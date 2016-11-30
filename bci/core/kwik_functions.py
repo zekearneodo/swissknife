@@ -1,12 +1,12 @@
 # Set of functions for appending data and reformatting the kwik file (and kwe)
-from scipy.io import wavfile
-from scipy import signal as ss
-import numpy as np
-import logging
-import h5_functions as h5f
-import file_tools as ft
-import os
 import h5py
+import logging
+import numpy as np
+import os
+from scipy import signal as ss
+from scipy.io import wavfile
+
+from bci.core.file import h5_functions as h5f
 
 module_logger = logging.getLogger("kwik_functions")
 

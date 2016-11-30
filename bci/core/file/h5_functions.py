@@ -6,10 +6,11 @@ import h5py
 import logging
 import os
 
+logger = logging.getLogger('bci.h5_functions')
 
 def h5_wrap(h5_function):
     """
-    Decorator to open h5 files if the path was provided to a function.
+    Decorator to open h5 structure if the path was provided to a function.
     :param h5_function: a function that receives an h5file as first argument
     :return: decorated function that takes open('r' mode) or path as first argument
     """
@@ -78,7 +79,7 @@ def get_rec_origin(kwd_file, rec):
     base_name = os.path.split(origin_strings[0])[-1].split('.')[0]
     sess = os.path.split(path)[-1]
     bird = os.path.split(os.path.split(path)[0])[-1]
-    return {'bird': bird, 'sess': sess, 'rec': recording, 'base': base_name}
+    return {'bird': bird, 'sess': sess, 'rec': recording, 'structure': base_name}
 
 
 @h5_wrap

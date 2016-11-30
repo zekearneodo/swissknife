@@ -1,30 +1,48 @@
 # Functions to do stuff with h5 open files
-import numpy as np
-from numpy.lib import recfunctions as rf
 import logging
-import h5py
-import logging
-import os
 
 logger = logging.getLogger('h5tools')
 
 
-def h5_wrap(h5_function):
+def h5_decorator(leave_open=True, default_mode='r'):
     """
-    Decorator to open h5 files if the path was provided to a function.
+    Decorator to open h5 structure if the path was provided to a function.
     :param h5_function: a function that receives an h5file as first argument
-    :return: decorated function that takes open('r' mode) or path as first argument
+    :param leave_open: whether to leave the file open.
+        It is overriden when file is entered open
+    :param default_mode: what mode to open the file by default.
+        It is overriden when file is entered open and when option 'mode' is set
+        in h5_function (if it exists)
+    :return: decorated function that takes open or path as first argument
     """
+    def wrap(h5_function):
+        def file_checker(h5_file, *args, **kwargs):
+            if 'mode' in kwargs.keys():
+                mode = kwargs['mode']
+            else:
+                mode = default_mode
+            # logger.debug('leave open {}'.format(leave_open))
+            logger.debug('mode {}'.format(mode))
+            try:
+                if type(h5_file) is not h5py._hl.files.File:
+                    if leave_open:
+                        logging.debug('Opening H5 file: {}'.format(h5_file))
+                        h5_file = h5py.File(h5_file, mode)
+                        return_value = h5_function(h5_file, *args, **kwargs)
+                    else:
+                        with h5py.File(h5_file, mode) as h5_file:
+                            return_value = h5_function(h5_file, *args, **kwargs)
 
-    def file_checker(h5_file, *args, **kwargs):
-        if type(h5_file) is not h5py._hl.files.File:
-            h5_file = h5py.File(h5_file, 'r')
-        logging.debug('H5 file: {}'.format(h5_file))
-        return_value = h5_function(h5_file, *args, **kwargs)
-        # h5_file.close()
-        return return_value
+                else:
+                    return_value = h5_function(h5_file, *args, **kwargs)
+                return return_value
 
-    return file_checker
+            except UnboundLocalError, err:
+                last_err = err
+                logger.error(err)
+
+        return file_checker
+    return wrap
 
 
 def list_subgroups(h5_group):
@@ -68,10 +86,10 @@ def dict_2_group(parent_group, dic, name, replace=False):
         logger.debug(err)
         if 'Name already exists' in err.args[0]:
             if replace:
-                logger.warn('Group {} already exists; replacing'.format(name))
+                logger.debug('Group {} already exists; replacing'.format(name))
                 group = parent_group.require_group(name)
             else:
-                logger.warning('Group {} already exists; skipping'.format(name))
+                logger.debug('Group {} already exists; skipping'.format(name))
                 return
 
     for key, item in dic.iteritems():
@@ -157,6 +175,3 @@ def append_atrributes(h5obj, attr_dict):
             logger.warning('Skipping sub-dictionary {0} in appending attributes of {1}'.format(key, h5obj.name))
             item = 'Error'
         h5obj.attrs.create(key, dict_2_attr_translator(item))
-
-
-
