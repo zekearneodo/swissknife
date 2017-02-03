@@ -8,6 +8,8 @@ from bci.core import kwefunctions as kwe
 from bci.core.file import h5_functions as h5f
 from bci.core import expstruct as et
 
+import matplotlib.pyplot as plt
+
 module_logger = logging.getLogger("stimalign")
 
 
@@ -36,19 +38,20 @@ def unlimited_rows_data(group, table_name, data):
     return table
 
 
-def find_first_peak(x, thresh_factor=0.5):
+def find_first_peak(x, thresh_factor=0.3):
     x = x - np.mean(x)
     thresh = np.max(x) * thresh_factor
     # find the peaks naively
     a = x[1:-1] - x[2:]
     b = x[1:-1] - x[:-2]
     c = x[1:-1]
-    max_pos = np.where((a > 0) & (b > 0) & (c > thresh))[0] + 1
+    max_pos = np.where((a >= 0) & (b > 0) & (c > thresh))[0] + 1
     return max_pos[0]
 
 
 def find_wav_onset(dset, chan, stamp, tr_df):
     [start, end] = get_trial_bounds(stamp, tr_df)
+    #module_logger.debug('Finding onset around {0}-{1} for {2}'.format(start, end, stamp))
     trial_frame = h5t.load_table_slice(dset, np.arange(start, end), [chan])
     onset_in_trial = find_first_peak(trial_frame)
     return start + onset_in_trial

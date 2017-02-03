@@ -70,7 +70,7 @@ class Spectrogram(object):
 def plot_spectrum(t, f, Sxx, before_ms=0, after_ms=None, ax=None, f_cut=10000, log_f=False, **kwargs):
 
     after_ms = np.max(t) if after_ms is None else after_ms
-    print after_ms
+    print(after_ms)
     if ax is None:
         spec_fig = plt.figure()
         ax = spec_fig.add_axes([0, 0, 1, 1])

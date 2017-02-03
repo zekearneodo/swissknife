@@ -13,6 +13,13 @@ logger = logging.getLogger("streamtools.temporal")
 
 
 def find_spikes(arr, thresholds, min_dist=10):
+    """
+    find spike events in an array
+    :param arr: numpy arran
+    :param thresholds:
+    :param min_dist:
+    :return:
+    """
     chans = np.arange(thresholds.shape[0])
     ranges = np.ptp(arr, axis=0)
     maxima = np.max(arr, axis=0)

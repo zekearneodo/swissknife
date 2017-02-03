@@ -4,30 +4,33 @@ import h5py
 import logging
 import os
 import socket
-import sys
 import yaml
 
 # for more than structure
 import numpy as np
 from numpy.lib import recfunctions as rf
-
-os.path.split(os.path.abspath(os.curdir))
 from bci.core.file import h5_functions as h5f
+from bci.core.file import file_functions as ff
 
-logger = logging.getLogger('expstruct')
+logger = logging.getLogger('bci.core.expstruct')
+
+
 # file structure
 
 def get_definitions_dictionaries():
     # packages is a dictionary with {'description': 'path relative to repos folder'}
     packages = {'sound': 'soundflow',
                 'ephys': 'ephys_flow',
-                'analysis': 'analysis_tools'}
+                'analysis': 'analysis_tools',
+                'swiss': 'swissknife'}
 
     locations = {'passaro':
                      {'repos': os.path.abspath('/mnt/cube/earneodo/repos'),
                       'experiment': os.path.abspath('/mnt/cube/earneodo/bci_zf'),
                       'experiment_local': os.path.abspath('/usr/local/experiment'),
-                      'archive': os.path.abspath('/mnt/cube/earneodo/archive/bci_zf')},
+                      'archive': os.path.abspath('/mnt/cube/earneodo/archive/bci_zf'),
+                      'store': os.path.abspath('/Data/bci_zf'),
+                      'scratch': os.path.abspath('/usr/local/experiment/scratchpad')},
                  'txori':
                      {'repos': os.path.abspath('/mnt/cube/earneodo/repos'),
                       'experiment': os.path.abspath('/mnt/cube/earneodo/bci_zf'),
@@ -41,7 +44,7 @@ def get_definitions_dictionaries():
                  'lookfar':
                      {'repos': os.path.abspath('/Users/zeke/repos'),
                       'experiment': os.path.abspath('/Volumes/gentner/earneodo/bci_zf'),
-                      'experiment_local': os.path.abspath('/Users/zeke/bci_zf')}
+                      'experiment_local': os.path.abspath('/Users/zeke/bci_zf')},
                  }
 
     return {'packages': packages,
@@ -52,10 +55,42 @@ def get_computer_name():
     return socket.gethostname()
 
 
+def get_locations(dict_path=None, comp_name=None):
+    if dict_path is None:
+        if comp_name is None:
+            comp_name = get_computer_name()
+            locations = get_definitions_dictionaries()['locations'][comp_name]
+    else:
+        #
+        raise NotImplementedError('Still dont know how to load a dictionary of locations')
+    return locations
+
+
 def set_paths(repos_root=None):
     if repos_root is None:
         repos_root
     pass
+
+
+def is_none(x):
+    return 'none' == str(x).lower()
+
+
+def flex_file_names(bird, sess='', rec=0, experiment_folder=None, base='experiment', location='experiment'):
+    fn = file_names(bird, sess, rec, experiment_folder, base)
+
+    exp_base = fn['locations'][location]
+    folders = {'raw': os.path.join(exp_base, 'raw_data', bird, sess),  # local raw
+           'ss': os.path.join(exp_base, 'ss_data', bird, sess),
+           'rw': os.path.join(exp_base, 'raw_data', bird, sess),  # stored raw
+           'stim': os.path.join(exp_base, 'stim_data', bird, sess),
+           'tmp': os.path.join(exp_base, 'tmp_data', bird, sess),
+           'templ': os.path.join(exp_base, 'templates'),
+           'prb': os.path.join(exp_base, 'probes')}
+
+    fn['folders'] = folders
+    return fn
+
 
 
 def file_names(bird, sess='', rec=0, experiment_folder=None, base='experiment'):
@@ -67,7 +102,10 @@ def file_names(bird, sess='', rec=0, experiment_folder=None, base='experiment'):
         base_location = get_definitions_dictionaries()['locations'][computer_name]
     else:
         experiment_local = experiment_folder
-        base_location = experiment_folder
+        base_location = {'experiment': os.path.abspath(experiment_folder),
+                         'experiment_local': os.path.abspath(experiment_folder),
+                         'store': os.path.abspath(experiment_folder),
+                         'archive': os.path.abspath(experiment_folder)}
 
     folders = {'raw': os.path.join(experiment_local, 'raw_data', bird, sess),  # local raw
                'ss': os.path.join(experiment_folder, 'ss_data', bird, sess),
@@ -77,6 +115,7 @@ def file_names(bird, sess='', rec=0, experiment_folder=None, base='experiment'):
                'templ': os.path.join(experiment_folder, 'templates'),
                'prb': os.path.join(experiment_folder, 'probes'),
                'kai': os.path.join(os.path.abspath('/mnt/cube/kai/results'), bird, sess)}
+
 
     files = {'structure': base,
              'ss_raw': base + '.raw.kwd',
@@ -130,12 +169,107 @@ def list_sessions(bird, experiment_folder=None, location='ss'):
     return sessions_bird
 
 
+def list_raw_sessions(bird, sess_day=None, depth='', experiment_folder=None, location='raw'):
+    all_sessions = list_sessions(bird, experiment_folder=experiment_folder, location=location)
+    if sess_day is not None:
+        all_sessions = [s for s in all_sessions if sess_day in s]
+    if depth != '':
+        all_sessions = [s for s in all_sessions if int(s[0].split('_')[-1]) == int(depth)]
+    all_depths = ['{}'.format(s.split('_')[-1]) for s in all_sessions]
+    return all_sessions, all_depths
+
+
 # Experiment structure
 def get_parameters(bird, sess, rec=0, experiment_folder=None, location='ss'):
     fn = file_names(bird, sess, rec, experiment_folder=experiment_folder)
     with open(os.path.join(fn['folders'][location], fn['structure']['par']), 'r') as f:
         pars = yaml.load(f)
     return pars
+
+
+def update_parameters(new_par, bird, sess, rec=0, experiment_folder=None, location='ss'):
+    fn = file_names(bird, sess, rec, experiment_folder=experiment_folder)
+    par_file_path = os.path.join(fn['folders'][location], fn['structure']['par'])
+    bkp_path = ff.make_backup(par_file_path)
+    logger.info('Overwriting parameter file; backup in {}'.format(bkp_path))
+    with open(par_file_path, 'w') as f:
+        written = yaml.dump(new_par, f)
+    return written
+
+
+def get_stims_dict(bird, sess, rec=0, experiment_folder=None, location='ss'):
+    """
+    get the dictionary of stimuli {name: file_name.wav}
+    :param bird:
+    :param sess:
+    :param rec:
+    :param experiment_folder:
+    :param location:
+    :return: dict
+    """
+    exp_pars = get_parameters(bird, sess,
+                              rec=rec,
+                              experiment_folder=experiment_folder,
+                              location=location)
+    return exp_pars['search_motiff']['motiff_patterns']
+
+
+def stim_id(exp_par, name):
+    """
+    Get a stimulus name's id in the .evt file of events (its group name)
+    :param exp_par: parameters of the experiment (read .yml file)
+    :param name: the name of the stimulus in the 'motiff_patterns' dictionary
+    :return: the id of the parameter
+    """
+    patterns = exp_par['search_motiff']['motiff_patterns']
+    return patterns[name].split('.wav')[0]
+
+
+def load_probe(bird, sess, experiment_folder=None, location='ss', override_path=None):
+    logger.debug('loading probe')
+
+    if override_path:
+        logger.debug('Will load probe from specified file {}'.format(override_path))
+        prb_file_path = override_path
+    else:
+        fn = file_names(bird, sess, experiment_folder=experiment_folder)
+        par = get_parameters(bird, sess, experiment_folder=experiment_folder, location=location)
+        probe_serial = par['probe']['serial'] if 'serial' in par['probe'].keys() else None
+        probe_model = par['probe']['model'] if 'model' in par['probe'].keys() else None
+        logger.debug('Probe serial {0}, model {1}'.format(probe_serial, probe_model))
+        try:
+            if not is_none(probe_serial):
+                logger.debug('Probe serial specified, using it to define file name')
+                probe_name = probe_serial
+            elif not is_none(probe_model):
+                logger.debug('Probe model specified, using it to define file name')
+                probe_name = probe_model
+            else:
+                raise ValueError('No valid descriptor of the probe')
+
+            try:
+                probe_rev = par['probe']['rev']
+                logger.debug('Probe rev specified: {}'.format(probe_rev))
+            except KeyError:
+                probe_rev = '0'
+                logger.debug('Probe rev not specified: default is {}'.format(probe_rev))
+
+            prb_file_path = os.path.join(fn['folders']['prb'],
+                                    '{0}_{1}.prb'.format(probe_name, probe_rev))
+            logger.debug('Probe should be {}'.format(prb_file_path))
+        except ValueError:
+            logger.debug('probe not specified in par file, going for default in-folder .prb file')
+            prb_file_path = file_path(fn, 'ss', 'kk_prb')
+
+    assert len(glob.glob(prb_file_path)) == 1, "Error finding .prb file in {}".format(prb_file_path)
+    prb_file = glob.glob(prb_file_path)[0]
+
+    logger.info('probe file: {}'.format(prb_file))
+    with open(prb_file, 'r') as f:
+        contents = f.read()
+    metadata = {}
+    exec (contents, {}, metadata)
+    return metadata
 
 
 def open_kwd(bird_id, sess, location='ss'):
@@ -179,6 +313,12 @@ def get_rec_list(bird, sess, location='ss'):
     return rec_list
 
 
+def get_rec_attribs(bird, sess, location='ss'):
+    rec_list = get_rec_list(bird, sess, location=location)
+
+    return rec_list
+
+
 # these should go to a different file
 def get_bird_events(bird, sessions_list=[], event_type=None, event_names=[], experiment_folder=None, location='ss'):
     bird_sessions = list_sessions(bird, experiment_folder=None,
@@ -186,10 +326,10 @@ def get_bird_events(bird, sessions_list=[], event_type=None, event_names=[], exp
     ev_stack = []
     for sess in bird_sessions:
         sess_events = get_one_sess_events(bird, sess,
-                                            event_type=event_type,
-                                            event_names=event_names,
-                                            experiment_folder=experiment_folder,
-                                            location=location)
+                                          event_type=event_type,
+                                          event_names=event_names,
+                                          experiment_folder=experiment_folder,
+                                          location=location)
         if sess_events is not None:
             ev_stack.append(sess_events)
 

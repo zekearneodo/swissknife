@@ -1,7 +1,52 @@
+from __future__ import division
 import matplotlib.pyplot as plt
 import numpy as np
-
 import ode
+
+default_sys_pars = {'alpha_1': 0.15,
+                    'beta_1': 0.15,
+                    'alpha_2': 0.15,
+                    'beta_2': 0.15,
+                    'gamma': 23500.,
+                    'Ch_inv': 4.5E10,
+                    'Lb_inv': 1.E-4,
+                    'Lg_inv': 1 / 82.,
+                    'Rb': 5E6,
+                    'Rh': 6E5,
+                    'V_ext': 0.,
+                    'dV_ext': 0.,
+                    'noise': 0.,
+                    'envelope': 0.,
+                    'noise_fraction_beta_1': 0.1,
+                    'noise_fraction_env': 0.1,
+                    's_f': 44100.,
+                    'steps_per_sample': 20
+                    }
+
+default_vocal_pars = {'sys': None,
+                      'S_1': 0.2,
+                      'S_2': 0.2,
+                      'S_3': 0.2,
+                      'l_1': 1.5,
+                      'l_2': 1.5,
+                      'l_3': 1.0,
+                      'r_out': 0.1,
+                      'r_12': None,
+                      'r_21': None,
+                      'r_23': None,
+                      'r_32': None,
+                      't_12': None,
+                      't_21': None,
+                      't_23': None,
+                      't_32': None,
+                      't_in': 0.5,
+                      'tau_1': None,
+                      'tau_2': None,
+                      'tau_3': None,
+                      'max_tau': None,
+                      'A_1': 0.,
+                      'A_2': None,
+                      'A_3': None}
 
 
 def takens_finch(v, pars):
@@ -112,7 +157,7 @@ def finch(pars, int_par_stream, x_0=None):
         x = syrinx.next()
         sampling_t -= 1
 
-    return pre_out/np.max(pre_out, axis=0) * max_env
+    return pre_out / np.max(pre_out, axis=0) * max_env
 
 
 def compute_tract_pars(pars, d_t, v_sound=35000):
@@ -124,6 +169,18 @@ def compute_tract_pars(pars, d_t, v_sound=35000):
     pars['max_tau'] = np.max(np.array([pars['tau_' + i] for i in ['1', '2', '3']]))
 
     return pars
+
+
+def make_song(pars_stream, sys_pars=default_sys_pars, vocal_pars=default_vocal_pars):
+    """
+    :param pars_stream: n_dt x 3 np.array (cols are alpha, beta, envelope)
+    :param sys_pars: dict of system parameters see default
+    :param vocal_pars: dict of vocal tract parametres see default
+    :return: n_dt x 2 np.array (cols are p_in, p_out)
+    """
+    vocal_pars['sys'] = sys_pars
+    song_synth = finch(vocal_pars, pars_stream)
+    return song_synth
 
 
 def main():

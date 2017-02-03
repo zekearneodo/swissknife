@@ -1,6 +1,6 @@
 # Objects and helper functions to do stuff with sound
 # The logic of using these is to be able to page through long structure and apply the same whether they are wavs, h5, bin.
-
+from __future__ import division
 import numpy as np
 import wave
 import struct
@@ -19,6 +19,34 @@ logger = logging.getLogger("streamtools.streams")
 
 def rms(x):
     return np.std(x, axis=0)
+
+
+def car(x, chans=None):
+    ch = np.arange(x.shape[1]) if chans is None else chans
+    return x[:, ch] - x[:, ch].mean(axis=1, keepdims=True)
+
+
+def plot_array(array, ax=None):
+    # Plot all channels into one plot
+    # Offset them
+    amps = np.ptp(array, axis=0)
+    plot_data = np.zeros_like(array)
+    for i in np.arange(array.shape[1]):
+        plot_data[:, i] = array[:, i] / amps[i] + i
+    if ax is None:
+        waveforms_fig = plt.figure()
+        ax = waveforms_fig.add_axes([0, 0, 1, 1])
+    else:
+        waveforms_fig = ax.figure
+
+    lines = ax.plot(plot_data);
+    return waveforms_fig, ax, lines
+
+
+def sum_frames(frames_list):
+    all_frames_array = np.array([f.data for f in frames_list])
+    all_avg = all_frames_array.mean(axis=0)
+    return all_avg
 
 class WavData2:
     # same as wavdata, but streams are read in columns into an N_samp X N_ch array (one channel = one column)
@@ -189,7 +217,7 @@ class H5Data:
         self.s_f = s_f
         if chan_list is None:
             self.n_chans = h5_table.shape[h5_table.ndim - 1]
-            self.chan_list = np.array(self.n_chans)
+            self.chan_list = np.arange(self.n_chans)
         else:
             self.n_chans = np.size(chan_list)
             self.chan_list = chan_list
@@ -201,7 +229,7 @@ class H5Data:
     def apply_repeated(self, starts, window, func, *args, **kwargs):
         # starts, window in sample units
         results = [func(Chunk(self,
-                              chan_list=np.arange(self.n_chans),
+                              chan_list=self.chan_list,
                               segment=[start, start + window]).data,
                         *args,
                         **kwargs) for start in starts]
@@ -221,11 +249,14 @@ class H5Data:
         assert (start >= 0)
         assert (end <= self.n_samples)
         assert (end > start)
-
-        chunk_data = np.array(h5t.load_table_slice(self.data, np.arange(start, end), chan_list),
-                        dtype=self.data_type)
-
+        chunk_data = np.array(h5t.load_table_slice(self.data,
+                                                   np.arange(start,
+                                                             end,
+                                                             dtype=int),
+                                                   chan_list),
+                              dtype=self.data_type)
         return chunk_data
+
 
 
 # class of methods for chunks of a signal
@@ -291,15 +322,52 @@ class Chunk:
         pass
 
 
-class Frame(Chunk):
-    def __init__(self, sound, chan_list=None, segment=[0, None]):
-        if chan_list is None:
-            chan_list = np.arange(sound.n_chans)
-        super(Chunk, self).__init__(sound, chan_list, segment)
+class Frame:
+    def __init__(self, data):
+        self.data = data
 
+    def __add__(self, other):
+        assert (self.data.shape == other.data.shape)
+        new_data = np.mean(np.array([self.data, other.data]), axis=0)
+        return Frame(new_data)
+
+    def __sub__(self, other):
+        assert (self.data.shape == other.data.shape)
+
+        new_data = self.data - other.data
+        return Frame(new_data)
+
+    def apply_filter(self, filter_func, *args, **kwargs):
+        # Apply some filter function to the chunk of data
+        self.data = filter_func(self.data, *args, **kwargs)
+
+    def plot(self, ax=None):
+        # Plot all channels into one plot
+        # Offset them
+        amps = np.ptp(self.data, axis=0)
+        plot_data = np.zeros_like(self.data)
+        for i in np.arange(self.chan_list.size):
+            plot_data[:, i] = self.data[:, i] / amps[i] + i
+        if ax is None:
+            waveforms_fig = plt.figure()
+            ax = waveforms_fig.add_axes([0, 0, 1, 1])
+            ax.plot(plot_data)
+        return waveforms_fig, ax
+
+
+def list_apply_filter(chunk_list, filter_func, *filter_args, **filter_kwargs):
+    return map(lambda x:
+               x.apply_filter(filter_func, *filter_args, **filter_kwargs),
+               chunk_list)
 
 
 def get_rms_threshold(full_sound, window_size_samples, rms_threshold_factor):
+    """
+    :param full_sound: A whole object that can give Chunks
+    :param window_size_samples: size of the running window (in samples)
+    :param rms_threshold_factor: standard deviations to define the threshold
+    :return:
+    """
     all_starts = np.arange(0, full_sound.n_samples - window_size_samples, window_size_samples)
     all_rms = full_sound.apply_repeated(all_starts, window_size_samples, rms)
     thresh_rms = np.mean(all_rms) + rms_threshold_factor * np.std(all_rms)
@@ -324,3 +392,4 @@ def array_wrap(stream_function):
         return return_value
 
     return array_checker
+

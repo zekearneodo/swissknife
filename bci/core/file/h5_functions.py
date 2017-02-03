@@ -120,6 +120,10 @@ def get_rec_starts(kwd_file):
     rec_starts = {rec: r_start for r_start, rec in zip(starts_vec, rec_sizes.iterkeys())}
     return rec_starts
 
+# H5 functions
+def copy_attribs(source, dest):
+    for key, attrib in source.attrs.iteritems():
+        dest.attrs.create(key, attrib, dtype=attrib.dtype)
 
 # Table functions
 def get_dset_group_attr(data_set, attr_name):

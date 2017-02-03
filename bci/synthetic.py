@@ -4,6 +4,7 @@ import logging
 import numpy as np
 import os
 from scipy.signal import resample
+from scipy.signal import savgol_filter
 
 from bci.core import expstruct as et
 
@@ -22,15 +23,11 @@ def running_diff(x, y):
     return np.array([np.sum(abs(x - y[:, i: i + n_x])) for i in range(n_y - n_x)])
 
 
-def mulog(x, mu=256):
-    return np.sign(x) * np.log(1. + mu * np.fabs(x)) / np.log(1. + mu)
+def np_mulog(x, mu=512):
+    return np.multiply(np.sign(x), np.log(mu * np.fabs(x) + 1.) / np.log(1. + mu))
 
 
-def mulog_vec(x, mu):
-    return np.array([mulog(i) for i in x])
-
-
-def inverse_mulog_vec(y, mu=256):
+def np_mulog_inv(y, mu=512):
     return np.sign(y) / mu * (np.power((1. + mu) * np.ones_like(y), np.fabs(y)) - 1.)
 
 
@@ -79,12 +76,14 @@ def load_alpha_beta(bird, syn_sess=1, s_f=44100, new_s_f=30000, first=None):
     # env = st.envelope(bos[:alpha.shape[0]], window=300, conv_mode='same')
 
     env = env_bos[:first, 2]
+    beta = savgol_filter(-(syn_par[:first, 1]), 43, 3)
     beta = -(syn_par[:first, 1])
+    beta[beta < 0] = 0
+    beta = savgol_filter(beta, 43, 3)
     beta[beta < 0] = 0
 
     return (alpha), (beta), env
 
 
 def fitted_to_stream(onof, beta, alpha):
-    return np.vstack([0.15 - onof, -beta, alpha*1000]).T
-
+    return np.vstack([0.15 - onof, -beta, alpha * 1000]).T

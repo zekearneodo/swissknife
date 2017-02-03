@@ -1,5 +1,6 @@
 # Functions to do stuff with h5 open files
 import logging
+import h5py
 
 logger = logging.getLogger('h5tools')
 
@@ -116,6 +117,18 @@ def attr_2_dict_translator(value):
     return out_value
 
 
+def obj_attrs_2_dict_translator(h5obj):
+    dic = {}
+    for attr, value in h5obj.attrs.iteritems():
+        try:
+            # logger.debug('attr {}'.format(attr))
+            dic[attr] = attr_2_dict_translator(value)
+        except ValueError:
+            logger.warning("Could not translate value for attribute {}".format(attr))
+            dic[attr] = None
+    return dic
+
+
 def group_2_dict(parent_dic, group, key_name):
     """
     Recursively dumps a group into a dictionary.
@@ -136,14 +149,22 @@ def group_2_dict(parent_dic, group, key_name):
             dic[attr] = attr_2_dict_translator(value)
         except ValueError:
             logger.warning("Could not translate value for attribute {}".format(attr))
-            dic['attr'] = None
+            dic[attr] = None
 
     for subgroup_name, subgroup_obj in group.iteritems():
+        logger.debug('Subgroup {}'.format(subgroup_name))
         try:
-            assert (isinstance(subgroup_obj, h5py.Group))
+            assert(isinstance(subgroup_obj, h5py.Group))
+            # logger.info('Ok subgroup {}'.format(subgroup_name))
             group_2_dict(dic, subgroup_obj, subgroup_name)
         except AssertionError:
-            raise Exception('group_2_dict', '')
+            try:
+                assert (isinstance(subgroup_obj, h5py.Dataset))
+                # logger.info('Ok dataset {}'.format(subgroup_name))
+                dic[subgroup_name] = obj_attrs_2_dict_translator(subgroup_obj)
+                # logger.info('Translated attrs of dataset {}'.format(subgroup_name))
+            except:
+                raise
 
     return parent_dic
 
