@@ -17,6 +17,7 @@ class Event:
     data = None
     datagroup = None
     datasets = None
+
     def __init__(self, name, h5=None):
         self.name = name
         self.data = h5

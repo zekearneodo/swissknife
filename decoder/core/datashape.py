@@ -35,7 +35,7 @@ def make_big_r(sup, hist_bins):
                       np.reshape(r.T, (-1, n_feat * (hist_bins)))])
 
 
-def sup_correct(sup, target, hist_bins):
+def correct_sv(sup, target, hist_bins):
     """
     :param sup: np array (t+history)xnu support vector (from -history to t)
                 of nu features (features are the columns)
@@ -64,7 +64,8 @@ def data_arrange(sup, target, hist_bins):
     :param hist_bins: size of sliding window (in bins/time steps)
     :return: an array of n_points x n_features, an array of n_points x 1 (target)
     """
-    sup_correct = sup_correct(sup, target, hist_bins)
 
-    big_r = make_big_r(sup_correct, hist_bins)
+    sup_corrected = correct_sv(sup, target, hist_bins)
+
+    big_r = make_big_r(sup_corrected, hist_bins)
     return big_r, target.flatten()

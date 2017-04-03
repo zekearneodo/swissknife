@@ -7,6 +7,7 @@ from scipy import signal as ss
 from scipy.io import wavfile
 
 from bci.core.file import h5_functions as h5f
+import expstruct as et
 
 module_logger = logging.getLogger("kwik_functions")
 
@@ -377,7 +378,7 @@ def kilo_to_kwik(bird, sess, file_names=None, location='ss'):
             kwd='experiment.raw.kwd',
             kwk='experiment.kwik')
 
-    fn = ft.experiment.file_names(bird, sess)
+    fn = et.file_names(bird, sess)
     for key, value in file_names.iteritems():
         file_names[key] = os.path.join(fn['folders'][location], value)
 

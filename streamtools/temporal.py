@@ -34,3 +34,19 @@ def find_spikes(arr, thresholds, min_dist=10):
                                       min_dist=min_dist))
 
     return all_indexes
+
+
+def spikes_array(data, thresholds, min_dist=10):
+    '''
+    :param data: np. array [n_samples, n_chans]
+    :param thresholds:
+    :param min_dist:
+    :return:
+    '''
+    # logger.info('Getting spikes from chunk with data sized {}'.format(chunk.data.shape))
+    spk_lst = find_spikes(data, thresholds, min_dist=min_dist)
+    spk_arr = np.zeros_like(data)
+    assert (len(spk_lst) == spk_arr.shape[1])
+    for ch in range(len(spk_lst)):
+        spk_arr[spk_lst[ch], ch] = 1
+    return spk_arr

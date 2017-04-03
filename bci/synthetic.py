@@ -48,6 +48,11 @@ def resample_interp(x, s_f, new_s_f):
     print new_t.shape
     return np.interp(new_t, t, x)
 
+def latent_to_stream(onof, beta, alpha):
+    onof[onof>.3] = .3
+    onof[onof<0] = 0
+    alpha[alpha<0]=0
+    return np.vstack([0.15 - onof, -beta, alpha]).T
 
 def load_syn_stream(bird, syn_sess=1, s_f=44100, new_s_f=30000, file_base='synth_bos'):
     stim_folder = et.file_names(bird)['folders']['stim']

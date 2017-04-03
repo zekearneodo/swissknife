@@ -25,7 +25,6 @@ def car(x, chans=None):
     ch = np.arange(x.shape[1]) if chans is None else chans
     return x[:, ch] - x[:, ch].mean(axis=1, keepdims=True)
 
-
 def plot_array(array, ax=None):
     # Plot all channels into one plot
     # Offset them
@@ -235,6 +234,21 @@ class H5Data:
                         **kwargs) for start in starts]
         #return results
         return np.stack(results, axis=0)
+
+    def collect_frames(self, starts, span, chan_list=None):
+        frames = []
+        bad_frames = []
+        logger.info('Collecting {} frames...'.format(starts.size))
+        for i_start, start in enumerate(starts):
+            if i_start % 10 == 0:
+                logger.info("Frame {} ...".format(i_start))
+            try:
+                one_frame = self.get_chunk(start, start + span, chan_list=chan_list)
+                frames.append(one_frame)
+            except AssertionError:
+                logger.warning('Frame out of bounds [{0}:{1}]'.format(start, start+span))
+                bad_frames.append(i_start)
+        return frames, bad_frames
 
     def get_rms(self, window_size_samples=50000, n_windows=5000, rms_func=rms, rms_args=(), rms_kwargs={}):
         logger.debug('Computing rms over {0} windows for {1} channels'.format(n_windows, self.n_chans))

@@ -1,3 +1,4 @@
+# Python 2 and 3
 import multiprocessing
 import logging
 
@@ -20,8 +21,7 @@ class threadedFunction(multiprocessing.Process):
         return
 
     def run(self):
-        logger.info('Starting function {0} in thread {1}'.format(self.func.func_name,
-                                                                 self.name))
+        logger.info('Starting function  in thread {0}'.format(self.name))
 
         # for arg in self.args:
         #     print arg
@@ -31,3 +31,13 @@ class threadedFunction(multiprocessing.Process):
         self.out = self.func(*self.args, **self.kwargs)
         logger.info("done process {0}".format(self.name))
         return self.out
+
+
+class threadedFunctionGPU(threadedFunction):
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, join_threads=[], verbose=None, gpuid=0):
+
+        threadedFunction.__init__(self, group=group, target=target, name=name,
+                                  args=args, kwargs=kwargs, join_threads=join_threads, verbose=verbose)
+
+        self.ctx = driver.Device(gpuid).make_context()

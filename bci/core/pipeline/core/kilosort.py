@@ -1,5 +1,6 @@
 # kilosort a session on (niao)
 # Definitions and functions
+
 import sys
 import os
 import logging
@@ -11,8 +12,10 @@ import numpy as np
 import scipy as sp
 import scipy.io as sio
 from string import Template
-from file_tools import experiment as et
-from basic_viewing import h5_functions as h5f
+#quick and dirty fix
+sys.path.append(os.path.join('/mnt/cube/earneodo/repos', 'swissknife'))
+from bci.core import expstruct as et
+from bci.core.file import h5_functions as h5f
 import numpy as np
 logger = logging.getLogger('kilosort')
 
@@ -27,22 +30,22 @@ def get_args():
 
 
 def make_kilo_scripts(bird, sess, n_filt=None,
-                      kilodir=os.path.abspath('/home/mthielk/github/KiloSort'),
-                      npy_matdir=os.path.abspath('/home/mthielk/github/npy-matlab')
+                      kilo_dir=os.path.abspath('/home/mthielk/github/KiloSort'),
+                      npymat_dir=os.path.abspath('/home/mthielk/github/npy-matlab')
                       ):
     fn = et.file_names(bird, sess)
     exp_par = et.get_parameters(bird, sess)  # load the yml parameter file
     local_sort_dir = fn['folders']['tmp']
     logger.debug('local sort dir: {}'.format(local_sort_dir))
-    block_name = fn['files']['base']
+    block_name = fn['structure']['structure']
     fs = h5f.get_record_sampling_frequency(et.open_kwd(bird, sess))
     n_chan = len(exp_par['channel_config']['neural'])
     logger.debug('n_chan: {}'.format(n_chan))
     if n_filt is None:
         n_filt = np.int(np.ceil(16*3./32.)*32)
     params = {
-        'kilodir': kilodir,
-        'npy_matdir': npy_matdir,
+        'kilodir': kilo_dir,
+        'npy_matdir': npymat_dir,
         'datadir': local_sort_dir,
         'blockname': block_name,
         'fs': fs,
@@ -122,7 +125,10 @@ def make_kilo_chanmap(bird, sess):
     sio.savemat(et.file_path(fn, 'tmp', 'ks_map'), chan_map_dict)
     
 
-def run_kilosort(bird, sess, no_copy=False):
+def run_kilosort(bird, sess, no_copy=False,
+                 kilo_dir=os.path.abspath('/home/mthielk/github/KiloSort'),
+                 npymat_dir=os.path.abspath('/home/mthielk/github/npy-matlab')
+                ):
     print "will run bci_pipeline on bird {0} - session {1}".format(bird, sess)
     fn = et.file_names(bird, sess)
     log_file = os.path.join(fn['folders']['ss'], 'kilosort_py.log')
@@ -138,7 +144,7 @@ def run_kilosort(bird, sess, no_copy=False):
         copyed = fetch_kilo_data(bird, sess)
         logger.info('Copied {}'.format(copyed))
     logger.info('Will create the scripts')
-    make_kilo_scripts(bird, sess)
+    make_kilo_scripts(bird, sess, kilo_dir=kilo_dir, npymat_dir=npymat_dir)
     logger.info('Will do the chanMap for matlab')
     make_kilo_chanmap(bird, sess)
     logger.info('Will do the sort')
@@ -196,14 +202,14 @@ def copy_data(bird, sess, orig, dest, only_files=[], exclude_files=[]):
     if len(only_files) > 0:
         logger.debug('Grabbing all files in list {}'.format(only_files))
         try:
-            copied = map(lambda f: sh.copy2(et.file_path(fn, orig, f), dest_folder), only_files)
+            copied = map(lambda x: sh.copy2(et.file_path(fn, orig, x), dest_folder), only_files)
 
         except:
             logger.error('Missing files')
             raise ValueError('Missing kilosort data', 'missingFiles')
 
     else:
-        copied = [sh.copy2(et.file_path(fn, orig, f), dest_folder) for f in fn['files']
+        copied = [sh.copy2(et.file_path(fn, orig, f), dest_folder) for f in fn['structure']
                   if not f in exclude_files
                   and os.path.isfile(et.file_path(fn, orig, f))]
 

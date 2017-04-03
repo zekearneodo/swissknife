@@ -1,4 +1,4 @@
-from bci_pipeline import kilosort
+from core import kilosort
 import logging
 import argparse
 import os
@@ -19,6 +19,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger("do_kilosort")
     logger.info('Will do kilosort on bird {}, sess {}'.format(args.bird, args.sess))
+    #kilosort.run_kilosort(args.bird, args.sess, no_copy=False)
     try:
         kilosort.run_kilosort(args.bird, args.sess, no_copy=False)
         logger.info('Finished sorting')

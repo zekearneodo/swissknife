@@ -332,11 +332,11 @@ def make_super_session(bird_id, sess_str, depth='', raw_location='rw'):
 
 
 def make_copies(sess_list, dest_path, keep=True):
-    module_logger.log("Backup of {0} sessions in {1}".format(len(sess_list), dest_path))
+    module_logger.info("Backup of {0} sessions in {1}".format(len(sess_list), dest_path))
     et.mkdir_p(dest_path)
     for session_path in sess_list:
         session_name = os.path.split(session_path)[-1]
-        module_logger.log('Sess {}'.format(session_name))
+        module_logger.debug('Sess {}'.format(session_name))
         dest_bkp = os.path.join(dest_path, session_name)
         operation = sh.copytree if keep else sh.move
         try:
@@ -361,7 +361,48 @@ def make_raw_bkp(bird_id, sess_list, raw_location='rw', locations=None):
         make_copies(sess_list, exp_path, keep=True)
 
     if raw_location == 'raw':
-        module_logger.info('Moving data out of local drive {}'.format(source_path))
+        module_logger.info('Should be Moving data out of local drive {}'.format(source_path))
         make_copies(sess_list, store_path, keep=False)
     else:
         module_logger.info('Data is not in local drive but in {}, doing nothing'.format(source_path))
+
+
+def process_awake_recording(bird_id, sess_day_id, depth, raw_location='raw'):
+    raw_data_folder = et.file_names(bird_id)['folders'][raw_location]
+    sessions = glob.glob(os.path.join(raw_data_folder, sess_day_id + '*' + str(depth)))
+    sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
+    data_processor = sess_par['rec_config']['processors']['data']
+    experiments = list_flatten(
+        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
+    experiments.sort()
+
+    super_sess_name = 'day-' + sess_day_id + '_' + depth
+    fn = et.file_names(bird_id, super_sess_name, 0)
+    super_sess_path = fn['folders']['ss']
+    super_file_path = os.path.join(super_sess_path, fn['structure']['ss_raw'])
+    module_logger.info('Super session path {}'.format(super_file_path))
+
+    sess_list = make_super_session(bird_id, sess_day_id, depth, raw_location=raw_location)
+    make_raw_bkp(bird_id, sess_list, raw_location=raw_location)
+    extract_wav_chans(bird_id, super_sess_name)
+    module_logger.info('Done making supersession')
+
+def process_asleep_recording(bird_id, sess_day_id, depth, raw_location='raw'):
+    raw_data_folder = et.file_names(bird_id)['folders'][raw_location]
+    sessions = glob.glob(os.path.join(raw_data_folder, sess_day_id + '*' + str(depth)))
+    sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
+    data_processor = sess_par['rec_config']['processors']['data']
+    experiments = list_flatten(
+        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
+    experiments.sort()
+
+    super_sess_name = 'day-' + sess_day_id + '_' + depth
+    fn = et.file_names(bird_id, super_sess_name, 0)
+    super_sess_path = fn['folders']['ss']
+    super_file_path = os.path.join(super_sess_path, fn['structure']['ss_raw'])
+    module_logger.info('Super session path {}'.format(super_file_path))
+
+    sess_list = make_super_session(bird_id, sess_day_id, depth, raw_location=raw_location)
+    make_raw_bkp(bird_id, sess_list, raw_location=raw_location)
+    extract_wav_chans(bird_id, super_sess_name)
+    module_logger.info('Done making supersession')

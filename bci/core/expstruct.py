@@ -110,6 +110,7 @@ def file_names(bird, sess='', rec=0, experiment_folder=None, base='experiment'):
     folders = {'raw': os.path.join(experiment_local, 'raw_data', bird, sess),  # local raw
                'ss': os.path.join(experiment_folder, 'ss_data', bird, sess),
                'rw': os.path.join(experiment_folder, 'raw_data', bird, sess),  # stored raw
+               'proc': os.path.join(experiment_folder, 'proc_data', bird, sess), #processed data
                'stim': os.path.join(experiment_folder, 'stim_data', bird, sess),
                'tmp': os.path.join(experiment_local, 'tmp_data', bird, sess),
                'templ': os.path.join(experiment_folder, 'templates'),
@@ -289,6 +290,12 @@ def open_kwik(bird_id, sess, shank=None, location='ss'):
     kwik_file_path = os.path.join(ss_path, kwik_file_name)
     kwik_file = h5py.File(kwik_file_path, 'r')
     return kwik_file
+
+def open_kwe(bird_id, sess, location='ss'):
+    fn = file_names(bird_id, sess, 0)
+    kwe_file_file_path = file_path(fn, location, 'sng')
+    kwe_file = h5py.File(kwe_file_file_path, 'r')
+    return kwe_file
 
 
 def get_shank_files_list(bird_id, sess, location='ss'):
