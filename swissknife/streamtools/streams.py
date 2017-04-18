@@ -1,15 +1,16 @@
 # Objects and helper functions to do stuff with sound
 # The logic of using these is to be able to page through long structure and apply the same whether they are wavs, h5, bin.
 from __future__ import division
-import numpy as np
-import wave
-import struct
+
 import copy
-
 import logging
+import struct
+import wave
 
-from h5tools import tables as h5t
+import numpy as np
 from matplotlib import pyplot as plt
+
+from swissknife.h5tools import tables as h5t
 
 # TODO:  Make DatSound a subclass of WavData
 #        Save chunk as wav file (using wave)

@@ -1,10 +1,7 @@
-import numpy as np
-import peakutils as pk
-
 import logging
 
-from h5tools import tables as h5t
-from matplotlib import pyplot as plt
+import numpy as np
+import peakutils as pk
 
 # TODO:  Make DatSound a subclass of WavData
 #        Save chunk as wav file (using wave)

@@ -1,8 +1,8 @@
 import numpy as np
 import numpy.lib.recfunctions as rfn
-
-from bci.core import kwik_functions as kwf
 from bci.core import expstruct as et
+
+from swissknife.bci.core import kwik_functions as kwf
 
 
 def list_shank_units(bird, sess, shank, shank_file=None, sorted=False):

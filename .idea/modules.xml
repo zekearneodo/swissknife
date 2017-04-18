@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/dynamo/.idea/dynamo.iml" filepath="$PROJECT_DIR$/dynamo/.idea/dynamo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ephysflow/.idea/ephysflow.iml" filepath="$PROJECT_DIR$/../ephysflow/.idea/ephysflow.iml" />
+      <module fileurl="file://$USER_HOME$/repos/googleapi/.idea/googleapi.iml" filepath="$USER_HOME$/repos/googleapi/.idea/googleapi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../soundflow/.idea/soundflow.iml" filepath="$PROJECT_DIR$/../soundflow/.idea/soundflow.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/swissknife.iml" filepath="$PROJECT_DIR$/.idea/swissknife.iml" />
+    </modules>
+  </component>
+</project>

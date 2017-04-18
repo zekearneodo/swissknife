@@ -1,8 +1,8 @@
-from core import kilosort
-import logging
 import argparse
-import os
+import logging
 import sys
+
+from core import kilosort
 
 
 def get_args():

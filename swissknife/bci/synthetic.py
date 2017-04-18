@@ -1,12 +1,13 @@
 from __future__ import division
 
 import logging
-import numpy as np
 import os
+
+import numpy as np
 from scipy.signal import resample
 from scipy.signal import savgol_filter
 
-from bci.core import expstruct as et
+from swissknife.bci.core import expstruct as et
 
 logger = logging.getLogger('bci_pipeline.synthetic')
 

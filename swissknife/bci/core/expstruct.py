@@ -1,16 +1,17 @@
 import errno
 import glob
-import h5py
 import logging
 import os
 import socket
-import yaml
 
+import h5py
 # for more than structure
 import numpy as np
+import yaml
 from numpy.lib import recfunctions as rf
-from bci.core.file import h5_functions as h5f
-from bci.core.file import file_functions as ff
+
+from swissknife.bci.core.file import file_functions as ff
+from swissknife.bci.core.file import h5_functions as h5f
 
 logger = logging.getLogger('bci.core.expstruct')
 

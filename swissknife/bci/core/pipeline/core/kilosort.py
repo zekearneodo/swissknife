@@ -1,21 +1,21 @@
 # kilosort a session on (niao)
 # Definitions and functions
 
-import sys
-import os
-import logging
-import glob
-import shutil as sh
 import argparse
+import glob
+import logging
+import os
+import shutil as sh
 import subprocess
-import numpy as np
-import scipy as sp
-import scipy.io as sio
+import sys
 from string import Template
+
+import scipy.io as sio
+
 #quick and dirty fix
 sys.path.append(os.path.join('/mnt/cube/earneodo/repos', 'swissknife'))
-from bci.core import expstruct as et
-from bci.core.file import h5_functions as h5f
+from swissknife.bci.core import expstruct as et
+from swissknife.bci.core.file import h5_functions as h5f
 import numpy as np
 logger = logging.getLogger('kilosort')
 

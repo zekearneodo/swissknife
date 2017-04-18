@@ -1,14 +1,13 @@
 import logging
+
+import h5py
 import numpy as np
 import pandas as pd
-import h5py
-import yaml
-from h5tools import tables as h5t
+from bci.core import expstruct as et
 from bci.core import kwefunctions as kwe
 from bci.core.file import h5_functions as h5f
-from bci.core import expstruct as et
 
-import matplotlib.pyplot as plt
+from swissknife.h5tools import tables as h5t
 
 module_logger = logging.getLogger("stimalign")
 
