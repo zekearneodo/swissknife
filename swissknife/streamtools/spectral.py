@@ -1,4 +1,4 @@
-from mock.mock import self
+#from mock.mock import self
 from scipy.signal import spectrogram
 import scipy.signal as sg
 import matplotlib.pyplot as plt

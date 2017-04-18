@@ -3,9 +3,9 @@ import logging
 import h5py
 import numpy as np
 import pandas as pd
-from bci.core import expstruct as et
-from bci.core import kwefunctions as kwe
-from bci.core.file import h5_functions as h5f
+from core import expstruct as et
+from core import kwefunctions as kwe
+from core.file import h5_functions as h5f
 
 from swissknife.h5tools import tables as h5t
 
@@ -118,11 +118,11 @@ def get_stim_starts(kwe_file, kwd_file, rec, tag_chan, stim_name):
     return precise_starts
 
 
-def align_stim(bird_id, super_sess_id):
+def align_stim(bird_id, super_sess_id, raw_location='rw', ss_location='ss'):
     ss_fn = et.file_names(bird_id, super_sess_id)
-    mot_file_path = et.file_path(ss_fn, 'ss', 'sng')
-    super_sess_path = et.file_path(ss_fn, 'ss', 'ss_raw')
-    rec_list = et.get_rec_list(bird_id, super_sess_id)
+    mot_file_path = et.file_path(ss_fn, ss_location, 'sng')
+    super_sess_path = et.file_path(ss_fn, ss_location, 'ss_raw')
+    rec_list = et.get_rec_list(bird_id, super_sess_id, location=ss_location)
 
     for rec in rec_list:
         # get the rec events file
@@ -130,12 +130,12 @@ def align_stim(bird_id, super_sess_id):
         module_logger.debug('Rec origin: {0}'.format(rec_origin))
         origin_fn = et.file_names(bird_id, rec_origin['sess'], base=rec_origin['structure'])
 
-        rec_ev_file_path = et.file_path(origin_fn, 'rw', 'evt')
-        rec_kwd_file_path = et.file_path(origin_fn, 'rw', 'ss_raw')
+        rec_ev_file_path = et.file_path(origin_fn, raw_location, 'evt')
+        rec_kwd_file_path = et.file_path(origin_fn, raw_location, 'ss_raw')
 
         # read the raw parameters file and get the tag channel
-        par_file_path = et.file_path(et.file_names(bird_id, rec_origin['sess']), 'rw', 'par')
-        pars = et.get_parameters(bird_id, rec_origin['sess'], location='rw')
+        par_file_path = et.file_path(et.file_names(bird_id, rec_origin['sess']), raw_location, 'par')
+        pars = et.get_parameters(bird_id, rec_origin['sess'], location=raw_location)
         tag_chan = int(pars['channel_config']['sts'])
 
         with h5py.File(rec_ev_file_path, 'r') as rec_ev_file:

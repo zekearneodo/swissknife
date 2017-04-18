@@ -26,6 +26,7 @@ def car(x, chans=None):
     ch = np.arange(x.shape[1]) if chans is None else chans
     return x[:, ch] - x[:, ch].mean(axis=1, keepdims=True)
 
+
 def plot_array(array, ax=None):
     # Plot all channels into one plot
     # Offset them
@@ -47,6 +48,7 @@ def sum_frames(frames_list):
     all_frames_array = np.array([f.data for f in frames_list])
     all_avg = all_frames_array.mean(axis=0)
     return all_avg
+
 
 class WavData2:
     # same as wavdata, but streams are read in columns into an N_samp X N_ch array (one channel = one column)
@@ -216,12 +218,12 @@ class H5Data:
         self.data_type = np.dtype(h5_table.dtype) if dtype is None else dtype
         self.s_f = s_f
         if chan_list is None:
-            self.n_chans = h5_table.shape[h5_table.ndim - 1]
+            self.n_chans = h5_table.shape[1]
             self.chan_list = np.arange(self.n_chans)
         else:
             self.n_chans = np.size(chan_list)
             self.chan_list = chan_list
-        self.n_samples = int(h5_table.size / h5_table.shape[h5_table.ndim - 1])
+        self.n_samples = int(h5_table.size / h5_table.shape[-1])
         self.data = h5_table
         self.rms = None
 

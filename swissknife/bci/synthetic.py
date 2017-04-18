@@ -7,7 +7,7 @@ import numpy as np
 from scipy.signal import resample
 from scipy.signal import savgol_filter
 
-from swissknife.bci.core import expstruct as et
+from core import expstruct as et
 
 logger = logging.getLogger('bci_pipeline.synthetic')
 

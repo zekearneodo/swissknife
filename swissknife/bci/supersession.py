@@ -201,9 +201,9 @@ def make_super_file(path):
     new_file.close()
 
 
-def save_ss_par(par, bird, sess):
+def save_ss_par(par, bird, sess, ss_location='ss'):
     fn = et.file_names(bird, sess)
-    par_path = et.file_path(fn, 'ss', 'par')
+    par_path = et.file_path(fn, ss_location, 'par')
     with open(par_path, 'w') as f:
         written = yaml.dump(par, f)
     return written
@@ -294,14 +294,13 @@ def list_experiment_files(bird_id, sess_str, depth=None, raw_location='rw', file
     return experiments
 
 
-def make_super_session(bird_id, sess_str, depth='', raw_location='rw'):
+def make_super_session(bird_id, sess_str, depth='', raw_location='rw', ss_location='ss'):
     raw_data_folder = et.file_names(bird_id)['folders'][raw_location]
     sessions = glob.glob(os.path.join(raw_data_folder, sess_str + '*' + str(depth)))
     exp_files = list_experiment_files(bird_id, sess_str,
                                       depth=depth,
                                       raw_location=raw_location,
                                       file_type='data')
-
     sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
 
     super_sess_par = sess_par.copy()
@@ -309,7 +308,7 @@ def make_super_session(bird_id, sess_str, depth='', raw_location='rw'):
     if depth != '':
         super_sess_name += '_{0}'.format(depth)
     fn = et.file_names(bird_id, super_sess_name, 0)
-    super_sess_path = fn['folders']['ss']
+    super_sess_path = fn['folders'][ss_location]
     super_file_path = os.path.join(super_sess_path, fn['structure']['ss_raw'])
     module_logger.info("Making supersession {}".format(super_sess_name))
     module_logger.info('super file path: {}'.format(super_file_path))
@@ -327,7 +326,7 @@ def make_super_session(bird_id, sess_str, depth='', raw_location='rw'):
                 insert_experiment_groups(super_file, raw_file, kwd_chan_list)
             super_file.flush()
     super_sess_par['channel_config'] = new_par_chan_config.copy()
-    save_ss_par(super_sess_par, bird_id, super_sess_name)
+    save_ss_par(super_sess_par, bird_id, super_sess_name, ss_location=ss_location)
     return sessions
 
 
@@ -387,7 +386,8 @@ def process_awake_recording(bird_id, sess_day_id, depth, raw_location='raw'):
     extract_wav_chans(bird_id, super_sess_name)
     module_logger.info('Done making supersession')
 
-def process_asleep_recording(bird_id, sess_day_id, depth, raw_location='raw'):
+
+def process_asleep_recording(bird_id, sess_day_id, depth, raw_location='raw', ss_location='ss'):
     raw_data_folder = et.file_names(bird_id)['folders'][raw_location]
     sessions = glob.glob(os.path.join(raw_data_folder, sess_day_id + '*' + str(depth)))
     sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
@@ -398,7 +398,7 @@ def process_asleep_recording(bird_id, sess_day_id, depth, raw_location='raw'):
 
     super_sess_name = 'day-' + sess_day_id + '_' + depth
     fn = et.file_names(bird_id, super_sess_name, 0)
-    super_sess_path = fn['folders']['ss']
+    super_sess_path = fn['folders'][ss_location]
     super_file_path = os.path.join(super_sess_path, fn['structure']['ss_raw'])
     module_logger.info('Super session path {}'.format(super_file_path))
 
@@ -406,3 +406,42 @@ def process_asleep_recording(bird_id, sess_day_id, depth, raw_location='raw'):
     make_raw_bkp(bird_id, sess_list, raw_location=raw_location)
     extract_wav_chans(bird_id, super_sess_name)
     module_logger.info('Done making supersession')
+
+
+def process_recording_realtime(bird_id, sess_day_id, depth, raw_location='raw', ss_location='ss'):
+    raw_data_folder = et.file_names(bird_id)['folders'][raw_location]
+    sessions = glob.glob(os.path.join(raw_data_folder, sess_day_id + '*' + str(depth)))
+    sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
+    data_processor = sess_par['rec_config']['processors']['data']
+    experiments = list_flatten(
+        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
+    experiments.sort()
+
+    super_sess_name = 'day-' + sess_day_id + '_' + depth
+    fn = et.file_names(bird_id, super_sess_name, 0)
+    super_sess_path = fn['folders'][ss_location]
+    super_file_path = os.path.join(super_sess_path, fn['structure']['ss_raw'])
+    module_logger.info('Super session path {}'.format(super_file_path))
+
+    sess_list = make_super_session(bird_id, sess_day_id, depth, raw_location=raw_location)
+
+    return super_sess_path
+
+
+def process_recording_realtime(bird_id, sess_day_id, depth, raw_location='raw', ss_location='ss'):
+    raw_data_folder = et.file_names(bird_id)['folders'][raw_location]
+    sessions = glob.glob(os.path.join(raw_data_folder, sess_day_id + '*' + str(depth)))
+    sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
+    data_processor = sess_par['rec_config']['processors']['data']
+    experiments = list_flatten(
+        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
+    experiments.sort()
+
+    super_sess_name = 'day-' + sess_day_id + '_' + depth
+    fn = et.file_names(bird_id, super_sess_name, 0)
+    super_sess_path = fn['folders'][ss_location]
+    super_file_path = os.path.join(super_sess_path, fn['structure']['ss_raw'])
+    module_logger.info('Super session path {}'.format(super_file_path))
+
+    sess_list = make_super_session(bird_id, sess_day_id, depth, raw_location=raw_location, ss_location=ss_location)
+    return sess_list

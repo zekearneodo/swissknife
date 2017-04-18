@@ -10,8 +10,8 @@ import numpy as np
 import yaml
 from numpy.lib import recfunctions as rf
 
-from swissknife.bci.core.file import file_functions as ff
-from swissknife.bci.core.file import h5_functions as h5f
+from file import file_functions as ff
+from file import h5_functions as h5f
 
 logger = logging.getLogger('bci.core.expstruct')
 
