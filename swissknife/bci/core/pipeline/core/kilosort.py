@@ -9,6 +9,7 @@ import shutil as sh
 import subprocess
 import sys
 from string import Template
+import numpy as np
 
 import scipy.io as sio
 
@@ -30,15 +31,17 @@ def get_args():
 
 
 def make_kilo_scripts(bird, sess, n_filt=None,
-                      kilo_dir=os.path.abspath('/home/mthielk/github/KiloSort'),
-                      npymat_dir=os.path.abspath('/home/mthielk/github/npy-matlab')
+                      kilo_dir=os.path.abspath('/home/earneodo/repos/KiloSort'),
+                      npymat_dir=os.path.abspath('/home/earneodo/repos/npy-matlab'),
+                      use_gpu=True,
+                      filt_per_chan=2
                       ):
     fn = et.file_names(bird, sess)
     exp_par = et.get_parameters(bird, sess)  # load the yml parameter file
     local_sort_dir = fn['folders']['tmp']
     logger.debug('local sort dir: {}'.format(local_sort_dir))
     block_name = fn['structure']['structure']
-    fs = h5f.get_record_sampling_frequency(et.open_kwd(bird, sess))
+    s_f = h5f.get_record_sampling_frequency(et.open_kwd(bird, sess))
     n_chan = len(exp_par['channel_config']['neural'])
     logger.debug('n_chan: {}'.format(n_chan))
     if n_filt is None:
@@ -48,13 +51,15 @@ def make_kilo_scripts(bird, sess, n_filt=None,
         'npy_matdir': npymat_dir,
         'datadir': local_sort_dir,
         'blockname': block_name,
-        'fs': fs,
+        'fs': s_f,
         'Nchan': n_chan,
-        'Nfilt': n_filt
+        'Nfilt': int(np.ceil(n_chan/32)*32)*filt_per_chan,
+        'useGPU': int(use_gpu)
+
     }
-    print params
+    logger.debug(params)
     template_dir = fn['folders']['templ']
-    print template_dir
+    print(template_dir)
     with open(os.path.join(template_dir, 'master.template'), 'r') as src:
         master_template = Template(src.read())
     with open(os.path.join(template_dir, 'config.template'), 'r') as src:
@@ -125,11 +130,11 @@ def make_kilo_chanmap(bird, sess):
     sio.savemat(et.file_path(fn, 'tmp', 'ks_map'), chan_map_dict)
     
 
-def run_kilosort(bird, sess, no_copy=False,
-                 kilo_dir=os.path.abspath('/home/mthielk/github/KiloSort'),
-                 npymat_dir=os.path.abspath('/home/mthielk/github/npy-matlab')
+def run_kilosort(bird, sess, no_copy=False, use_gpu=True,
+                 kilo_dir=os.path.abspath('/home/earneodo/repos/KiloSort'),
+                 npymat_dir=os.path.abspath('/home/earneodo/repos/npy-matlab')
                 ):
-    print "will run bci_pipeline on bird {0} - session {1}".format(bird, sess)
+    logger.info("will run bci_pipeline on bird {0} - session {1}".format(bird, sess))
     fn = et.file_names(bird, sess)
     log_file = os.path.join(fn['folders']['ss'], 'kilosort_py.log')
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -144,7 +149,7 @@ def run_kilosort(bird, sess, no_copy=False,
         copyed = fetch_kilo_data(bird, sess)
         logger.info('Copied {}'.format(copyed))
     logger.info('Will create the scripts')
-    make_kilo_scripts(bird, sess, kilo_dir=kilo_dir, npymat_dir=npymat_dir)
+    make_kilo_scripts(bird, sess, kilo_dir=kilo_dir, npymat_dir=npymat_dir, use_gpu=use_gpu)
     logger.info('Will do the chanMap for matlab')
     make_kilo_chanmap(bird, sess)
     logger.info('Will do the sort')
@@ -152,7 +157,7 @@ def run_kilosort(bird, sess, no_copy=False,
     logger.info('Sorted {}'.format(sort_out))
     pushed = push_kilo_data(bird, sess)
     logger.info('Pushed back to cube {}'.format(pushed))
-    print 'Finished '
+    print('Finished ')
     return
 
 
@@ -163,8 +168,9 @@ def do_the_sort(bird, sess):
     log_file = os.path.join(fn['folders']['ss'], 'kilosort_mat.log')
     mlb_cmd = '-r "cd(\'{}\'); dir; master; exit();"'.format(sort_folder)
     log_cmd = '-logfile {}'.format(log_file)
+    logger.debug('Issue command {}'.format(mlb_cmd))
     logger.info('output to {}'.format(log_file))
-    sorter = subprocess.check_output(['matlab', '-nodesktop', '-nosplash', '-noawt', '-nojvm', mlb_cmd, log_cmd])
+    sorter = subprocess.check_output(['matlab', '-nodesktop', '-nosplash', '-noawt', mlb_cmd, log_cmd])
     return sorter
 
 
@@ -184,7 +190,7 @@ def push_kilo_data(bird, sess):
     fn = et.file_names(bird, sess)
     source_folder = fn['folders']['tmp']
     dest_folder = fn['folders']['ss']
-    extensions = ['npy', 'csv', 'py']
+    extensions = ['npy', 'csv', 'py', 'm']
     #print extensions
     copied = []
     for ext in extensions:

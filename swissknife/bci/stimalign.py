@@ -3,9 +3,9 @@ import logging
 import h5py
 import numpy as np
 import pandas as pd
-from core import expstruct as et
-from core import kwefunctions as kwe
-from core.file import h5_functions as h5f
+from swissknife.bci.core import expstruct as et
+from swissknife.bci.core import kwefunctions as kwe
+from swissknife.bci.core.file import h5_functions as h5f
 
 from swissknife.h5tools import tables as h5t
 
@@ -69,17 +69,27 @@ def get_wave_times(kwe_file, wave_file=None):
     wav_times = wav_df.t.values.astype(np.int)
     wav_names = [(x.split()[-1].split('/')[-1].split('.')[0]) for x in wav_df.text.values]
 
-    wav_table = pd.DataFrame.from_items([('t', wav_times - get_start_rec_times(kwe_file)),
-                                         ('stim_name', wav_names),
-                                         ('rec', wav_df['rec'].values)])
-    if wave_file is not None:
-        wav_table = wav_table[wav_table['stim_name'] == wave_file]
+    if not wav_names:
+        module_logger.info('Empty list of play_wav in file {}'.format(kwe_file.filename))
+        wav_table = pd.DataFrame()
+    else:
+        wav_table = pd.DataFrame.from_items([('t', wav_times - get_start_rec_times(kwe_file)),
+                                             ('stim_name', wav_names),
+                                             ('rec', wav_df['rec'].values)])
+        if wave_file is not None:
+            wav_table = wav_table[wav_table['stim_name'] == wave_file]
     return wav_table
 
 
 def get_stims_list(kwe_file):
     stims_table = get_wave_times(kwe_file)
-    return np.unique(stims_table.stim_name)
+    if stims_table.empty:
+        stim_names = []
+    else:
+        stim_names = np.unique(stims_table.stim_name)
+
+    module_logger.debug('Stim_names: {}'.format(stim_names))
+    return stim_names
 
 
 def get_start_rec_times(kwe_file):
@@ -134,11 +144,11 @@ def align_stim(bird_id, super_sess_id, raw_location='rw', ss_location='ss'):
         rec_kwd_file_path = et.file_path(origin_fn, raw_location, 'ss_raw')
 
         # read the raw parameters file and get the tag channel
-        par_file_path = et.file_path(et.file_names(bird_id, rec_origin['sess']), raw_location, 'par')
         pars = et.get_parameters(bird_id, rec_origin['sess'], location=raw_location)
         tag_chan = int(pars['channel_config']['sts'])
 
         with h5py.File(rec_ev_file_path, 'r') as rec_ev_file:
+            #module_logger.debug('File {}'.format(rec_ev_file.filename))
             for stim_id in get_stims_list(rec_ev_file):
                 module_logger.info('Getting starts of stim {}'.format(stim_id))
                 store_starts = get_stim_starts(rec_ev_file, rec_kwd_file_path,

@@ -10,10 +10,45 @@ import wave
 import scipy.signal as sg
 import shutil as sh
 
-from core.file import h5_functions as h5
-from core import expstruct as et
+from swissknife.bci.core.file import h5_functions as h5
+from swissknife.bci.core import expstruct as et
 
 module_logger = logging.getLogger("supersession")
+
+
+def primes(n):
+    primfac = []
+    d = 2
+    while d * d <= n:
+        while (n % d) == 0:
+            primfac.append(d)  # supposing you want multiple factors repeated
+            n //= d
+        d += 1
+    if n > 1:
+        primfac.append(n)
+    return primfac
+
+
+def decimate_by_parts(x, q_list, *args, **kwargs):
+    try:
+        q = q_list.pop()
+        z = sg.decimate(x, q, *args, **kwargs)
+        y = decimate_by_parts(z, q_list, *args, **kwargs)
+    except IndexError as ierr:
+        if 'empty' in ierr.args[0]:
+            y = x
+        else:
+            raise
+    return y
+
+
+def decimate(x, q, *args, **kwargs):
+    if q == 1:
+        decimated = x
+    else:
+        q_list = primes(q)
+        decimated = decimate_by_parts(x, q_list, *args, **kwargs)
+    return decimated
 
 
 def list_flatten(x):
@@ -62,6 +97,59 @@ def create_neural_data_set(data_set, parent_group, channel_list,
                                          np.arange(n_full_frames * frame_size,
                                                    n_full_frames * frame_size + last_frame_size),
                                          channel_list)
+    # copy the attributes:
+    neural_dset.attrs.create('valid_samples',
+                             np.array(data_set.attrs['valid_samples'][channel_list]))
+
+
+def create_lfp_data_set(data_set, parent_group, channel_list,
+                        frame_size=None,
+                        decimate_factor=30,
+                        processing=None,
+                        *args, **kwargs):
+
+    assert type(decimate_factor) == int, 'decimate factor has to be integer'
+    # make the new dataset
+    d_type = data_set.dtype
+    nd_cols = np.array(channel_list).size  # columns in neural data
+    nd_rows = data_set.shape[0] // decimate_factor  # rows in neural data (rows/decimate factor)
+    d_chunks = np.array(data_set.chunks)
+
+    if d_chunks[0] > nd_rows:
+        d_chunks[0] = nd_rows
+
+    if frame_size is None:
+        frame_size = d_chunks[0] if d_chunks[0] < nd_rows else nd_rows
+
+    # Multiply by decimation factor so new chunks have same size as old
+    frame_size = int(frame_size * decimate_factor)
+
+    module_logger.debug('frame size {}'.format(frame_size))
+
+    store_frame_size = frame_size // decimate_factor
+    neural_dset = parent_group.create_dataset("data", (nd_rows, nd_cols),
+                                              chunks=(d_chunks[0], nd_cols), dtype=d_type)
+
+    n_full_frames = int(data_set.shape[0] // frame_size)
+    # print neural_dset.shape
+    # Fill the dataset:
+    for i in range(n_full_frames):
+        copy_frame = h5.load_table_slice(data_set,
+                                         np.arange(i * frame_size, (i + 1) * frame_size),
+                                         channel_list)
+        save_frame = decimate(copy_frame, decimate_factor, axis=0) if decimate_factor > 1 else copy_frame
+        neural_dset[i * store_frame_size: (i + 1) * store_frame_size, 0:nd_cols] = save_frame
+
+    if frame_size * n_full_frames < nd_rows:
+        last_frame_size = nd_rows - frame_size * n_full_frames
+        copy_frame = h5.load_table_slice(data_set,
+                                         np.arange(n_full_frames * frame_size,
+                                                   n_full_frames * frame_size + last_frame_size),
+                                         channel_list)
+        save_frame = decimate(copy_frame, decimate_factor, axis=0) if decimate_factor > 1 else copy_frame
+        neural_dset[n_full_frames * store_frame_size: n_full_frames * store_frame_size + save_frame.shape[0],
+        0: nd_cols] = save_frame
+
     # copy the attributes:
     neural_dset.attrs.create('valid_samples',
                              np.array(data_set.attrs['valid_samples'][channel_list]))
@@ -140,13 +228,26 @@ def create_data_group(raw_file, new_file, chan_list, new_rec_name):
         create_neural_data_set(rec_group['data'], new_file['/recordings'][rec_name], chan_list)
 
 
-def insert_neural_rec_group(dest_file, raw_rec_group, chan_list, new_group_name=None):
+def insert_neural_rec_group(dest_file, raw_rec_group, chan_list,
+                            new_group_name=None,
+                            stream_type='raw'):
     rec_name = raw_rec_group.name if new_group_name is None else new_group_name
     dest_file['/recordings'].create_group(rec_name)
-    new_rec = dest_file['/recordings'][rec_name]
-    copy_application_data(raw_rec_group, new_rec, chan_list)
-    h5.copy_attribs(raw_rec_group, new_rec)
-    create_neural_data_set(raw_rec_group['data'], new_rec, chan_list)
+    new_rec_group = dest_file['/recordings'][rec_name]
+    copy_application_data(raw_rec_group, new_rec_group, chan_list)
+    h5.copy_attribs(raw_rec_group, new_rec_group)
+
+    if stream_type == 'raw':
+        create_neural_data_set(raw_rec_group['data'], new_rec_group, chan_list)
+    elif stream_type == 'lfp':
+        s_f = raw_rec_group.attrs.get('sample_rate')
+        decim_factor = int(s_f // 1000)
+        create_lfp_data_set(raw_rec_group['data'], new_rec_group, chan_list,
+                            decimate_factor=decim_factor)
+        # correct the sampling frequency (not the same as the raw file)
+        new_rec_group.attrs.modify('sample_rate', s_f/decim_factor)
+    else:
+        raise ValueError('unrecognized stream_type {}'.format(stream_type))
 
 
 def modify_rec_group_attribs(kwd_file, rec_name, attr_dict, new_attr_dict=None):
@@ -175,23 +276,30 @@ def get_experiment_endpoints(experiment_file):
     return [next_rec_num, next_sample]
 
 
-def insert_experiment_groups(dest_file, raw_file, chan_list):
+def insert_experiment_groups(dest_file, raw_file, chan_list, stream_type='raw'):
     # all the recs in an experiment file if they pass check
     for raw_rec_name, raw_rec_group in raw_file['/recordings'].iteritems():
         # print 'rec {0}'.format(raw_rec_name)
-        s_f = raw_rec_group.attrs['sample_rate']
+
         if check_rec_data(raw_rec_group):
             target_rec_num, target_start_sample = get_experiment_endpoints(dest_file)
+            # if the target is not empty, check what the s_f should be
+            if target_rec_num > 0:
+                s_f = h5.get_record_sampling_frequency(dest_file, recording=target_rec_num - 1)
+            else:
+                s_f = raw_rec_group.attrs['sample_rate']
             target_rec_name = str(target_rec_num)
             target_start_time = int(target_start_sample / (0.001 * s_f))
             target_source = '{0}:''/''recordings/{1}'.format(raw_file.filename, raw_rec_name)
-            insert_neural_rec_group(dest_file, raw_rec_group, chan_list, new_group_name=target_rec_name)
+            insert_neural_rec_group(dest_file, raw_rec_group, chan_list,
+                                    new_group_name=target_rec_name,
+                                    stream_type=stream_type)
             modify_rec_group_attribs(dest_file, target_rec_name,
                                      {'start_sample': target_start_sample},
                                      new_attr_dict={'name': target_source,
                                                     'start_time': target_start_time})
         else:
-            # print "Skipping rec {0} with no data".format(raw_rec_name)
+            module_logger.debug("Skipping rec {0} with no data".format(raw_rec_name))
             pass
 
 
@@ -294,7 +402,8 @@ def list_experiment_files(bird_id, sess_str, depth=None, raw_location='rw', file
     return experiments
 
 
-def make_super_session(bird_id, sess_str, depth='', raw_location='rw', ss_location='ss'):
+def make_super_session(bird_id, sess_str, depth='', raw_location='rw', ss_location='ss',
+                       super_sess_name=None):
     raw_data_folder = et.file_names(bird_id)['folders'][raw_location]
     sessions = glob.glob(os.path.join(raw_data_folder, sess_str + '*' + str(depth)))
     exp_files = list_experiment_files(bird_id, sess_str,
@@ -304,19 +413,22 @@ def make_super_session(bird_id, sess_str, depth='', raw_location='rw', ss_locati
     sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
 
     super_sess_par = sess_par.copy()
-    super_sess_name = 'day-' + sess_str
-    if depth != '':
-        super_sess_name += '_{0}'.format(depth)
+    if super_sess_name is None:
+        super_sess_name = 'day-' + sess_str
+        if depth != '':
+            super_sess_name += '_{0}'.format(depth)
     fn = et.file_names(bird_id, super_sess_name, 0)
     super_sess_path = fn['folders'][ss_location]
     super_file_path = os.path.join(super_sess_path, fn['structure']['ss_raw'])
+    lfp_file_path = os.path.join(super_sess_path, fn['structure']['ss_lfp'])
     module_logger.info("Making supersession {}".format(super_sess_name))
     module_logger.info('super file path: {}'.format(super_file_path))
     module_logger.info('Found {} experiment files'.format(len(exp_files)))
     et.mkdir_p(super_sess_path)
     make_super_file(super_file_path)
+    make_super_file(lfp_file_path)
 
-    with h5py.File(super_file_path, 'a') as super_file:
+    with h5py.File(super_file_path, 'a') as super_file, h5py.File(lfp_file_path, 'a') as lfp_file:
         for experiment_path in exp_files:
             module_logger.info('Inserting file {0}'.format(experiment_path))
             sess_fold = os.path.split(os.path.split(experiment_path)[0])[1]
@@ -324,7 +436,10 @@ def make_super_session(bird_id, sess_str, depth='', raw_location='rw', ss_locati
             kwd_chan_list, new_par_chan_config = new_channel_config(sess_par['channel_config'])
             with h5py.File(experiment_path, 'r') as raw_file:
                 insert_experiment_groups(super_file, raw_file, kwd_chan_list)
+                insert_experiment_groups(lfp_file, raw_file, kwd_chan_list, stream_type='lfp')
             super_file.flush()
+            lfp_file.flush()
+
     super_sess_par['channel_config'] = new_par_chan_config.copy()
     save_ss_par(super_sess_par, bird_id, super_sess_name, ss_location=ss_location)
     return sessions
@@ -366,25 +481,33 @@ def make_raw_bkp(bird_id, sess_list, raw_location='rw', locations=None):
         module_logger.info('Data is not in local drive but in {}, doing nothing'.format(source_path))
 
 
-def process_awake_recording(bird_id, sess_day_id, depth, raw_location='raw'):
+def process_awake_recording(bird_id, sess_day_id, depth, cond='', raw_location='raw'):
     raw_data_folder = et.file_names(bird_id)['folders'][raw_location]
-    sessions = glob.glob(os.path.join(raw_data_folder, sess_day_id + '*' + str(depth)))
+    cond_string = cond if cond in ['', '*'] else '{}_'.format(cond)
+    sess_day_str = cond_string + sess_day_id
+    sessions = glob.glob(os.path.join(raw_data_folder, sess_day_str + '*' + str(depth)))
+    print(sessions)
     sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
     data_processor = sess_par['rec_config']['processors']['data']
+    print([(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
     experiments = list_flatten(
         [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
     experiments.sort()
 
-    super_sess_name = 'day-' + sess_day_id + '_' + depth
+    super_sess_name = ('day-' + sess_day_str + '_' + depth).replace('*', 'all_')
     fn = et.file_names(bird_id, super_sess_name, 0)
     super_sess_path = fn['folders']['ss']
     super_file_path = os.path.join(super_sess_path, fn['structure']['ss_raw'])
     module_logger.info('Super session path {}'.format(super_file_path))
 
-    sess_list = make_super_session(bird_id, sess_day_id, depth, raw_location=raw_location)
+    sess_list = make_super_session(bird_id, sess_day_str, depth, raw_location=raw_location,
+                                   super_sess_name=super_sess_name)
+
     make_raw_bkp(bird_id, sess_list, raw_location=raw_location)
     extract_wav_chans(bird_id, super_sess_name)
     module_logger.info('Done making supersession')
+
+    return super_sess_name
 
 
 def process_asleep_recording(bird_id, sess_day_id, depth, raw_location='raw', ss_location='ss'):

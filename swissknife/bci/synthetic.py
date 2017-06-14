@@ -7,7 +7,7 @@ import numpy as np
 from scipy.signal import resample
 from scipy.signal import savgol_filter
 
-from core import expstruct as et
+from swissknife.bci.core import expstruct as et
 
 logger = logging.getLogger('bci_pipeline.synthetic')
 
@@ -46,7 +46,7 @@ def resample_interp(x, s_f, new_s_f):
     t = np.linspace(0, x.size / s_f, x.size)
     # print t
     new_t = np.linspace(0, x.size / s_f, np.int(x.size * new_s_f / s_f))
-    print new_t.shape
+    print(new_t.shape)
     return np.interp(new_t, t, x)
 
 def latent_to_stream(onof, beta, alpha):

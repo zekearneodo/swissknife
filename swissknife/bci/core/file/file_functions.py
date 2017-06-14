@@ -10,6 +10,22 @@ logger = logging.getLogger('bci.core.file.file_functions')
 def list_folders(folder_path):
     return [i for i in glob.glob(os.path.join(folder_path, '*')) if os.path.isdir(i)]
 
+def split_path(path):
+
+    folders = []
+    while 1:
+        path, folder = os.path.split(path)
+
+        if folder != "":
+            folders.append(folder)
+        else:
+            if path != "":
+                folders.append(path)
+
+            break
+
+    folders.reverse()
+    return folders
 
 def make_backup(file_path):
     [f_p, f_n] = os.path.split(file_path)

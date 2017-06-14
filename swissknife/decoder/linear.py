@@ -1,6 +1,6 @@
 import numpy as np
 import logging
-import core.datashape as ds
+import swissknife.decoder.core.datashape as ds
 
 logger = logging.getLogger('decoder.linear')
 

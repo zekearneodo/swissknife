@@ -7,7 +7,7 @@ import numpy as np
 from scipy import signal as ss
 from scipy.io import wavfile
 
-import expstruct as et
+from swissknife.bci.core import expstruct as et
 from swissknife.bci.core.file import h5_functions as h5f
 
 module_logger = logging.getLogger("kwik_functions")
@@ -246,9 +246,12 @@ class KwikFile:
         else:
             raise IOError('both spike_clusters.npy and spike_templates.npy weren\'t found')
         self.spk = np.load(file_names['spk'])
-        if file_names['grp']:
+
+        if file_names['grp'] and os.path.isfile(file_names['grp']):
+            print('Found grp file')
             self.grp = load_grp_file(file_names['grp'])
         else:
+            print('No grp file found')
             self.grp = [(i, 'unsorted') for i in np.unique(self.clu)]
         self.rec_kwik = None
         self.spk_kwik = None

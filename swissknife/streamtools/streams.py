@@ -8,6 +8,7 @@ import struct
 import wave
 
 import numpy as np
+import scipy.signal as sg
 from matplotlib import pyplot as plt
 
 from swissknife.h5tools import tables as h5t
@@ -25,6 +26,37 @@ def rms(x):
 def car(x, chans=None):
     ch = np.arange(x.shape[1]) if chans is None else chans
     return x[:, ch] - x[:, ch].mean(axis=1, keepdims=True)
+
+
+def primes(n):
+    primfac = []
+    d = 2
+    while d * d <= n:
+        while (n % d) == 0:
+            primfac.append(d)  # supposing you want multiple factors repeated
+            n //= d
+        d += 1
+    if n > 1:
+        primfac.append(n)
+    return primfac
+
+
+def decimate_by_parts(x, q_list, *args, **kwargs):
+    try:
+        q = q_list.pop()
+        z = sg.decimate(x, q, *args, **kwargs)
+        y = decimate_by_parts(z, q_list, *args, **kwargs)
+    except IndexError as ierr:
+        if 'empty' in ierr.args[0]:
+            y = x
+        else:
+            raise
+    return y
+
+
+def decimate(x, q, *args, **kwargs):
+    q_list = primes(q)
+    return decimate_by_parts(x, q_list, *args, **kwargs)
 
 
 def plot_array(array, ax=None):

@@ -31,13 +31,3 @@ class threadedFunction(multiprocessing.Process):
         self.out = self.func(*self.args, **self.kwargs)
         logger.info("done process {0}".format(self.name))
         return self.out
-
-
-class threadedFunctionGPU(threadedFunction):
-    def __init__(self, group=None, target=None, name=None,
-                 args=(), kwargs={}, join_threads=[], verbose=None, gpuid=0):
-
-        threadedFunction.__init__(self, group=group, target=target, name=name,
-                                  args=args, kwargs=kwargs, join_threads=join_threads, verbose=verbose)
-
-        self.ctx = driver.Device(gpuid).make_context()

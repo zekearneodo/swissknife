@@ -42,7 +42,7 @@ def get_rec_list(k_file):
     :param k_file:
     :return: list of recordings in an h5file (kwik/kwd) as a sorted numpy array
     """
-    return np.sort(map(int, k_file['/recordings'].keys()))
+    return np.sort(map(int, list(k_file['/recordings'].keys())))
 
 
 @h5_wrap
@@ -51,6 +51,7 @@ def get_shank_list(k_file):
     :param k_file:
     :return: list of recordings in an h5file (kwik/kwd) as a sorted numpy array
     """
+    #print(list(k_file['/channel_groups'].keys().items()))
     return np.sort(map(int, k_file['/channel_groups'].keys()))
 
 

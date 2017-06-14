@@ -21,7 +21,7 @@ def main():
     logger.info('Will do kilosort on bird {}, sess {}'.format(args.bird, args.sess))
     #kilosort.run_kilosort(args.bird, args.sess, no_copy=False)
     try:
-        kilosort.run_kilosort(args.bird, args.sess, no_copy=False)
+        kilosort.run_kilosort(args.bird, args.sess, no_copy=False, use_gpu=True)
         logger.info('Finished sorting')
     except:
         logger.error('Something went wrong')

@@ -10,8 +10,8 @@ import numpy as np
 import yaml
 from numpy.lib import recfunctions as rf
 
-from file import file_functions as ff
-from file import h5_functions as h5f
+from swissknife.bci.core.file import file_functions as ff
+from swissknife.bci.core.file import h5_functions as h5f
 
 logger = logging.getLogger('bci.core.expstruct')
 
@@ -121,6 +121,7 @@ def file_names(bird, sess='', rec=0, experiment_folder=None, base='experiment'):
 
     files = {'structure': base,
              'ss_raw': base + '.raw.kwd',
+             'ss_lfp': base + '.lfp.kwd',
              'ss_bin': base + '.dat',
              'ss_par': base + '.par.yml',
              'par': base + '.par.yml',

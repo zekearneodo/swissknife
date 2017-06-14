@@ -38,7 +38,7 @@ def h5_decorator(leave_open=True, default_mode='r'):
                     return_value = h5_function(h5_file, *args, **kwargs)
                 return return_value
 
-            except UnboundLocalError, err:
+            except UnboundLocalError as err:
                 last_err = err
                 logger.error(err)
 
@@ -83,7 +83,7 @@ def dict_2_group(parent_group, dic, name, replace=False):
     logger.debug('Translating dictionary key {} into its own group'.format(name))
     try:
         group = parent_group.create_group(name)
-    except ValueError, err:
+    except ValueError as err:
         logger.debug(err)
         if 'Name already exists' in err.args[0]:
             if replace:
