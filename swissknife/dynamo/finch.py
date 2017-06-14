@@ -1,7 +1,7 @@
 from __future__ import division
 import matplotlib.pyplot as plt
 import numpy as np
-import ode
+from swissknife.dynamo import ode
 
 default_sys_pars = {'alpha_1': 0.15,
                     'beta_1': 0.15,

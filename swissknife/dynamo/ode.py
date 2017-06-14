@@ -92,7 +92,7 @@ class System(object):
         self.x = self.x if x_0 is None else x_0
 
         n_steps = np.int(np.round((t_f - self.t) / self.dt))
-        print n_steps
+        #print(n_steps)
         n_samples = np.int(np.floor(n_steps / self.steps_per_sample))
 
         x = np.zeros([n_samples, self.x.shape[0]])
