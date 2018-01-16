@@ -1,6 +1,6 @@
 # some objects to do quick stuff on events
 import numpy as np
-from core import kwik_functions as kwf
+from swissknife.bci.core import kwik_functions as kwf
 
 
 class Event:
@@ -32,6 +32,7 @@ class Sound(Event):
             'code': 'codes',
             'start': 'time_samples'}
 
+        print()
         if self.data is not None:
             self.datagroup_path = '/event_types/Stimulus'
             self.datagroup = h5[self.datagroup_path]

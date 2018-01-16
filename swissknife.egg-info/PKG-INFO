@@ -1,4 +1,4 @@
-Metadata-Version: 1.0
+Metadata-Version: 1.1
 Name: swissknife
 Version: 0.1
 Summary: Various tools to handle data and simmulations
@@ -8,3 +8,6 @@ Author-email: earneodo@ucsd.edu
 License: MIT
 Description: UNKNOWN
 Platform: UNKNOWN
+Requires: numpy
+Requires: scipy
+Requires: matplotlib

@@ -23,3 +23,20 @@ def make_butter_bandpass(lowcut, highcut, fs, order=5):
     high = highcut / nyq
     b, a = sg.butter(order, [low, high], btype='band')
     return b, a
+
+
+def band_pass_filter(chunk, hp_b, hp_a, lp_b, lp_a):
+    chunk_hi = sg.filtfilt(hp_b, hp_a, chunk)
+    chunk_filt = sg.filtfilt(lp_b, lp_a, chunk_hi)
+    return chunk_filt
+
+@rms_after_filter
+def rms_band_pass_filter(chunk, hp_b, hp_a, lp_b, lp_a):
+    #plt.plot(np.transpose(chunk))
+    chunk_hi = sg.filtfilt(hp_b, hp_a, chunk)
+    chunk_filt = sg.filtfilt(lp_b, lp_a, chunk_hi)
+    return chunk_filt
+
+@rms_after_filter
+def rms_identity(chunk):
+    return(chunk)

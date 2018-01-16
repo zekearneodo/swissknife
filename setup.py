@@ -8,4 +8,5 @@ setup(name='swissknife',
       author_email='earneodo@ucsd.edu',
       license='MIT',
       packages=['swissknife'],
+      requires=['numpy', 'scipy', 'matplotlib'],
       zip_safe=False)

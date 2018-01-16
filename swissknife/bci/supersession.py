@@ -9,6 +9,7 @@ import yaml
 import wave
 import scipy.signal as sg
 import shutil as sh
+import collections
 
 from swissknife.bci.core.file import h5_functions as h5
 from swissknife.bci.core import expstruct as et
@@ -51,14 +52,12 @@ def decimate(x, q, *args, **kwargs):
     return decimated
 
 
-def list_flatten(x):
-    result = []
-    for el in x:
-        if hasattr(el, "__iter__") and not isinstance(el, basestring):
-            result.extend(list_flatten(el))
+def list_flatten(l):
+    for el in l:
+        if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes)):
+            yield from list_flatten(el)
         else:
-            result.append(el)
-    return result
+            yield el
 
 
 def create_neural_data_set(data_set, parent_group, channel_list,
@@ -158,7 +157,8 @@ def create_lfp_data_set(data_set, parent_group, channel_list,
 def copy_application_data(source_rec, dest_rec, chan_list,
                           resize_keys=['channel_bit_volts', 'channel_sample_rates']):
     dest_rec.create_group('application_data')
-    for key, attrib in source_rec['application_data'].attrs.iteritems():
+    #module_logger.debug(list(source_rec['application_data'].attrs.items()))
+    for key, attrib in source_rec['application_data'].attrs.items():
         if not key in resize_keys:
             dest_rec['application_data'].attrs.create(key, attrib, dtype=attrib.dtype)
         else:
@@ -193,7 +193,7 @@ def get_valid_samples(source_rec):
 
 
 def create_data_groups(raw_file, new_file, chan_list):
-    for rec_name, rec_group in raw_file['/recordings'].iteritems():
+    for rec_name, rec_group in raw_file['/recordings'].items():
         new_file['/recordings'].create_group(rec_name)
         h5.copy_attribs(rec_group, new_file['/recordings'][rec_name])
         copy_application_data(rec_group, new_file['/recordings'][rec_name], chan_list)
@@ -209,11 +209,13 @@ def make_shank_kwd(raw_file, out_file_path, chan_list):
 
 def new_channel_config(chan_config):
     new_chan_config = {}
-    chan_list = list_flatten([chans for chans in chan_config.itervalues()])
+    chan_nested = [chans for chans in chan_config.values()]
+    module_logger.info(chan_nested)
+    chan_list = list(list_flatten([chans for chans in chan_config.values()]))
     chan_list.sort()
     raw_chans = np.array(chan_list)
-    for chan_group, channels in chan_config.iteritems():
-        if hasattr(channels, "__iter__") and not isinstance(channels, basestring):
+    for chan_group, channels in chan_config.items():
+        if hasattr(channels, "__iter__") and not isinstance(channels, str):
             new_chan_config[chan_group] = [int(np.where(raw_chans == r_ch)[0][0]) for r_ch in channels]
         else:
             new_chan_config[chan_group] = int(np.where(raw_chans == channels)[0][0])
@@ -221,7 +223,7 @@ def new_channel_config(chan_config):
 
 
 def create_data_group(raw_file, new_file, chan_list, new_rec_name):
-    for rec_name, rec_group in raw_file['/recordings'].iteritems():
+    for rec_name, rec_group in raw_file['/recordings'].items():
         new_file['/recordings'].create_group(rec_name)
         h5.copy_attribs(rec_group, new_file['/recordings'][rec_name])
         copy_application_data(rec_group, new_file['/recordings'][rec_name], chan_list)
@@ -249,13 +251,22 @@ def insert_neural_rec_group(dest_file, raw_rec_group, chan_list,
     else:
         raise ValueError('unrecognized stream_type {}'.format(stream_type))
 
+def h5_unicode_hack(x):
+    if isinstance(x, str):
+        x = x.encode('utf8')
+    return x
 
 def modify_rec_group_attribs(kwd_file, rec_name, attr_dict, new_attr_dict=None):
-    for key, value in attr_dict.iteritems():
+    for key, value in attr_dict.items():
         kwd_file['/recordings'][rec_name].attrs.modify(key, value)
 
     if new_attr_dict is not None:
-        for key, value in new_attr_dict.iteritems():
+        for key, value in new_attr_dict.items():
+            module_logger.debug('Key {}, value {}'.format(key, value))
+            key = h5_unicode_hack(key)
+            value = h5_unicode_hack(value)
+
+            #module_logger.debug(key.dtype())
             kwd_file['/recordings'][rec_name].attrs.create(key, value)
 
 
@@ -278,7 +289,7 @@ def get_experiment_endpoints(experiment_file):
 
 def insert_experiment_groups(dest_file, raw_file, chan_list, stream_type='raw'):
     # all the recs in an experiment file if they pass check
-    for raw_rec_name, raw_rec_group in raw_file['/recordings'].iteritems():
+    for raw_rec_name, raw_rec_group in raw_file['/recordings'].items():
         # print 'rec {0}'.format(raw_rec_name)
 
         if check_rec_data(raw_rec_group):
@@ -352,8 +363,10 @@ def export_audio(data_set, chan_number, out_file_path, filter_func=None, args=()
         frame_buffer[0: end - start, :] = h5.load_table_slice(data_set,
                                                               np.arange(start, end),
                                                               [chan_number])
-        frame_buffer[0:end - start, :] = filter_func(frame_buffer[0:end - start, :],
+        if filter_func is not None:
+            frame_buffer[0:end - start, :] = filter_func(frame_buffer[0:end - start, :],
                                                      *args, **kwargs)
+
         wavefile.writeframes(frame_buffer[0: end - start].astype('h').tostring())
 
     wavefile.close()
@@ -366,7 +379,7 @@ def extract_wav_chans(bird_id, sess, ch_name='mic', location='ss'):
     super_file = h5py.File(super_file_path, 'r')
     rec_list = super_file['/recordings'].keys()
     module_logger.info('Extract {0} chan to wav for recs {1}'.format(ch_name, rec_list))
-    for rec, rec_grp in super_file['/recordings'].iteritems():
+    for rec, rec_grp in super_file['/recordings'].items():
         fn = et.file_names(bird_id, sess, int(rec))
         data_set = rec_grp['data']
         s_f = rec_grp.attrs['sample_rate']
@@ -391,13 +404,14 @@ def list_experiment_files(bird_id, sess_str, depth=None, raw_location='rw', file
     """
     raw_data_folder = et.file_names(bird_id)['folders'][raw_location]
     str_depth = '' if depth is None else '_{}'.format(depth)
-    sessions = glob.glob(os.path.join(raw_data_folder, sess_str + '*' + str_depth))
+    sessions = list(glob.glob(os.path.join(raw_data_folder, sess_str + '*' + str_depth)))
+    module_logger.debug('Sessions: {}'.format(sessions))
     sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
     processor = sess_par['rec_config']['processors'][file_type]
     search_str = '*_{}.raw.kwd'.format(processor)
     module_logger.info('searching {}'.format(search_str))
-    experiments = list_flatten(
-        [glob.glob(os.path.join(s, search_str))[:] for s in sessions])
+    experiments = list(list_flatten(
+        [glob.glob(os.path.join(s, search_str))[:] for s in sessions]))
     experiments.sort()
     return experiments
 
@@ -465,7 +479,6 @@ def make_copies(sess_list, dest_path, keep=True):
 def make_raw_bkp(bird_id, sess_list, raw_location='rw', locations=None):
     locations = et.get_locations() if locations is None else locations
     exp_path = os.path.join(locations['experiment'], 'raw_data', bird_id)
-    store_path = os.path.join(locations['store'], 'raw_data', bird_id)
     source_path = os.path.split(sess_list[0])[0]
 
     if source_path == exp_path:
@@ -476,6 +489,7 @@ def make_raw_bkp(bird_id, sess_list, raw_location='rw', locations=None):
 
     if raw_location == 'raw':
         module_logger.info('Should be Moving data out of local drive {}'.format(source_path))
+        store_path = os.path.join(locations['store'], 'raw_data', bird_id)
         make_copies(sess_list, store_path, keep=False)
     else:
         module_logger.info('Data is not in local drive but in {}, doing nothing'.format(source_path))
@@ -486,12 +500,13 @@ def process_awake_recording(bird_id, sess_day_id, depth, cond='', raw_location='
     cond_string = cond if cond in ['', '*'] else '{}_'.format(cond)
     sess_day_str = cond_string + sess_day_id
     sessions = glob.glob(os.path.join(raw_data_folder, sess_day_str + '*' + str(depth)))
+    sessions.sort()
     print(sessions)
     sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
     data_processor = sess_par['rec_config']['processors']['data']
-    print([(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
-    experiments = list_flatten(
-        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
+    print([glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
+    experiments = list(list_flatten(
+        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions]))
     experiments.sort()
 
     super_sess_name = ('day-' + sess_day_str + '_' + depth).replace('*', 'all_')
@@ -515,8 +530,8 @@ def process_asleep_recording(bird_id, sess_day_id, depth, raw_location='raw', ss
     sessions = glob.glob(os.path.join(raw_data_folder, sess_day_id + '*' + str(depth)))
     sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
     data_processor = sess_par['rec_config']['processors']['data']
-    experiments = list_flatten(
-        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
+    experiments = list(list_flatten(
+        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions]))
     experiments.sort()
 
     super_sess_name = 'day-' + sess_day_id + '_' + depth
@@ -536,8 +551,8 @@ def process_recording_realtime(bird_id, sess_day_id, depth, raw_location='raw', 
     sessions = glob.glob(os.path.join(raw_data_folder, sess_day_id + '*' + str(depth)))
     sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
     data_processor = sess_par['rec_config']['processors']['data']
-    experiments = list_flatten(
-        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
+    experiments = list(list_flatten(
+        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions]))
     experiments.sort()
 
     super_sess_name = 'day-' + sess_day_id + '_' + depth
@@ -556,8 +571,8 @@ def process_recording_realtime(bird_id, sess_day_id, depth, raw_location='raw', 
     sessions = glob.glob(os.path.join(raw_data_folder, sess_day_id + '*' + str(depth)))
     sess_par = et.get_parameters(bird_id, os.path.split(sessions[0])[-1], location=raw_location)
     data_processor = sess_par['rec_config']['processors']['data']
-    experiments = list_flatten(
-        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions])
+    experiments = list(list_flatten(
+        [glob.glob(os.path.join(s, '*_{}.raw.kwd'.format(data_processor)))[:] for s in sessions]))
     experiments.sort()
 
     super_sess_name = 'day-' + sess_day_id + '_' + depth

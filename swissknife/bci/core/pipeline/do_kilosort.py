@@ -2,7 +2,7 @@ import argparse
 import logging
 import sys
 
-from core import kilosort
+from swissknife.bci.core.pipeline.core import kilosort
 
 
 def get_args():
@@ -11,6 +11,8 @@ def get_args():
                        help='bird that has ss data in the cube')
     parser.add_argument('sess', default = '', nargs='?',
                        help='session')
+    parser.add_argument('port', default = 0, nargs='?',
+                       help='probe')
     return parser.parse_args()
 
 
@@ -21,7 +23,7 @@ def main():
     logger.info('Will do kilosort on bird {}, sess {}'.format(args.bird, args.sess))
     #kilosort.run_kilosort(args.bird, args.sess, no_copy=False)
     try:
-        kilosort.run_kilosort(args.bird, args.sess, no_copy=False, use_gpu=True)
+        kilosort.run_kilosort(args.bird, args.sess, port=args.port, no_copy=False, use_gpu=True)
         logger.info('Finished sorting')
     except:
         logger.error('Something went wrong')

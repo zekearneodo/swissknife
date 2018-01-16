@@ -52,7 +52,7 @@ def list_subgroups(h5_group):
     :param h5_group: a Group object
     :return: a list of the keys of items that are instances of group
     """
-    return [key for key, val in h5_group.iteritems() if isinstance(val, h5py.Group)]
+    return [key for key, val in h5_group.items() if isinstance(val, h5py.Group)]
 
 
 def dict_2_attr_translator(item):
@@ -93,7 +93,7 @@ def dict_2_group(parent_group, dic, name, replace=False):
                 logger.debug('Group {} already exists; skipping'.format(name))
                 return
 
-    for key, item in dic.iteritems():
+    for key, item in dic.items():
         if not isinstance(item, dict):
             try:
                 item = dict_2_attr_translator(item)
@@ -119,7 +119,7 @@ def attr_2_dict_translator(value):
 
 def obj_attrs_2_dict_translator(h5obj):
     dic = {}
-    for attr, value in h5obj.attrs.iteritems():
+    for attr, value in h5obj.attrs.items():
         try:
             # logger.debug('attr {}'.format(attr))
             dic[attr] = attr_2_dict_translator(value)
@@ -143,7 +143,7 @@ def group_2_dict(parent_dic, group, key_name):
     logger.debug('Translating group {} into its own dictionary'.format(key_name))
     parent_dic[key_name] = dict()
     dic = parent_dic[key_name]
-    for attr, value in group.attrs.iteritems():
+    for attr, value in group.attrs.items():
         try:
             # logger.debug('attr {}'.format(attr))
             dic[attr] = attr_2_dict_translator(value)
@@ -151,7 +151,7 @@ def group_2_dict(parent_dic, group, key_name):
             logger.warning("Could not translate value for attribute {}".format(attr))
             dic[attr] = None
 
-    for subgroup_name, subgroup_obj in group.iteritems():
+    for subgroup_name, subgroup_obj in group.items():
         logger.debug('Subgroup {}'.format(subgroup_name))
         try:
             assert(isinstance(subgroup_obj, h5py.Group))
@@ -190,7 +190,7 @@ def append_atrributes(h5obj, attr_dict):
     :param attr_dict: Dictionary (with no dictionaries)
     :return:
     """
-    for key, item in attr_dict.iteritems():
+    for key, item in attr_dict.items():
         # print attr_dict['name'] + ' {0} - {1}'.format(attr_dict['data'], attr_dict['dtype'])
         if isinstance(key, dict):
             logger.warning('Skipping sub-dictionary {0} in appending attributes of {1}'.format(key, h5obj.name))

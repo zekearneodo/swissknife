@@ -5,8 +5,6 @@ import swissknife.decoder.core.datashape as ds
 logger = logging.getLogger('decoder.linear')
 
 
-
-
 def data_arrange(sup, target, hist_bins):
     """
     :param sup: np array (t+history)xnu support vector (from -history to t)

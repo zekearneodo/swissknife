@@ -18,7 +18,7 @@ def h5_wrap(h5_function):
     def file_checker(h5_file, *args, **kwargs):
         if type(h5_file) is not h5py._hl.files.File:
             h5_file = h5py.File(h5_file, 'r')
-        logging.debug('H5 file: {}'.format(h5_file))
+        #logging.debug('H5 file: {}'.format(h5_file))
         return_value = h5_function(h5_file, *args, **kwargs)
         # h5_file.close()
         return return_value
@@ -27,13 +27,21 @@ def h5_wrap(h5_function):
 
 
 def list_subgroups(h5_group):
-    return [key for key, val in h5_group.iteritems() if isinstance(val, h5py.Group)]
+    return [key for key, val in h5_group.items() if isinstance(val, h5py.Group)]
+
+
+def h5_unicode_hack(x):
+    if isinstance(x, str):
+        x = x.encode('utf8')
+    elif isinstance(x, bytes):
+        x = x.decode('utf-8')
+    return x
 
 # gets the sampling frequency of a recording
 @h5_wrap
 def get_record_sampling_frequency(h5, recording=0):
     path = 'recordings/{0:d}'.format(recording)
-    return h5[path].attrs.get('sample_rate')
+    return h5_unicode_hack(h5[path].attrs.get('sample_rate'))
 
 
 @h5_wrap
@@ -42,7 +50,7 @@ def get_rec_list(k_file):
     :param k_file:
     :return: list of recordings in an h5file (kwik/kwd) as a sorted numpy array
     """
-    return np.sort(map(int, list(k_file['/recordings'].keys())))
+    return np.sort(list(map(int, list(k_file['/recordings'].keys()))))
 
 
 @h5_wrap
@@ -52,7 +60,7 @@ def get_shank_list(k_file):
     :return: list of recordings in an h5file (kwik/kwd) as a sorted numpy array
     """
     #print(list(k_file['/channel_groups'].keys().items()))
-    return np.sort(map(int, k_file['/channel_groups'].keys()))
+    return np.sort(list(map(int, list(k_file['/channel_groups'].keys()))))
 
 
 @h5_wrap
@@ -74,7 +82,7 @@ def get_rec_origin(kwd_file, rec):
     :return: dictionary with bird, sess, rec
     """
     group = get_rec_group(kwd_file, rec)
-    origin_strings = group.attrs.get('name').split(':')
+    origin_strings = h5_unicode_hack(group.attrs.get('name')).split(':')
     recording = int(origin_strings[1].split('/')[-1])
     path = os.path.split(origin_strings[0])[0]
     base_name = os.path.split(origin_strings[0])[-1].split('.')[0]
@@ -115,16 +123,20 @@ def get_corresponding_rec(kwd_file, sample):
 
 @h5_wrap
 def get_rec_starts(kwd_file):
+    logger.debug('Getting rec_starts')
     rec_sizes = get_rec_sizes(kwd_file)
-    starts_vec = np.array(rec_sizes.values()).cumsum()
+    #logger.debug('rec sizes {}'.format(rec_sizes))
+    starts_vec = np.array(list(rec_sizes.values())).cumsum()
+    #logger.debug('starts vector {}'.format(starts_vec))
     starts_vec = np.hstack([0, starts_vec[:-1]])
-    rec_starts = {rec: r_start for r_start, rec in zip(starts_vec, rec_sizes.iterkeys())}
+    rec_starts = {rec: r_start for r_start, rec in zip(starts_vec, rec_sizes.keys())}
     return rec_starts
+
 
 # H5 functions
 def copy_attribs(source, dest):
-    for key, attrib in source.attrs.iteritems():
-        dest.attrs.create(key, attrib, dtype=attrib.dtype)
+    for key, attrib in source.attrs.items():
+        dest.attrs.create(key, attrib)
 
 # Table functions
 def get_dset_group_attr(data_set, attr_name):
@@ -165,7 +177,7 @@ def dset_to_binary_file(data_set, out_file, chan_list=None, chunk_size=8000000):
     """
     samples_data = data_set.shape[0]
     channels_data = data_set.shape[1]
-    data_type = data_set.dtype
+    data_type =np.dtype(data_set.dtype)
     logging.info('Ripping dataset from {}'.format(data_set.parent.name))
     if chan_list is None:
         logging.debug('Counting channels')
@@ -175,7 +187,7 @@ def dset_to_binary_file(data_set, out_file, chan_list=None, chunk_size=8000000):
     samples_chunk = min(chunk_size, samples_data)
     channels_chunk = len(chan_list)
 
-    chunk_buffer = np.empty((samples_chunk, channels_chunk), dtype=np.dtype(data_type))
+    chunk_buffer = np.empty((samples_chunk, channels_chunk), dtype=data_type)
     chunk_starts = np.arange(0, samples_data, samples_chunk)
     n_chunks = chunk_starts.size
 
@@ -186,7 +198,9 @@ def dset_to_binary_file(data_set, out_file, chan_list=None, chunk_size=8000000):
         chunk_buffer[0: end - start, :] = load_table_slice(data_set,
                                                            np.arange(start, end),
                                                            chan_list)
-        out_file.write(chunk_buffer[0: end - start].astype(np.dtype(data_type)).tostring())
+        #logging.info('Chunk buffer dtype {}'.format(chunk_buffer.dtype))
+        #logging.info('Chunk dtype dtype {}'.format(data_type))
+        out_file.write(chunk_buffer[0: end - start].astype(data_type).tostring())
 
     stored = n_chunks * chunk_buffer.size + chunk_buffer[0: end - start, :].size
     logging.info('{} elements written'.format(stored))
@@ -213,15 +227,15 @@ def kwd_to_binary(kwd_file, out_file_path, chan_list=None, chunk_size=8000000):
         chan_list = list(chan_list)
     rec_list = get_rec_list(kwd_file)
     logging.info('Will go through recs {}'.format(rec_list))
-    out_file = open(out_file_path, 'wt')
-    stored_elements = map(lambda rec_name: dset_to_binary_file(get_data_set(kwd_file, rec_name),
-                                                               out_file,
-                                                               chan_list=chan_list,
-                                                               chunk_size=chunk_size
-                                                               ),
-                          rec_list)
-    out_file.close()
-    elements_in = np.array(stored_elements).sum()
+    with open(out_file_path, 'wb') as out_file:
+        stored_elements = list(map(lambda rec_name: dset_to_binary_file(get_data_set(kwd_file, rec_name),
+                                                                   out_file,
+                                                                   chan_list=chan_list,
+                                                                   chunk_size=chunk_size
+                                                                   ),
+                              rec_list))
+
+    elements_in = np.array(list(stored_elements)).sum()
     logging.info('{} elements written'.format(elements_in))
 
 
@@ -271,4 +285,4 @@ def list_event_types(kwe_file):
 
 
 def count_events(kwe_file, ev_type, ev_name, rec=None):
-    return get_events(kwe_file, ev_type, ev_name, rec=rec).size
+    return get_events_one_type(kwe_file, ev_type, ev_name, rec=rec).size

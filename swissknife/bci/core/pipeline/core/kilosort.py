@@ -1,6 +1,6 @@
 # kilosort a session on (niao)
 # Definitions and functions
-
+from __future__ import division
 import argparse
 import glob
 import logging
@@ -10,11 +10,9 @@ import subprocess
 import sys
 from string import Template
 import numpy as np
-
+import yaml
 import scipy.io as sio
 
-#quick and dirty fix
-sys.path.append(os.path.join('/mnt/cube/earneodo/repos', 'swissknife'))
 from swissknife.bci.core import expstruct as et
 from swissknife.bci.core.file import h5_functions as h5f
 import numpy as np
@@ -29,12 +27,23 @@ def get_args():
                         help='sessin')
     return parser.parse_args()
 
+def try_par(yml_par, key, default_value):
+    logger.debug('Looking for key {0}, {1}'.format(key, default_value))
+    print(yml_par)
+    try:
+        par_value = yml_par[key]
+    except KeyError:
+        logger.debug('Looking for parameter not defined: {}'.format(key))
+        par_value = default_value
+    return par_value
 
 def make_kilo_scripts(bird, sess, n_filt=None,
                       kilo_dir=os.path.abspath('/home/earneodo/repos/KiloSort'),
                       npymat_dir=os.path.abspath('/home/earneodo/repos/npy-matlab'),
                       use_gpu=True,
-                      filt_per_chan=2
+                      filt_per_chan=2,
+                      auto_merge=False,
+                      port=0
                       ):
     fn = et.file_names(bird, sess)
     exp_par = et.get_parameters(bird, sess)  # load the yml parameter file
@@ -42,10 +51,22 @@ def make_kilo_scripts(bird, sess, n_filt=None,
     logger.debug('local sort dir: {}'.format(local_sort_dir))
     block_name = fn['structure']['structure']
     s_f = h5f.get_record_sampling_frequency(et.open_kwd(bird, sess))
-    n_chan = len(exp_par['channel_config']['neural'])
+    try:
+        logger.debug('looking for port neural_{}'.format(port))
+        n_chan = len(exp_par['channel_config']['neural_{}'.format(port)])
+    except KeyError:
+        n_chan = len(exp_par['channel_config']['neural'])
     logger.debug('n_chan: {}'.format(n_chan))
-    if n_filt is None:
-        n_filt = np.int(np.ceil(16*3./32.)*32)
+
+    # overrride defaults with vaules defined in the parameter file
+    # under the key 'kilosort'
+    # load the kilosort pars, if they are not defined, just get an empty dict
+    kilo_par = try_par(exp_par, 'kilosort', yaml.load(str({'empty': None})))
+    auto_merge = try_par(kilo_par, 'auto_merge', auto_merge)
+    filt_per_chan = try_par(kilo_par, 'filt_per_chan', filt_per_chan)
+    use_gpu = try_par(kilo_par, 'use_gpu', use_gpu)
+
+    logger.debug('n_filt: {}'.format(int(np.ceil(n_chan * filt_per_chan/32)*32)))
     params = {
         'kilodir': kilo_dir,
         'npy_matdir': npymat_dir,
@@ -53,9 +74,9 @@ def make_kilo_scripts(bird, sess, n_filt=None,
         'blockname': block_name,
         'fs': s_f,
         'Nchan': n_chan,
-        'Nfilt': int(np.ceil(n_chan/32)*32)*filt_per_chan,
+        'n_filt': int(np.ceil(n_chan * filt_per_chan/32)*32),
+        'auto_merge': int(auto_merge),
         'useGPU': int(use_gpu)
-
     }
     logger.debug(params)
     template_dir = fn['folders']['templ']
@@ -72,24 +93,45 @@ def make_kilo_scripts(bird, sess, n_filt=None,
         f.write(config_template.substitute(params))
 
 
-def make_kilo_chanmap(bird, sess):
+def make_kilo_chanmap(bird, sess, port=0):
     fn = et.file_names(bird, sess)
     logger.debug('Making ChanMap file')
     par = et.get_parameters(bird, sess)
+    probe_key = 'probe_{}'.format(port)
+
+    # check if new version of probe desciption applies
     try:
-        probe_serial = par['probe']['serial']
-        logger.debug('Probe serial specified: {}'.format(probe_serial))
-        try:
-            probe_rev = par['probe']['rev']
-            logger.debug('Probe rev specified: {}'.format(probe_rev))
-        except KeyError:
-            probe_rev = '0'
-            logger.debug('Probe rev not specified: default is {}'.format(probe_rev))
-        prb_file = os.path.join(fn['folders']['prb'],
-                                     '{0}_{1}.prb'.format(probe_serial, probe_rev))
-        logger.debug('Probe should be {}'.format(prb_file))
+        par_probe = par[probe_key]
     except KeyError:
-        logger.debug('probe not specified in par file, going for default in-folder .prb file')
+        probe_key = 'probe'
+
+    # do the usual
+    logger.info('set to look for probe {}'.format(probe_key))
+    try:
+        par_probe = par[probe_key]
+        logger.info('probe specified')
+        try:
+            probe_serial = par_probe['serial']
+            logger.debug('Probe serial specified: {}'.format(probe_serial))
+            try:
+                probe_rev = par_probe['rev']
+                logger.debug('Probe rev specified: {}'.format(probe_rev))
+
+            except KeyError:
+                probe_rev = '0'
+                logger.debug('Probe rev not specified: default is {}'.format(probe_rev))
+
+            prb_file = os.path.join(fn['folders']['prb'],
+                                    '{0}_{1}.prb'.format(probe_serial, probe_rev))
+            logger.debug('Probe should be {}'.format(prb_file))
+
+        except KeyError:
+            logger.debug('probe specified but serial missing?')
+            raise KeyError
+
+    except KeyError:
+        logger.debug('probe not specified in par file, '
+                     'going for default in-folder .prb file')
         prb_file_path = et.file_path(fn, 'ss', 'kk_prb')
 
         assert len(glob.glob(prb_file_path)) == 1, "Error finding .prb file in {}".format(prb_file_path)
@@ -128,13 +170,13 @@ def make_kilo_chanmap(bird, sess):
                 'kcoords': k_coords}
 
     sio.savemat(et.file_path(fn, 'tmp', 'ks_map'), chan_map_dict)
-    
 
-def run_kilosort(bird, sess, no_copy=False, use_gpu=True,
+
+def run_kilosort(bird, sess, no_copy=False, use_gpu=True, port=0, auto_merge=True,
                  kilo_dir=os.path.abspath('/home/earneodo/repos/KiloSort'),
                  npymat_dir=os.path.abspath('/home/earneodo/repos/npy-matlab')
                 ):
-    logger.info("will run bci_pipeline on bird {0} - session {1}".format(bird, sess))
+    logger.info("will run bci_pipeline on bird {0} - session {1}, port {2}".format(bird, sess, port))
     fn = et.file_names(bird, sess)
     log_file = os.path.join(fn['folders']['ss'], 'kilosort_py.log')
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -142,16 +184,20 @@ def run_kilosort(bird, sess, no_copy=False, use_gpu=True,
     fh.setFormatter(formatter)
     logger.info('Saving output in log file: {}'.format(log_file))
     logger.addHandler(fh)
-    logger.info("will run bci_pipeline on bird {0} - session {1}".format(bird, sess))
     if no_copy:
         logger.info('Will not pull data from cube')
     else:
         copyed = fetch_kilo_data(bird, sess)
         logger.info('Copied {}'.format(copyed))
     logger.info('Will create the scripts')
-    make_kilo_scripts(bird, sess, kilo_dir=kilo_dir, npymat_dir=npymat_dir, use_gpu=use_gpu)
+    make_kilo_scripts(bird, sess,
+                      kilo_dir=kilo_dir,
+                      npymat_dir=npymat_dir,
+                      use_gpu=use_gpu,
+                      port=port,
+                      auto_merge=auto_merge)
     logger.info('Will do the chanMap for matlab')
-    make_kilo_chanmap(bird, sess)
+    make_kilo_chanmap(bird, sess, port=port)
     logger.info('Will do the sort')
     sort_out = do_the_sort(bird, sess)
     logger.info('Sorted {}'.format(sort_out))
@@ -162,15 +208,20 @@ def run_kilosort(bird, sess, no_copy=False, use_gpu=True,
 
 
 def do_the_sort(bird, sess):
-    logger.info('Running kilosort on matlab')
+    mod_logger = logging.getLogger()
+    mod_logger.info('Running kilosort on matlab')
     fn = et.file_names(bird, sess)
     sort_folder = fn['folders']['tmp']
     log_file = os.path.join(fn['folders']['ss'], 'kilosort_mat.log')
     mlb_cmd = '-r "cd(\'{}\'); dir; master; exit();"'.format(sort_folder)
     log_cmd = '-logfile {}'.format(log_file)
-    logger.debug('Issue command {}'.format(mlb_cmd))
-    logger.info('output to {}'.format(log_file))
+    mod_logger.debug('Issue command {}'.format(mlb_cmd))
+    mod_logger.info('output to {}'.format(log_file))
+
+    # pause the module logger and log to a different thing.
+    mod_logger.disabled = True
     sorter = subprocess.check_output(['matlab', '-nodesktop', '-nosplash', '-noawt', mlb_cmd, log_cmd])
+    mod_logger.disabled = False
     return sorter
 
 
@@ -196,6 +247,8 @@ def push_kilo_data(bird, sess):
     for ext in extensions:
         files = glob.glob(os.path.join(source_folder, '*.{}'.format(ext)))
         copied += [sh.copy2(os.path.join(source_folder, f), dest_folder) for f in files]
+    logger.info('Will remove tmp folder {}'.format(source_folder))
+    sh.rmtree(source_folder)
     return copied
 
 
@@ -208,7 +261,7 @@ def copy_data(bird, sess, orig, dest, only_files=[], exclude_files=[]):
     if len(only_files) > 0:
         logger.debug('Grabbing all files in list {}'.format(only_files))
         try:
-            copied = map(lambda x: sh.copy2(et.file_path(fn, orig, x), dest_folder), only_files)
+            copied = list(map(lambda x: sh.copy2(et.file_path(fn, orig, x), dest_folder), only_files))
 
         except:
             logger.error('Missing files')

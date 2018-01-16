@@ -9,6 +9,8 @@ from swissknife.bci.core.file import h5_functions as h5f
 
 from swissknife.h5tools import tables as h5t
 
+from swissknife.streamtools import spectral as sp
+
 module_logger = logging.getLogger("stimalign")
 
 
@@ -50,7 +52,7 @@ def find_first_peak(x, thresh_factor=0.3):
 
 def find_wav_onset(dset, chan, stamp, tr_df):
     [start, end] = get_trial_bounds(stamp, tr_df)
-    #module_logger.debug('Finding onset around {0}-{1} for {2}'.format(start, end, stamp))
+    # module_logger.debug('Finding onset around {0}-{1} for {2}'.format(start, end, stamp))
     trial_frame = h5t.load_table_slice(dset, np.arange(start, end), [chan])
     onset_in_trial = find_first_peak(trial_frame)
     return start + onset_in_trial
@@ -66,6 +68,7 @@ def store_motiff(ev_file, rec, bout_starts, motiff_name):
 def get_wave_times(kwe_file, wave_file=None):
     all_msg = kwe.get_messages(kwe_file)
     wav_df = all_msg[all_msg['text'].str.contains('play_wav')]
+
     wav_times = wav_df.t.values.astype(np.int)
     wav_names = [(x.split()[-1].split('/')[-1].split('.')[0]) for x in wav_df.text.values]
 
@@ -82,7 +85,10 @@ def get_wave_times(kwe_file, wave_file=None):
 
 
 def get_stims_list(kwe_file):
+    module_logger.info('getting stim lists of {}'.format(kwe_file))
     stims_table = get_wave_times(kwe_file)
+    #module_logger.info(stims_table)
+
     if stims_table.empty:
         stim_names = []
     else:
@@ -95,7 +101,7 @@ def get_stims_list(kwe_file):
 def get_start_rec_times(kwe_file):
     all_msg = kwe.get_messages(kwe_file)
     start_rec_df = all_msg[all_msg['text'].str.contains('start time')]
-    start_times = [long(x.split()[-1].split('@')[0]) for x in start_rec_df.text.values]
+    start_times = [int(x.split()[-1].split('@')[0]) for x in start_rec_df.text.values]
     assert (len(start_times) == 1), "more or less than one recording start time"
     return start_times[0]
 
@@ -133,6 +139,7 @@ def align_stim(bird_id, super_sess_id, raw_location='rw', ss_location='ss'):
     mot_file_path = et.file_path(ss_fn, ss_location, 'sng')
     super_sess_path = et.file_path(ss_fn, ss_location, 'ss_raw')
     rec_list = et.get_rec_list(bird_id, super_sess_id, location=ss_location)
+    module_logger.info('Aligning stim of sess {}, rec_list={}'.format(super_sess_path, rec_list))
 
     for rec in rec_list:
         # get the rec events file
@@ -146,9 +153,10 @@ def align_stim(bird_id, super_sess_id, raw_location='rw', ss_location='ss'):
         # read the raw parameters file and get the tag channel
         pars = et.get_parameters(bird_id, rec_origin['sess'], location=raw_location)
         tag_chan = int(pars['channel_config']['sts'])
+        #module_logger.debug('ev file path: {}'.format(rec_ev_file_path))
 
         with h5py.File(rec_ev_file_path, 'r') as rec_ev_file:
-            #module_logger.debug('File {}'.format(rec_ev_file.filename))
+            module_logger.debug('File {}'.format(rec_ev_file.filename))
             for stim_id in get_stims_list(rec_ev_file):
                 module_logger.info('Getting starts of stim {}'.format(stim_id))
                 store_starts = get_stim_starts(rec_ev_file, rec_kwd_file_path,
@@ -159,3 +167,89 @@ def align_stim(bird_id, super_sess_id, raw_location='rw', ss_location='ss'):
                     module_logger.info('Stored in {}'.format(mot_file_path))
 
         module_logger.info('Done')
+
+
+# Functions for the intan board
+
+def dig_pulses(dig_chan):
+    # get start:end in dig_chan (chan uint64 with [0,1])
+    x = dig_chan.astype(np.short)
+    onsets = np.where(np.diff(x) == 1)[0]
+    offsets = np.where(np.diff(x) == -1)[0]
+
+    # for debugging
+    # plt.plot(rrx)
+    # plt.plot(onsets, np.ones_like(onsets), 'r*');
+    # plt.plot(offsets, np.ones_like(offsets), 'k*')
+
+    # print(onsets.shape)
+    if (onsets.size > 0) & (offsets.size > 0):
+        if onsets[0] > offsets[0]:
+            offsets = offsets[1:]
+        if offsets[-1] < onsets[-1]:
+            onsets = onsets[:-1]
+    else:
+        onsets = np.nan
+        offsets = np.nan
+    return np.vstack([onsets, offsets]).T
+
+
+def get_sine_freq(x, s_f, samples=1024):
+    f, t, s = sp.pretty_spectrogram(x[:samples].astype(np.float), s_f,
+                                    log=False,
+                                    fft_size=samples,
+                                    step_size=samples,
+                                    window=('tukey', 0.25))
+    # s should be just one slice
+    # get the peak frequency
+    f_0 = f[np.argmax(s[:, 0])]
+
+    return f_0
+
+
+def get_sine(x, s_f, trial_bound):
+    # onset ref to the beginning of the rec
+    onset = find_first_peak(x[trial_bound[0]:trial_bound[1]]) + trial_bound[0]
+    sin_chunk = x[onset: trial_bound[1]]
+
+    f_0 = get_sine_freq(sin_chunk, s_f)
+
+    # correct the onset with the 1/4 wave
+    wave_samples = float(s_f) / f_0
+    samples_correction = int(wave_samples * 0.25)
+    # print(samples_correction)
+
+    return onset - samples_correction, onset, f_0
+
+
+def get_all_wav_starts(sine_chan, mark_chan, s_f):
+    module_logger.debug('Getting all markers from digital chan')
+
+    all_on_off = dig_pulses(mark_chan)
+
+    if np.isnan(all_on_off).any():
+        module_logger.warning('No events found')
+        all_starts = None
+    else:
+        module_logger.info('found {} events'.format(all_on_off.shape[0]))
+        all_starts = list(map(lambda tb: get_sine(sine_chan, s_f, tb), all_on_off))
+
+    all_starts_pd = pd.DataFrame(all_starts, columns=['t', 't_uncorrected', 'tag_f'])
+    return all_starts_pd
+
+
+def chan_dict_lookup(chan_name, chan_dict_list):
+    id_found = [i for i, chan_dict in enumerate(chan_dict_list) if chan_dict['name'] == chan_name]
+    assert len(id_found) == 1, 'Found many or none channels of name {}'.format(chan_name)
+    return chan_dict_list[id_found[0]]
+
+
+def lookup_freq(freq, stim_freqs_dict, precision=100):
+    freq_to_find = round(freq / precision) * precision
+    # module_logger.info('lookup freq {}'.format(lookup_freq))
+    found_name = [k for (k, v) in stim_freqs_dict.items() if v == freq_to_find]
+    # print(found_name)
+
+    assert len(found_name) == 1, 'Either not found or found many stim with freq {} ({})'.format(freq, freq_to_find)
+
+    return found_name[0]

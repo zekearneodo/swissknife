@@ -19,9 +19,32 @@ from swissknife.h5tools import tables as h5t
 logger = logging.getLogger("streamtools.streams")
 
 
-def rms(x):
-    return np.std(x, axis=0)
+#decorator for getting the rms after applying a filter to a segment
+def rms_after_filter(filter_func):
+    def out_of_filtered(*args, **kwargs):
+        #print "Arguments were: %s, %s" % (args, kwargs)
+        #plt.plot(np.transpose(filter_func(*args, **kwargs)))
+        return np.linalg.norm(filter_func(*args, **kwargs))
+    return out_of_filtered
 
+def rms(x, axis=0):
+    #print('plain rms with shape {}'.format(x.shape))
+    if axis is None:
+        return np.linalg.norm(x)
+    else:
+        return np.linalg.norm(x, axis=axis)/x.shape[axis]
+
+def chunk_rms(x, axis=0):
+    #print('chunk rms with shape {}'.format(x.shape))
+    return np.linalg.norm(x, axis=axis)
+
+def mad(x):
+    med = np.median(x)
+    dev = np.abs(x - np.median(x))
+    return np.median(dev)
+
+def identity(x):
+    return x
 
 def car(x, chans=None):
     ch = np.arange(x.shape[1]) if chans is None else chans
@@ -136,6 +159,7 @@ class WavData:
         self.s_f = self.raw.getparams()[2]
         self.frame_size = self.raw.getparams()[1]
         self.n_chans = self.raw.getparams()[0]
+        logger.info('wavdata')
 
     def get_chunk(self, start, end, chan_list=[0]):
         frame_to_type = {'2': 'h', '4': 'i'}
@@ -151,6 +175,7 @@ class WavData:
 
         # TODO: this is dirty, change by one read, unpack and reshape
         data = np.zeros((len(chan_list), end - start), dtype=np.dtype(data_type))
+        #logger.info(data.shape)
         data_unpacked = struct.unpack('<' + str((end - start) * n_chans) + data_type, chunk_bit)
         for i, channel in enumerate(chan_list):
             data[i, :] = data_unpacked[channel::n_chans]
@@ -171,6 +196,9 @@ class WavData:
 
     def get_rms(self, t_ms):
         pass
+
+    def close(self):
+        self.raw.close()
 
 
 class DatSound:
@@ -267,6 +295,7 @@ class H5Data:
                               segment=[start, start + window]).data,
                         *args,
                         **kwargs) for start in starts]
+        #print(results[0].shape)
         #return results
         return np.stack(results, axis=0)
 
@@ -292,6 +321,13 @@ class H5Data:
         self.rms = self.apply_repeated(all_starts, window_size_samples, rms_func, *rms_args, **rms_kwargs).mean(axis=0)
         return self.rms
 
+    def get_rms_2(self, window_size_samples=50000, n_windows=5000, rms_func=chunk_rms, rms_args=(), rms_kwargs={'axis':0}):
+        logger.debug('Computing rms over {0} windows for {1} channels'.format(n_windows, self.n_chans))
+        window_size_samples = min(window_size_samples, self.n_samples)
+        all_starts = np.random.randint(self.n_samples - window_size_samples, size=n_windows)
+        self.rms = self.apply_repeated(all_starts, window_size_samples, rms_func, *rms_args, **rms_kwargs)
+        return self.rms
+
     def get_chunk(self, start, end, chan_list=None):
         if chan_list is None:
             chan_list = self.chan_list
@@ -305,7 +341,6 @@ class H5Data:
                                                    chan_list),
                               dtype=self.data_type)
         return chunk_data
-
 
 
 # class of methods for chunks of a signal
@@ -441,4 +476,3 @@ def array_wrap(stream_function):
         return return_value
 
     return array_checker
-

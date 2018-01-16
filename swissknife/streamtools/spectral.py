@@ -7,6 +7,11 @@ import copy
 import tensorflow as tf
 from swissknife.streamtools.core.data import overlap
 
+from tqdm import tqdm
+
+import logging
+
+logger = logging.getLogger('h5tools')
 
 class Spectrogram(object):
     def __init__(self, x, s_f,
@@ -164,20 +169,19 @@ def overlap(X, window_size, window_step):
         out[i] = x[start: stop]
     return out
 
-
 # functions using tensorflow
 def real_fft(x, only_abs=True, logarithmic=False, window=None):
     """
     Computes fft of a stack of time series.
     :param x: ndarray, shape=(n_series, n_samples)
             Input stack of time series
-    :param only_abs: boolean 
+    :param only_abs: boolean
             return only absolute values (power spectra)
     :param logarithmic: boolean
             return in logarithmic scale; ignored if only_abs==False
     :param window: ndarray, shape=(n_samples, )
             boxing window (default none), np.array (n_samples)
-    :return: ndarray, shape=(n_series, n_samples/2) 
+    :return: ndarray, shape=(n_series, n_samples/2)
             with fft computed for every row
              dtype=np.float32 (if only_abs==True) or dtype=np.complex64 (if only_abs==False)
     """
@@ -211,7 +215,6 @@ def real_fft(x, only_abs=True, logarithmic=False, window=None):
         s = sess.run(fft)
     return s
 
-
 def pretty_spectrogram_tf(X, log=True, db_cut=65, fft_size=512, step_size=64,
                           window=None):
     """
@@ -241,29 +244,146 @@ def pretty_spectrogram_tf(X, log=True, db_cut=65, fft_size=512, step_size=64,
         specgram[specgram < threshold] = threshold  # set anything less than the threshold as the threshold
     return specgram
 
-
 def pretty_spectrogram(x, s_f, log=True, fft_size=512, step_size=64, window=None,
                        db_cut=65,
                        f_min=0.,
-                       f_max=10000.):
-
+                       f_max=None):
+    # db_cut=0 for no_trhesholding
     f, t, specgram = sg.spectrogram(x, fs=s_f, window=window,
                                        nperseg=fft_size,
                                        noverlap=fft_size - step_size,
                                        nfft=None,
                                        detrend='constant',
                                        return_onesided=True,
-                                       scaling='density',
-                                       axis=-1,
-                                       mode='psd')
+                                       scaling='spectrum',
+                                       axis=-1)
+                                       #mode='psd')
 
-    max_specgram = np.max(specgram)
-    threshold = max_specgram * pow(10, -db_cut * 0.05)
-    specgram[specgram < threshold] = threshold  # set anything less than the threshold as the threshold
-
+    if db_cut>0:
+        specgram = spectrogram_db_cut(specgram, db_cut=db_cut, log_scale=False)
     if log:
         specgram = np.log10(specgram)
 
-    f_filter = np.where((f > f_min) & (f < f_max))
+    if f_max is None:
+        f_max = s_f/2.
+
+    f_filter = np.where((f >= f_min) & (f < f_max))
     #return f, t, specgram
     return f[f_filter], t, specgram[f_filter]
+
+
+def chunky_spectrogram(x, s_f, log=True, fft_size=256, step_size=64, window=None,
+                       db_cut=65,
+                       f_min=0.,
+                       f_max=None,
+                       chunk_size = 40):
+
+    # chunk is n. of fft_sizes
+    logger.info('Getting chunked spectrogram, total size {}'.format(x.size))
+    if np.mod(fft_size, step_size) > 0:
+        raise ValueError('fft_size has to be multiple of step_size for chunked spectrogram')
+    logger.debug('Input size {}'.format(x.size))
+    chunk_size = np.min([chunk_size * fft_size * step_size, x.size])
+    #print('Chunk size {}'.format(chunk_size))
+    chunk_size_samples = fft_size * chunk_size
+    chunk_starts = np.arange(0, x.size, chunk_size_samples)
+    #print('Chunk starts {}'.format(chunk_starts))
+
+    d_t = step_size/s_f
+
+    f_nyq = s_f/2
+    d_f = s_f/fft_size
+    all_f = np.arange(0, f_nyq, d_f)
+    f_filter = np.where((all_f >= f_min) & (all_f < f_max))[0]
+    select_f = all_f[f_filter]
+
+    chunk_size_steps = int(np.floor( (chunk_size_samples - fft_size)/step_size + 1 )) #the output of spectrogram at each chunk
+    logger.debug('Chunk size steps {}'.format(chunk_size_steps))
+    spec_chunks_starts = np.arange(chunk_starts.size)*chunk_size_steps
+
+    total_steps = int(np.floor( (x.size - fft_size)/step_size + 1 ))
+    logger.debug('total_steps {}'.format(total_steps))
+    all_specgram = np.zeros([select_f.size, total_steps])
+    all_specgram[:] = np.nan
+    all_t = np.arange(total_steps) * d_t
+    #ctrl_t = np.zeros(total_steps)
+    #ctrl_t[:] = np.nan
+    logger.debug('All_spec {}'.format(all_specgram.shape))
+    #print('All_t {}'.format(all_t.shape))
+    out_sizes = []
+    # db_cut=0 for no_trhesholding
+    t_prev = 0
+    for i_chunk, (i_sample, i_step) in tqdm(enumerate(zip(chunk_starts, spec_chunks_starts)),
+                                 total=chunk_starts.size):
+        #if i_sample > 0:
+        i_sample -= (fft_size - step_size)*i_chunk
+
+        x_t = x[i_sample: i_sample+chunk_size_samples]
+
+        logger.debug('Enter chunk size {}'.format(x_t.shape))
+        f, t, s = sg.spectrogram(x_t,
+                                 fs=s_f, window=window,
+                                           nperseg=fft_size,
+                                           noverlap=fft_size - step_size,
+                                           nfft=None,
+                                           detrend='constant',
+                                           return_onesided=True,
+                                           scaling='spectrum',
+                                           axis=-1)
+        out_sizes.append(s.shape[1])
+        logger.debug('Out size {}'.format(s.shape))
+        logger.debug(i_step)
+        logger.debug(chunk_size_steps)
+        #all_specgram[:, i_step: i_step + s.shape ] = s[f_filter,:]
+        all_specgram[:, i_step: i_step + chunk_size_steps] = s[f_filter,:]
+        #ctrl_t[i_step: i_step + chunk_size_steps] = t + t_prev
+        #t_prev += t[-1]
+
+    if db_cut>0:
+        all_specgram = spectrogram_db_cut(all_specgram, db_cut=db_cut, log_scale=False)
+    if log:
+        all_specgram = np.log10(all_specgram)
+
+    if f_max is None:
+        f_max = s_f/2.
+
+    f_filter = np.where((f >= f_min) & (f < f_max))
+    #return f, t, specgram
+    return f[f_filter], all_t, all_specgram
+
+
+def spectrogram_db_cut(s, db_cut=65, log_scale=False):
+    specgram = np.copy(s)
+    max_specgram = np.max(specgram)
+    # do the cut_off. Values are amplitude, not power, hence db = -20*log(V/V_0)
+    if log_scale:
+        # threshold = pow(10, max_specgram) * pow(10, -db_cut*0.05)
+        # specgram[specgram < np.log10(threshold)] = np.log10(threshold)
+        log10_threshhold = max_specgram - db_cut * 0.05
+        specgram[specgram < log10_threshhold] = log10_threshhold
+        # specgram /= specgram.max()  # volume normalize to max 1
+    else:
+        threshold = max_specgram * pow(10, -db_cut * 0.05)
+        specgram[specgram < threshold] = threshold  # set anything less than the threshold as the threshold
+    return specgram
+
+def spectrogram_rms(x, y):
+    rms = np.linalg.norm(x-y)/np.sqrt(x.size)
+    return rms
+
+
+def array_spectrogram(x, pars, axis=-1):
+    y = x.T if axis == 0 else x
+    t_steps, n_ch = y.shape
+
+    spec_tower = []
+    for i_ch in range(n_ch):
+        f, t, s = pretty_spectrogram(x[:, i_ch], pars['s_f'],
+                                        fft_size=pars['win_samples'],
+                                        log=True,
+                                        step_size=pars['step_samples'], db_cut=pars['db_cut'],
+                                        f_min=pars['f_min'], f_max=pars['f_max'],
+                                        window=('gaussian', pars['win_samples'] // 4))
+
+        spec_tower.append(s)
+    return np.stack(spec_tower, axis=0)

@@ -1,6 +1,8 @@
 # Set of functions for appending data and reformatting the kwik file (and kwe)
 import logging
+import shutil
 import os
+import glob
 
 import h5py
 import numpy as np
@@ -47,11 +49,11 @@ def insert_sound(kf, sound_name, sound_file_path,
     waveform_group.attrs.create('sampling_rate', s_f, dtype='f4')
 
     if waveform_meta_data is not None:
-        for key, val in waveform_meta_data.iteritems():
+        for key, val in waveform_meta_data.items():
             waveform_group.attrs.create(key, val)
 
     if stim_meta_data is not None:
-        for key, val in stim_meta_data.iteritems():
+        for key, val in stim_meta_data.items():
             sound_group.attrs.create(key, val)
 
     waveform_group.create_dataset('stimulus', data=data)
@@ -62,7 +64,7 @@ def append_stream(kf, sound_name, stream, stream_name, parent_group='/event_type
     waveform_group = kf[parent_group + '/' + sound_name + '/' + 'waveforms']
     assert waveform_group
     if meta_data is not None:
-        for key, val in meta_data.iteritems():
+        for key, val in meta_data.items():
             waveform_group.attrs.create(key, val)
 
     if resample:
@@ -102,7 +104,12 @@ def read_sound(kf, sound_name, parent_group='/event_types/Stimulus'):
 
 def list_stim_streams(kf, sound_name, parent_group='/event_types/Stimulus'):
     sound_group = kf[parent_group + '/' + sound_name + '/' + 'waveforms']
-    return sound_group.keys()
+    return list(sound_group.keys())
+
+def list_stims(kf, stim_type='singing'):
+    stims_group = kf['/event_types/'+ stim_type]
+    #stims_list = list(map(lambda x: str(x.decode('utf-8')), stims_group.keys()))
+    return list(stims_group.keys())
 
 
 def read_stim_stream(kf, sound_name, stream_name, parent_group='/event_types/Stimulus'):
@@ -149,12 +156,12 @@ def get_rec_list(k_file):
     :param k_file: (kwik or kwd)
     :return: list of recordings in an h5file (kwik/kwd) as a sorted numpy array
     """
-    return np.sort(map(int, k_file['/recordings'].keys()))
+    return np.sort(list(map(int, k_file['/recordings'].keys())))
 
 
 @h5f.h5_wrap
 def rec_start_array(kwik):
-    rec_list = map(int, get_rec_list(kwik))
+    rec_list = list(map(int, get_rec_list(kwik)))
     rec_array = np.arange(max(rec_list) + 1)
     start_array = np.zeros_like(rec_array)
     for i_rec in rec_list:
@@ -182,8 +189,8 @@ def apply_rec_offset(h5, stamp_array, rec_array):
 
 
 def apply_offsets(stamps, recs, offset_array):
-    offsets = map(lambda i: offset_array[i], recs)
-    return stamps + offsets
+    offsets = list(map(lambda i: offset_array[i], recs))
+    return np.array(stamps) + np.array(offsets)
 
 
 # List all the units in a file
@@ -195,15 +202,15 @@ def list_units(kf, group=0, sorted=True):
     clu_dtype = np.int
     qlt_dtype = np.int
 
-    clu_list = kf[qlt_path].keys()
+    clu_list = list(kf[qlt_path].keys())
     qlt_list = [kf["{0:s}/{1:s}".format(qlt_path, c)].attrs.get('cluster_group') for c in clu_list]
     n_spikes = len(clu_list)
     clu_dt = np.dtype([('group', g_dtype, 1), ('clu', clu_dtype, 1), ('qlt', qlt_dtype, 1)])
     clu = np.recarray(n_spikes, dtype=clu_dt)
 
     clu['group'] = group
-    clu['clu'] = map(int, clu_list)
-    clu['qlt'] = map(int, qlt_list)
+    clu['clu'] = np.array(list(map(int, clu_list)))
+    clu['qlt'] = np.array(list(map(int, qlt_list)))
 
     if sorted:
         clu = clu[(clu['qlt'] == 1) | (clu['qlt'] == 2)]
@@ -226,13 +233,13 @@ def is_number(s):
 
 
 def attrs2dict(node):
-    return {key: val for key, val in node.attrs.iteritems()}
+    return {key: val for key, val in node.attrs.items()}
 
 
 def dict2attrs(meta_dict, node):
     if meta_dict is not None:
         assert node
-        for key, val in meta_dict.iteritems():
+        for key, val in meta_dict.items():
             node.attrs.create(key, val)
 
 
@@ -257,17 +264,16 @@ class KwikFile:
         self.spk_kwik = None
         self.kwf = None
         self.chan_group = chan_group
-
-        with open(file_names['par']) as f:
-            exec (f.read())
-            self.s_f = sample_rate
-
+        # with open(file_names['par']) as f:
+        #     exec (f.read())
+        #     self.s_f = sample_rate
+        self.s_f = get_record_sampling_frequency(file_names['kwd'])
         self.create_kwf()
 
     def create_kwf(self):
-        with h5py.File(self.file_names['kwk'], 'w') as kwf:
-            kwf.create_group('/channel_groups')
-            kwf.create_group('/recordings')
+        with h5py.File(self.file_names['kwk'], 'a') as kwf:
+            kwf.require_group('/channel_groups')
+            kwf.require_group('/recordings')
 
     def make_spk_tables(self):
         with h5py.File(self.file_names['kwd'], 'r') as kwd:
@@ -288,16 +294,35 @@ class KwikFile:
     def make_rec_groups(self):
         rec_list = np.unique(self.rec_kwik)
         rec_start_samples = h5f.get_rec_starts(self.file_names['kwd'])
-
+        #module_logger.debug(rec_start_samples)
+        #module_logger.info("Found recs {}".format(rec_list))
         with h5py.File(self.file_names['kwk'], 'r+') as kwf:
             rec_group = kwf.require_group('recordings')
             for rec in rec_list:
+                #module_logger.info("table for rec {}".format(rec))
+
                 rec_name = 'recording_{}'.format(rec)
+                #module_logger.debug(rec_start_samples)
+                #module_logger.info(rec_name)
                 attribs = [{'name': 'name', 'data': rec_name, 'dtype': 'S{}'.format(len(rec_name))},
                            {'name': 'sample_rate', 'data': self.s_f, 'dtype': np.dtype(np.float64)},
                            {'name': 'start_sample', 'data': rec_start_samples[rec], 'dtype': np.int64},
                            {'name': 'start_time', 'data': rec_start_samples[rec] / self.s_f, 'dtype': np.float64}]
-                insert_group(rec_group, str(rec), attribs)
+                module_logger.info('Will make rec group for rec {}'.format(rec))
+                try:
+                    insert_group(rec_group, str(rec), attribs)
+                # except ValueError as err:
+                #     if 'Name already exists' in err.args[0]:
+                #         module_logger.info('rec group already existed, skipping')
+                #     else:
+                #         raise
+                except RuntimeError as err:
+                    if 'Name already exists' in err.args[0]:
+                        module_logger.info('rec group already existed, skipping')
+                    else:
+                        raise
+
+
 
     def make_clu_groups(self, name='main'):
         clu_grp_dict = {'good': 2,
@@ -331,7 +356,7 @@ def insert_table(group, table, name, attr_dict=None):
 
 
 def insert_group(parent_group, name, attr_dict_list=None):
-    new_group = parent_group.create_group(name)
+    new_group = parent_group.require_group(name)
     if attr_dict_list is not None:
         append_atrributes(new_group, attr_dict_list)
     return new_group
@@ -360,7 +385,7 @@ def ref_to_rec_starts(rec_sizes, spk_array):
     spk_rec = np.empty_like(spk_array)
     rec_array = np.empty_like(spk_array)
 
-    for rec, size in rec_sizes.iteritems():
+    for rec, size in rec_sizes.items():
         end = start + size
         this_rec_spk = (spk_array > start) & (spk_array < end)
         spk_rec[this_rec_spk] = spk_array[this_rec_spk] - start
@@ -370,7 +395,7 @@ def ref_to_rec_starts(rec_sizes, spk_array):
     return rec_array, spk_rec
 
 
-def kilo_to_kwik(bird, sess, file_names=None, location='ss'):
+def kilo_to_kwik(bird, sess, file_names=None, location='ss', chan_group=0):
     module_logger.info('Creating kwik file for bird: {} sess: {}'.format(bird, sess))
     if file_names is None:
         file_names = dict(
@@ -383,7 +408,7 @@ def kilo_to_kwik(bird, sess, file_names=None, location='ss'):
             kwk='experiment.kwik')
 
     fn = et.file_names(bird, sess)
-    for key, value in file_names.iteritems():
+    for key, value in file_names.items():
         file_names[key] = os.path.join(fn['folders'][location], value)
 
     # Check whether there is manual sort or not:
@@ -397,11 +422,23 @@ def kilo_to_kwik(bird, sess, file_names=None, location='ss'):
         file_names['temp'] = None
         module_logger.debug(file_names)
 
-    k = KwikFile(file_names)
+    k = KwikFile(file_names, chan_group=chan_group)
     module_logger.info('Making spike tables')
     k.make_spk_tables()
-    module_logger.info('Making rec tables')
+    module_logger.info('Making rec tables (make_rec_groups)')
     k.make_rec_groups()
     module_logger.info('Making cluster group tables')
     k.make_clu_groups()
+
+    module_logger.info('Moving files to their sort folder')
+    sort_kilo_dir = os.path.join(fn['folders'][location],
+                                 'kilo_{:02d}'.format(chan_group))
+    et.mkdir_p(sort_kilo_dir)
+    py_files = glob.glob(os.path.join(fn['folders'][location], '*.py'))
+    npy_files = glob.glob(os.path.join(fn['folders'][location], '*.npy'))
+    for src in py_files + npy_files:
+        shutil.move(src, sort_kilo_dir)
+    module_logger.info('Removing temporary .dat file')
+    dat_file = os.path.join(fn['folders'][location], 'experiment.dat')
+    os.remove(dat_file)
     module_logger.info('Done')

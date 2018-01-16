@@ -32,11 +32,12 @@ def get_definitions_dictionaries():
                       'archive': os.path.abspath('/mnt/cube/earneodo/archive/bci_zf'),
                       'store': os.path.abspath('/Data/bci_zf'),
                       'scratch': os.path.abspath('/usr/local/experiment/scratchpad')},
-                 'txori':
+                 'manu':
                      {'repos': os.path.abspath('/mnt/cube/earneodo/repos'),
                       'experiment': os.path.abspath('/mnt/cube/earneodo/bci_zf'),
                       'experiment_local': os.path.abspath('/mnt/cube/earneodo/bci_zf'),
-                      'archive': os.path.abspath('/mnt/cube/earneodo/archive/bci_zf')},
+                      'archive': os.path.abspath('/mnt/cube/earneodo/archive/bci_zf'),
+                      'scratch': os.path.abspath('/home/earneodo/scratchpad')},
                  'niao':
                      {'repos': os.path.abspath('/mnt/cube/earneodo/repos'),
                       'experiment': os.path.abspath('/mnt/cube/earneodo/bci_zf'),
@@ -46,6 +47,12 @@ def get_definitions_dictionaries():
                      {'repos': os.path.abspath('/Users/zeke/repos'),
                       'experiment': os.path.abspath('/Volumes/gentner/earneodo/bci_zf'),
                       'experiment_local': os.path.abspath('/Users/zeke/bci_zf')},
+                 'txori':
+                     {'repos': os.path.abspath('/mnt/cube/earneodo/repos'),
+                      'experiment': os.path.abspath('/mnt/cube/earneodo/bci_zf'),
+                      'experiment_local': os.path.abspath('/home/earneodo/bci_zf'),
+                      'archive': os.path.abspath('/mnt/cube/earneodo/archive/bci_zf'),
+                      'scratch': os.path.abspath('/home/earneodo/scratchpad')},
                  }
 
     return {'packages': packages,
@@ -93,6 +100,10 @@ def flex_file_names(bird, sess='', rec=0, experiment_folder=None, base='experime
     return fn
 
 
+def read_yml(file_path):
+    with open(file_path, 'r') as f:
+        contents = yaml.load(f)
+    return contents
 
 def file_names(bird, sess='', rec=0, experiment_folder=None, base='experiment'):
     computer_name = get_computer_name()
@@ -185,8 +196,7 @@ def list_raw_sessions(bird, sess_day=None, depth='', experiment_folder=None, loc
 # Experiment structure
 def get_parameters(bird, sess, rec=0, experiment_folder=None, location='ss'):
     fn = file_names(bird, sess, rec, experiment_folder=experiment_folder)
-    with open(os.path.join(fn['folders'][location], fn['structure']['par']), 'r') as f:
-        pars = yaml.load(f)
+    pars = read_yml(os.path.join(fn['folders'][location], fn['structure']['par']))
     return pars
 
 
@@ -277,8 +287,8 @@ def load_probe(bird, sess, experiment_folder=None, location='ss', override_path=
 
 def open_kwd(bird_id, sess, location='ss'):
     fn = file_names(bird_id, sess, 0)
-    kwd_file_file_path = file_path(fn, location, 'ss_raw')
-    kwd_file = h5py.File(kwd_file_file_path, 'r')
+    kwd_file_path = file_path(fn, location, 'ss_raw')
+    kwd_file = h5py.File(kwd_file_path, 'r')
     return kwd_file
 
 
@@ -317,7 +327,7 @@ def get_shanks_list(bird_id, sess, location='ss'):
 
 def get_rec_list(bird, sess, location='ss'):
     kwd_file = open_kwd(bird, sess, location)
-    rec_list = kwd_file['/recordings'].keys()
+    rec_list = list(kwd_file['/recordings'].keys())
     kwd_file.close()
     return rec_list
 
