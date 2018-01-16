@@ -90,7 +90,7 @@ def finch(pars, int_par_stream, x_0=None):
 
     d_t = 1. / (s_f * steps_per_sample)
 
-    total_steps = stream_len * steps_per_sample
+    total_steps = int(stream_len * steps_per_sample)
     pre_out = np.zeros([stream_len, 2])
     t_fractional = 0.
 
@@ -110,6 +110,8 @@ def finch(pars, int_par_stream, x_0=None):
     sampling_t = 0
     t_samples = 0
     max_env = np.max(int_par_stream[:, 2])
+    if np.any(int_par_stream[:, 2] < 0):
+        raise ValueError('Got a negative value for envelope')
 
     for step in np.arange(pars['max_tau'], pars['max_tau'] + total_steps):
 
@@ -129,7 +131,7 @@ def finch(pars, int_par_stream, x_0=None):
                       (1. + pars['sys']['noise_fraction_env'] *
                        pars['sys']['noise'][0])
         pars['sys']['beta_1'] = beta_1 * (1. + pars['sys']['noise_fraction_beta_1'] *
-                                          pars['sys']['noise'][1])
+                                          (pars['sys']['noise'][1] - 0.5))
 
         db_old = tract_buffers[step, db]
         tract_buffers[step, a] = pars['t_in'] * pars['A_1'] * x[1] + tract_buffers[step - pars['tau_1'], bb]
@@ -171,14 +173,18 @@ def compute_tract_pars(pars, d_t, v_sound=35000):
     return pars
 
 
-def make_song(pars_stream, sys_pars=default_sys_pars, vocal_pars=default_vocal_pars):
+def make_song(pars_stream, sys_pars=default_sys_pars, vocal_pars=default_vocal_pars,
+              s_f_override=None):
     """
     :param pars_stream: n_dt x 3 np.array (cols are alpha, beta, envelope)
     :param sys_pars: dict of system parameters see default
     :param vocal_pars: dict of vocal tract parametres see default
+    :param s_f: (np.float) if entered, overrides sampling rate
     :return: n_dt x 2 np.array (cols are p_in, p_out)
     """
     vocal_pars['sys'] = sys_pars
+    if s_f_override:
+        sys_pars['s_f'] = s_f_override
     song_synth = finch(vocal_pars, pars_stream)
     return song_synth
 
