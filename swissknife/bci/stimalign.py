@@ -3,6 +3,7 @@ import logging
 import h5py
 import numpy as np
 import pandas as pd
+import warnings
 from swissknife.bci.core import expstruct as et
 from swissknife.bci.core import kwefunctions as kwe
 from swissknife.bci.core.file import h5_functions as h5f
@@ -213,11 +214,17 @@ def get_sine(x, s_f, trial_bound):
     sin_chunk = x[onset: trial_bound[1]]
 
     f_0 = get_sine_freq(sin_chunk, s_f)
+    #module_logger.debug('f0 {}'.format(f_0))
 
-    # correct the onset with the 1/4 wave
-    wave_samples = float(s_f) / f_0
-    samples_correction = int(wave_samples * 0.25)
-    # print(samples_correction)
+    if (np.isfinite(f_0) and f_0 > 0):
+        # correct the onset with the 1/4 wave
+        wave_samples = float(s_f) / f_0
+        samples_correction = int(wave_samples * 0.25)
+        # print(samples_correction)
+    else:
+        msg = 'Invalid f_0 around {}'.format(trial_bound)
+        warnings.warn(msg, RuntimeWarning)
+        samples_correction = 0
 
     return onset - samples_correction, onset, f_0
 

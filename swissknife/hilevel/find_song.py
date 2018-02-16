@@ -62,11 +62,11 @@ def find_song(bird_id, sess_day, raw_location='rw'):
 
     raw_data_folder_bird = et.file_names(bird_id)['folders'][raw_location]
     raw_file_list = get_bird_files(raw_data_folder_bird, only_days=[sess_day])
-    all_raw_file_list = [x for x in raw_file_list if 'autobouts' not in x]
+    all_raw_file_list = [x for x in raw_file_list if 'auto' not in x]
     all_raw_file_list.sort()
     raw_file_path = all_raw_file_list[-1]
     raw_path, raw_fname = os.path.split(raw_file_path)
-    raw_path.replace('raw_data', 'ss_data')
+    #raw_path.replace('raw_data', 'ss_data')
 
     # create file handler which logs even debug messages
     logger = logging.getLogger()

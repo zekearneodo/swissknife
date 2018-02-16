@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../archivetools/.idea/archivetools.iml" filepath="$PROJECT_DIR$/../archivetools/.idea/archivetools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ephysflow/.idea/ephysflow.iml" filepath="$PROJECT_DIR$/../ephysflow/.idea/ephysflow.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../intan2kwik/.idea/intan2kwik.iml" filepath="$PROJECT_DIR$/../intan2kwik/.idea/intan2kwik.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../klusta-pipeline/.idea/klusta-pipeline.iml" filepath="$PROJECT_DIR$/../klusta-pipeline/.idea/klusta-pipeline.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../load_intan_rhs/.idea/load_intan_rhs.iml" filepath="$PROJECT_DIR$/../load_intan_rhs/.idea/load_intan_rhs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ephysflow/rig_tools/.idea/rig_tools.iml" filepath="$PROJECT_DIR$/../ephysflow/rig_tools/.idea/rig_tools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/swissknife.iml" filepath="$PROJECT_DIR$/.idea/swissknife.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../tidydrive/.idea/tidydrive.iml" filepath="$PROJECT_DIR$/../tidydrive/.idea/tidydrive.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../tweetify/.idea/tweetify.iml" filepath="$PROJECT_DIR$/../tweetify/.idea/tweetify.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../vae-tf/.idea/vae-tf.iml" filepath="$PROJECT_DIR$/../vae-tf/.idea/vae-tf.iml" />
+    </modules>
+  </component>
+</project>
