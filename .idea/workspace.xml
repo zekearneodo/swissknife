@@ -2,124 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3464a451-8b9e-4bbd-ad92-20f458bb2d83" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../ephysflow/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../ephysflow/.idea/inspectionProfiles/profiles_settings.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/Cluster 2D Syllable Representations-ZEKE.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/Cluster+2D+Syllable+Representations-ZEKE.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/Discrete birdsong decoding analysis.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/Discrete birdsong decoding in lintu.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/align_stim-from_pkg.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/align_stim.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/animation_works.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/csd_test.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/kilosort_from_passaro.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/kwik_file_example-Copy1.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/kwik_file_example-chop_syllables.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/kwik_file_example-exported.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/kwik_file_example.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/kwik_file_scrutiny.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/make_alpha_beta_wavs.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/motiffs_to_wavs.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_kwd-supersession-frompkg-kilosort-dbg.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_kwd-supersession-frompkg.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_kwd-supersession-kilosort-simalign.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_kwd-supersession-v2.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_kwd-supersession.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_neural.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_reading.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_real_time_check.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_searching_bout.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_searching_motif-from_functions-envcheck.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_searching_motif-from_functions.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_searching_motif-unified.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_searching_motif-v2-nopandas.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_searching_motif-v2.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_searching_motif_z020.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_supersession_surface.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/peri_universal.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/searching_motif-aftermath-v4-kai.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/searching_motif-aftermath-v4.3.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/searching_motif-aftermath.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/searching_motif-v4.1.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/searching_motif-v4.2.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/searching_motif-v4.21.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/searching_motif-v4.210.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/searching_motif-v4.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/single_kwd_check-Copy1.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/single_kwd_check.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/spectral_prepare_z007-model_fitting_legacy-09-10.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/spectral_prepare_z007-model_fitting_legacy.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/spectral_prepare_z007-model_fitting_template-09-10.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/spectral_prepare_z007.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/spike_detect_aux.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/spike_detect_z007-cleanup-ffnn-lfp-py3.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/spike_detect_z007-cleanup-ffnn-lfp.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/spike_detect_z007-cleanup-ffnn.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/spike_detect_z007-cleanup.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/spike_detect_z007.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/veiw_lfp_realtime.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp-thres_window_test.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp-v2-z023.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_find_spikes.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_v2.5.01-bos-rev.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_v2.5.011.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_v2.5.01_csd.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_v2.5.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_v2_z023-Copy1.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_v2_z023.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_v2_z030-deep.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_v2_z030.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_z009.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_z021.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_lfp_z023.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-after-sort-open-ephys.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-after-sort.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-b1114.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-fit-z007-ffnn-per_syl-template.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-fit-z007-ffnn-per_syl.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-fit-z007-ffnn.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-fit-z007-keras.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-fit-z007-lstm-per_syl-template-Copy1.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-fit-z007-lstm-per_syl-template.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-fit-z007-multisess.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-fit-z007.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-z007-before_sweep.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo-z007.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing-kilo.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-singing.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters-sleeping-kilo.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/view_rasters.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/z007-unitseparate.ipynb" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../archivetools/do_archive.py" afterPath="$PROJECT_DIR$/../archivetools/do_archive.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/.idea/misc.xml" afterPath="$PROJECT_DIR$/../ephysflow/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/swissknife/bci/core/file/mdaio.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/swissknife/bci/core/pipeline/core/moutainsort.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/mdaio.py" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/.idea/ephysflow.iml" afterPath="$PROJECT_DIR$/../ephysflow/.idea/ephysflow.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/.idea/modules.xml" afterPath="$PROJECT_DIR$/../ephysflow/.idea/modules.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/.idea/vcs.xml" afterPath="$PROJECT_DIR$/../ephysflow/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../ephysflow/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/basic_viewing/units.py" afterPath="$PROJECT_DIR$/../ephysflow/basic_viewing/units.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/file_tools/experiment.py" afterPath="$PROJECT_DIR$/../ephysflow/file_tools/experiment.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/rig_tools/open_ephys.py" afterPath="$PROJECT_DIR$/../ephysflow/rig_tools/open_ephys.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/open_ephys_real_time_check.ipynb" afterPath="$PROJECT_DIR$/../ephysflow/open_ephys_real_time_check.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/rig_tools/beagle_bone.py" afterPath="$PROJECT_DIR$/../ephysflow/rig_tools/beagle_bone.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/rig_tools/singtome.ipynb" afterPath="$PROJECT_DIR$/../ephysflow/rig_tools/singtome.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/load_intan.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/load_intan.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/data_to_result.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/data_to_result.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/get_bytes_per_data_block.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/get_bytes_per_data_block.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/notch_filter.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/notch_filter.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/qstring.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/qstring.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_header.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_header.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_one_data_block.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_one_data_block.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/reading.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/reading.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/maps.py" afterPath="$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/maps.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/probe.py" afterPath="$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/probe.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/swissknife.iml" afterPath="$PROJECT_DIR$/.idea/swissknife.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/load_intan.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/load_intan.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/data_to_result.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/data_to_result.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/get_bytes_per_data_block.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/get_bytes_per_data_block.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/notch_filter.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/notch_filter.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/qstring.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/qstring.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_header.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_header.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_one_data_block.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_one_data_block.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/stimalign.py" afterPath="$PROJECT_DIR$/swissknife/bci/stimalign.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/hilevel/find_song.py" afterPath="$PROJECT_DIR$/swissknife/hilevel/find_song.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../vae-tf/vae.py" afterPath="$PROJECT_DIR$/../vae-tf/vae.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/veiw_lfp_realtime.ipynb" afterPath="$PROJECT_DIR$/../ephysflow/veiw_lfp_realtime.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/file/h5_functions.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/file/h5_functions.py" />
     </list>
     <ignored path="swissknife.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -142,9 +37,59 @@
       <file leaf-file-name="kwik_functions.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/swissknife/bci/core/kwik_functions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="628">
-              <caret line="407" column="34" lean-forward="true" selection-start-line="407" selection-start-column="34" selection-end-line="407" selection-end-column="34" />
-              <folding />
+            <state relative-caret-position="4739">
+              <caret line="444" column="0" lean-forward="true" selection-start-line="444" selection-start-column="0" selection-end-line="444" selection-end-column="0" />
+              <folding>
+                <element signature="e#79#93#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="kilosort_functions.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/swissknife/bci/core/kilosort_functions.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1380">
+              <caret line="92" column="21" lean-forward="false" selection-start-line="92" selection-start-column="8" selection-end-line="92" selection-end-column="21" />
+              <folding>
+                <element signature="e#71#88#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="h5_functions.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/swissknife/bci/core/file/h5_functions.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-747">
+              <caret line="25" column="27" lean-forward="true" selection-start-line="25" selection-start-column="27" selection-end-line="25" selection-end-column="27" />
+              <folding>
+                <element signature="e#43#61#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="moutainsort.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/swissknife/bci/core/pipeline/core/moutainsort.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="22" column="26" lean-forward="true" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="kilosort.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/swissknife/bci/core/pipeline/core/kilosort.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="18" column="19" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+              <folding>
+                <element signature="e#59#90#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -152,7 +97,7 @@
       <file leaf-file-name="find_song.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/swissknife/hilevel/find_song.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="945">
+            <state relative-caret-position="1305">
               <caret line="87" column="32" lean-forward="false" selection-start-line="87" selection-start-column="32" selection-end-line="87" selection-end-column="32" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
@@ -161,12 +106,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="findsong.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="findsong.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/swissknife/streamtools/findsong.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1216">
-              <caret line="122" column="19" lean-forward="true" selection-start-line="122" selection-start-column="19" selection-end-line="122" selection-end-column="19" />
+            <state relative-caret-position="949">
+              <caret line="122" column="19" lean-forward="false" selection-start-line="122" selection-start-column="19" selection-end-line="122" selection-end-column="19" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="h5tools.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/swissknife/h5tools/h5tools.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="e#43#57#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -182,7 +139,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>self.step</find>
       <find>unit_type</find>
       <find>plot</find>
       <find>items</find>
@@ -212,6 +168,7 @@
       <find>reading</find>
       <find>auto</find>
       <find>kilo</find>
+      <find>raise</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -220,7 +177,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/swissknife/dynamo/finch.py" />
         <option value="$PROJECT_DIR$/swissknife/h5tools/h5tools.py" />
         <option value="$PROJECT_DIR$/../archivetools/do_archive.py" />
         <option value="$PROJECT_DIR$/swissknife/streamtools/findbout.py" />
@@ -228,7 +184,6 @@
         <option value="$PROJECT_DIR$/../ephysflow/rig_tools/session.py" />
         <option value="$PROJECT_DIR$/../ephysflow/rig_tools/open_ephys.py" />
         <option value="$PROJECT_DIR$/swissknife/bci/core/pipeline/core/kilosort.py" />
-        <option value="$PROJECT_DIR$/swissknife/bci/core/file/h5_functions.py" />
         <option value="$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/probe.py" />
         <option value="$PROJECT_DIR$/swissknife/bci/core/kilosort_functions.py" />
         <option value="$PROJECT_DIR$/swissknife/bci/core/kwefunctions.py" />
@@ -271,14 +226,16 @@
         <option value="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/reading.py" />
         <option value="$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py" />
         <option value="$PROJECT_DIR$/swissknife/streamtools/findsong.py" />
+        <option value="$PROJECT_DIR$/swissknife/bci/core/file/h5_functions.py" />
+        <option value="$PROJECT_DIR$/swissknife/bci/core/pipeline/core/moutainsort.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1230" />
-    <option name="y" value="84" />
-    <option name="width" value="1139" />
-    <option name="height" value="1767" />
+    <option name="x" value="670" />
+    <option name="y" value="24" />
+    <option name="width" value="1250" />
+    <option name="height" value="1097" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -317,85 +274,10 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tidydrive" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tidydrive" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tidydrive" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="klusta-pipeline" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="intan2kwik" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="intan2kwik" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="intan2kwik" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="intan2kwik" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="intan2kwik" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="swissknife" />
@@ -448,24 +330,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="hilevel" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="bci" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -492,26 +356,108 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="swissknife" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="swissknife" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="swissknife" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bci" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pipeline" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="swissknife" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="swissknife" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="swissknife" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bci" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pipeline" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="swissknife" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="swissknife" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="swissknife" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bci" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="file" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ephysflow" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/../ephysflow/rig_tools" />
-      <recent name="$PROJECT_DIR$/swissknife/bci" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/../tidydrive/tidydrive/core" />
       <recent name="$PROJECT_DIR$/../tidydrive" />
       <recent name="$PROJECT_DIR$/../intan2kwik/intan2kwik/core" />
       <recent name="$PROJECT_DIR$/../load_intan_rhs" />
       <recent name="$PROJECT_DIR$/swissknife/bci/core/" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/swissknife/bci/core/file" />
+      <recent name="$PROJECT_DIR$/../ephysflow/rig_tools" />
+      <recent name="$PROJECT_DIR$/swissknife/bci" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -773,14 +719,13 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1230" y="84" width="1139" height="1767" extended-state="0" />
-    <editor active="true" />
+    <frame x="670" y="24" width="1250" height="1097" extended-state="0" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15823367" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2384" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13279802" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19798459" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13279802" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.0068093385" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24954297" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19085856" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -788,23 +733,12 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13279802" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19798459" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19085856" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20719929" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24954297" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39973083" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -873,56 +807,8 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/swissknife/streamtools/streams.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="620">
-          <caret line="34" column="56" lean-forward="false" selection-start-line="34" selection-start-column="56" selection-end-line="34" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/intan_rhs/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_header.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="22" column="44" lean-forward="true" selection-start-line="22" selection-start-column="44" selection-end-line="22" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/get_bytes_per_data_block.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="15" column="58" lean-forward="true" selection-start-line="15" selection-start-column="58" selection-end-line="15" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_one_data_block.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Downloads/chart.jpeg" />
-    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/qstring.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="5" column="22" lean-forward="true" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/notch_filter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1000">
-          <caret line="50" column="0" lean-forward="true" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/qstring.py" />
+    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/notch_filter.py" />
     <entry file="file://$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/data_to_result.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="520">
@@ -937,27 +823,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/get_bytes_per_data_block.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="640">
-          <caret line="32" column="26" lean-forward="true" selection-start-line="32" selection-start-column="26" selection-end-line="32" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/qstring.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/get_bytes_per_data_block.py" />
+    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/qstring.py" />
     <entry file="file://$PROJECT_DIR$/swissknife/bci/core/intan_rhs/load_intan.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -965,20 +833,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan_to_kwik_example.ipynb">
-      <provider selected="true" editor-type-id="ipnb-editor">
-        <state>
-          <selected id="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/data_to_result.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="660">
-          <caret line="33" column="0" lean-forward="true" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan_to_kwik_example.ipynb" />
+    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/data_to_result.py" />
     <entry file="file://$PROJECT_DIR$/../ephysflow/file_tools/experiment.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -986,77 +842,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/read_one_data_block.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/read_header.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="379">
-          <caret line="20" column="16" lean-forward="true" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_one_data_block.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="18" column="50" lean-forward="true" selection-start-line="18" selection-start-column="50" selection-end-line="18" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/notch_filter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/get_bytes_per_data_block.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="11" column="28" lean-forward="false" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/data_to_result.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="7" column="15" lean-forward="true" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/util/read_one_data_block.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/util/read_header.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="78">
-          <caret line="4" column="0" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/util/get_bytes_per_data_block.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/util/data_to_result.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/read_one_data_block.py" />
+    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/read_header.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_one_data_block.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/notch_filter.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/get_bytes_per_data_block.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/data_to_result.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/util/read_one_data_block.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/util/read_header.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/util/get_bytes_per_data_block.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/util/data_to_result.py" />
     <entry file="file://$PROJECT_DIR$/swissknife/bci/stimalign.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
@@ -1064,34 +859,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_header.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/load_intan.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="24" column="29" lean-forward="false" selection-start-line="24" selection-start-column="29" selection-end-line="24" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/hilevel/intan_to_kwd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/load_intan.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="20">
-          <caret line="21" column="33" lean-forward="false" selection-start-line="21" selection-start-column="33" selection-end-line="21" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_header.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/load_intan.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/load_intan.py" />
     <entry file="file://$PROJECT_DIR$/swissknife/bci/units.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="20">
@@ -1099,13 +869,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../tidydrive/tidydrive/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../tidydrive/tidydrive/__init__.py" />
     <entry file="file://$PROJECT_DIR$/swissknife/bci/supersession.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
@@ -1113,88 +877,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/setup.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="10" column="25" lean-forward="true" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/setup.py" />
     <entry file="file://$PROJECT_DIR$/../tidydrive/tidydrive/core/__init__.py" />
-    <entry file="file://$PROJECT_DIR$/../tidydrive/setup.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="12" column="11" lean-forward="false" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../tidydrive/setup.py" />
     <entry file="file://$PROJECT_DIR$/../tidydrive/tidydrive/core/api.py" />
     <entry file="file://$PROJECT_DIR$/../tidydrive/tidydrive/core/file.py" />
-    <entry file="file://$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/make_mat_chanMap.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/maps.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5640">
-          <caret line="376" column="9" lean-forward="false" selection-start-line="376" selection-start-column="5" selection-end-line="376" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/probe.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5415">
-          <caret line="362" column="0" lean-forward="true" selection-start-line="362" selection-start-column="0" selection-end-line="362" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#25#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#14#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/reading.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="750">
-          <caret line="63" column="30" lean-forward="false" selection-start-line="63" selection-start-column="30" selection-end-line="63" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#18#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/load_intan.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="949">
-          <caret line="220" column="0" lean-forward="true" selection-start-line="220" selection-start-column="0" selection-end-line="220" selection-end-column="0" />
-          <folding>
-            <element signature="e#85#119#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../tidydrive/tidydrive/tidydrive.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="14" column="58" lean-forward="true" selection-start-line="14" selection-start-column="58" selection-end-line="14" selection-end-column="58" />
-          <folding>
-            <element signature="e#0#38#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/make_mat_chanMap.py" />
+    <entry file="file://$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/maps.py" />
+    <entry file="file://$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/probe.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py" />
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/core/reading.py" />
+    <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/load_intan.py" />
+    <entry file="file://$PROJECT_DIR$/../tidydrive/tidydrive/tidydrive.py" />
     <entry file="file://$PROJECT_DIR$/swissknife/bci/events.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1202,17 +896,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/kwik_functions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="628">
-          <caret line="407" column="34" lean-forward="true" selection-start-line="407" selection-start-column="34" selection-end-line="407" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/swissknife/hilevel/find_song.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="945">
+        <state relative-caret-position="1305">
           <caret line="87" column="32" lean-forward="false" selection-start-line="87" selection-start-column="32" selection-end-line="87" selection-end-column="32" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
@@ -1220,11 +906,89 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/h5tools/h5tools.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#43#57#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/hilevel/intan_to_kwd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#43#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/swissknife/streamtools/findsong.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1216">
-          <caret line="122" column="19" lean-forward="true" selection-start-line="122" selection-start-column="19" selection-end-line="122" selection-end-column="19" />
+        <state relative-caret-position="949">
+          <caret line="122" column="19" lean-forward="false" selection-start-line="122" selection-start-column="19" selection-end-line="122" selection-end-column="19" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/kilosort_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1380">
+          <caret line="92" column="21" lean-forward="false" selection-start-line="92" selection-start-column="8" selection-end-line="92" selection-end-column="21" />
+          <folding>
+            <element signature="e#71#88#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/file/mdaio.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="11" column="40" lean-forward="true" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/kwik_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4739">
+          <caret line="444" column="0" lean-forward="true" selection-start-line="444" selection-start-column="0" selection-end-line="444" selection-end-column="0" />
+          <folding>
+            <element signature="e#79#93#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/file/h5_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-747">
+          <caret line="25" column="27" lean-forward="true" selection-start-line="25" selection-start-column="27" selection-end-line="25" selection-end-column="27" />
+          <folding>
+            <element signature="e#43#61#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/pipeline/core/kilosort.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="19" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding>
+            <element signature="e#59#90#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/pipeline/core/moutainsort.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="22" column="26" lean-forward="true" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
