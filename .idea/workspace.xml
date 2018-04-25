@@ -4,6 +4,8 @@
     <list default="true" id="3464a451-8b9e-4bbd-ad92-20f458bb2d83" name="Default" comment="">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../ephysflow/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../ephysflow/.idea/inspectionProfiles/profiles_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/swissknife/hilevel/ffnn.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/swissknife/hilevel/metrics.py" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/Cluster 2D Syllable Representations-ZEKE.ipynb" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/Cluster+2D+Syllable+Representations-ZEKE.html" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../ephysflow/Discrete birdsong decoding analysis.ipynb" afterPath="" />
@@ -98,26 +100,11 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/file_tools/experiment.py" afterPath="$PROJECT_DIR$/../ephysflow/file_tools/experiment.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/rig_tools/open_ephys.py" afterPath="$PROJECT_DIR$/../ephysflow/rig_tools/open_ephys.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../ephysflow/rig_tools/singtome.ipynb" afterPath="$PROJECT_DIR$/../ephysflow/rig_tools/singtome.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/load_intan.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/load_intan.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/data_to_result.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/data_to_result.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/get_bytes_per_data_block.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/get_bytes_per_data_block.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/notch_filter.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/notch_filter.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/qstring.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/qstring.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_header.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_header.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_one_data_block.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/util/read_one_data_block.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/reading.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/reading.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik.egg-info/PKG-INFO" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik.egg-info/PKG-INFO" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../intan2kwik/intan2kwik.egg-info/SOURCES.txt" afterPath="$PROJECT_DIR$/../intan2kwik/intan2kwik.egg-info/SOURCES.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/maps.py" afterPath="$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/maps.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/probe.py" afterPath="$PROJECT_DIR$/../klusta-pipeline/klusta_pipeline/probe.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/swissknife.iml" afterPath="$PROJECT_DIR$/.idea/swissknife.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/load_intan.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/load_intan.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/data_to_result.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/data_to_result.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/get_bytes_per_data_block.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/get_bytes_per_data_block.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/notch_filter.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/notch_filter.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/qstring.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/qstring.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_header.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_header.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_one_data_block.py" afterPath="$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_one_data_block.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/bci/stimalign.py" afterPath="$PROJECT_DIR$/swissknife/bci/stimalign.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/swissknife/hilevel/find_song.py" afterPath="$PROJECT_DIR$/swissknife/hilevel/find_song.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../vae-tf/vae.py" afterPath="$PROJECT_DIR$/../vae-tf/vae.py" />
     </list>
@@ -139,12 +126,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="kwik_functions.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/swissknife/bci/core/kwik_functions.py">
+      <file leaf-file-name="kwd.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="628">
-              <caret line="407" column="34" lean-forward="true" selection-start-line="407" selection-start-column="34" selection-end-line="407" selection-end-column="34" />
-              <folding />
+            <state relative-caret-position="20">
+              <caret line="182" column="0" lean-forward="false" selection-start-line="182" selection-start-column="0" selection-end-line="182" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -152,8 +141,8 @@
       <file leaf-file-name="find_song.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/swissknife/hilevel/find_song.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="945">
-              <caret line="87" column="32" lean-forward="false" selection-start-line="87" selection-start-column="32" selection-end-line="87" selection-end-column="32" />
+            <state relative-caret-position="525">
+              <caret line="119" column="35" lean-forward="false" selection-start-line="119" selection-start-column="35" selection-end-line="119" selection-end-column="35" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -161,12 +150,72 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="findsong.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/swissknife/streamtools/findsong.py">
+      <file leaf-file-name="ffnn.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/swissknife/hilevel/ffnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1216">
-              <caret line="122" column="19" lean-forward="true" selection-start-line="122" selection-start-column="19" selection-end-line="122" selection-end-column="19" />
-              <folding />
+            <state relative-caret-position="-3281">
+              <caret line="342" column="53" lean-forward="false" selection-start-line="342" selection-start-column="53" selection-end-line="342" selection-end-column="53" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+                <element signature="e#965#10443#0" expanded="false" />
+                <element signature="e#10541#10986#0" expanded="false" />
+                <element signature="e#11040#11277#0" expanded="false" />
+                <element signature="e#11315#11433#0" expanded="false" />
+                <marker date="1524644430066" expanded="true" signature="22586:24179" ph="..." />
+                <marker date="1524644430066" expanded="true" signature="22971:23373" ph="..." />
+                <marker date="1524644430066" expanded="true" signature="23407:23553" ph="..." />
+                <marker date="1524644430066" expanded="true" signature="24037:24128" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="metrics.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/swissknife/hilevel/metrics.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="957">
+              <caret line="129" column="16" lean-forward="true" selection-start-line="129" selection-start-column="16" selection-end-line="129" selection-end-column="16" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+                <element signature="e#403#559#0" expanded="false" />
+                <element signature="e#586#706#0" expanded="false" />
+                <element signature="e#738#935#0" expanded="false" />
+                <element signature="e#960#980#0" expanded="false" />
+                <element signature="e#1020#1051#0" expanded="false" />
+                <element signature="e#1079#1186#0" expanded="false" />
+                <element signature="e#1219#1662#0" expanded="false" />
+                <element signature="e#1845#3124#0" expanded="false" />
+                <element signature="e#6157#7167#0" expanded="false" />
+                <element signature="e#7259#8234#0" expanded="false" />
+                <element signature="e#8291#9214#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="neural.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/swissknife/decoder/neural.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="280">
+              <caret line="46" column="0" lean-forward="false" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#194#754#0" expanded="false" />
+                <element signature="e#935#1615#0" expanded="false" />
+                <element signature="e#1685#2539#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="expstruct.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/swissknife/bci/core/expstruct.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1400">
+              <caret line="70" column="9" lean-forward="true" selection-start-line="70" selection-start-column="9" selection-end-line="70" selection-end-column="9" />
+              <folding>
+                <element signature="e#0#12#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -182,10 +231,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>self.step</find>
-      <find>unit_type</find>
-      <find>plot</find>
-      <find>items</find>
       <find>iter</find>
       <find>do_kilo</find>
       <find>run_kilosort</find>
@@ -211,17 +256,20 @@
       <find>warn</find>
       <find>reading</find>
       <find>auto</find>
+      <find>get_data</find>
       <find>kilo</find>
+      <find>log_name</find>
+      <find>logging.</find>
+      <find>mkdir</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
+    <option name="ROOT_SYNC" value="SYNC" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/swissknife/dynamo/finch.py" />
-        <option value="$PROJECT_DIR$/swissknife/h5tools/h5tools.py" />
         <option value="$PROJECT_DIR$/../archivetools/do_archive.py" />
         <option value="$PROJECT_DIR$/swissknife/streamtools/findbout.py" />
         <option value="$PROJECT_DIR$/../ephysflow/rig_tools/tsippor/session.py" />
@@ -262,7 +310,6 @@
         <option value="$PROJECT_DIR$/swissknife/bci/stimalign.py" />
         <option value="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan_rhs/load_intan.py" />
         <option value="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/intan/load_intan.py" />
-        <option value="$PROJECT_DIR$/swissknife/hilevel/find_song.py" />
         <option value="$PROJECT_DIR$/../tidydrive/tidydrive/core/__init__.py" />
         <option value="$PROJECT_DIR$/../tidydrive/tidydrive/core/file.py" />
         <option value="$PROJECT_DIR$/../tidydrive/tidydrive/core/api.py" />
@@ -271,14 +318,17 @@
         <option value="$PROJECT_DIR$/../intan2kwik/intan2kwik/core/reading.py" />
         <option value="$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py" />
         <option value="$PROJECT_DIR$/swissknife/streamtools/findsong.py" />
+        <option value="$PROJECT_DIR$/swissknife/hilevel/find_song.py" />
+        <option value="$PROJECT_DIR$/swissknife/hilevel/ffnn.py" />
+        <option value="$PROJECT_DIR$/swissknife/hilevel/metrics.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1230" />
-    <option name="y" value="84" />
-    <option name="width" value="1139" />
-    <option name="height" value="1767" />
+    <option name="x" value="1211" />
+    <option name="y" value="22" />
+    <option name="width" value="1182" />
+    <option name="height" value="1759" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -318,6 +368,7 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -402,7 +453,19 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
+              <option name="myItemId" value="intan2kwik" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="intan2kwik" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="intan_rhs" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -413,10 +476,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife.egg-info" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -466,39 +525,16 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="bci" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swissknife" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bci" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
+              <option name="myItemId" value="decoder" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ephysflow" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -773,13 +809,12 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1230" y="84" width="1139" height="1767" extended-state="0" />
-    <editor active="true" />
+    <frame x="1211" y="22" width="1182" height="1759" extended-state="0" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15823367" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16637169" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13279802" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13279802" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19798459" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24954297" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -793,17 +828,17 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13279802" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19798459" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13279802" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19085856" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20719929" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12296564" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24954297" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39973083" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39973083" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -856,10 +891,6 @@
           <line>5</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/swissknife/hilevel/find_song.py</url>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -873,42 +904,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/swissknife/streamtools/streams.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="620">
-          <caret line="34" column="56" lean-forward="false" selection-start-line="34" selection-start-column="56" selection-end-line="34" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/intan_rhs/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_header.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="22" column="44" lean-forward="true" selection-start-line="22" selection-start-column="44" selection-end-line="22" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/get_bytes_per_data_block.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="15" column="58" lean-forward="true" selection-start-line="15" selection-start-column="58" selection-end-line="15" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/intan_rhs/util/read_one_data_block.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Downloads/chart.jpeg" />
     <entry file="file://$PROJECT_DIR$/../load_intan_rhs/load_intan_rhs/util/qstring.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
@@ -1141,7 +1136,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5640">
           <caret line="376" column="9" lean-forward="false" selection-start-line="376" selection-start-column="5" selection-end-line="376" selection-end-column="38" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1149,19 +1143,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5415">
           <caret line="362" column="0" lean-forward="true" selection-start-line="362" selection-start-column="0" selection-end-line="362" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#25#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#14#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1169,9 +1150,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="750">
           <caret line="63" column="30" lean-forward="false" selection-start-line="63" selection-start-column="30" selection-end-line="63" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#18#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1179,9 +1157,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="949">
           <caret line="220" column="0" lean-forward="true" selection-start-line="220" selection-start-column="0" selection-end-line="220" selection-end-column="0" />
-          <folding>
-            <element signature="e#85#119#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1189,9 +1164,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="160">
           <caret line="14" column="58" lean-forward="true" selection-start-line="14" selection-start-column="58" selection-end-line="14" selection-end-column="58" />
-          <folding>
-            <element signature="e#0#38#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1202,29 +1174,93 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/h5tools/h5tools.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2729">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/kwefunctions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/swissknife/bci/core/kwik_functions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="628">
-          <caret line="407" column="34" lean-forward="true" selection-start-line="407" selection-start-column="34" selection-end-line="407" selection-end-column="34" />
-          <folding />
+        <state relative-caret-position="7920">
+          <caret line="407" column="34" lean-forward="false" selection-start-line="407" selection-start-column="34" selection-end-line="407" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/streamtools/findsong.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1335">
+          <caret line="99" column="40" lean-forward="false" selection-start-line="99" selection-start-column="40" selection-end-line="99" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/file/h5_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="410">
+          <caret line="110" column="28" lean-forward="false" selection-start-line="110" selection-start-column="28" selection-end-line="110" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/streamtools/streams.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1614">
+          <caret line="309" column="25" lean-forward="false" selection-start-line="309" selection-start-column="16" selection-end-line="309" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../intan2kwik/intan2kwik/kwd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20">
+          <caret line="182" column="0" lean-forward="false" selection-start-line="182" selection-start-column="0" selection-end-line="182" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/swissknife/bci/core/expstruct.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1400">
+          <caret line="70" column="9" lean-forward="true" selection-start-line="70" selection-start-column="9" selection-end-line="70" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/swissknife/hilevel/find_song.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="945">
-          <caret line="87" column="32" lean-forward="false" selection-start-line="87" selection-start-column="32" selection-end-line="87" selection-end-column="32" />
+        <state relative-caret-position="525">
+          <caret line="119" column="35" lean-forward="false" selection-start-line="119" selection-start-column="35" selection-end-line="119" selection-end-column="35" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/swissknife/streamtools/findsong.py">
+    <entry file="file://$PROJECT_DIR$/swissknife/hilevel/ffnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1216">
-          <caret line="122" column="19" lean-forward="true" selection-start-line="122" selection-start-column="19" selection-end-line="122" selection-end-column="19" />
-          <folding />
+        <state relative-caret-position="-3281">
+          <caret line="342" column="53" lean-forward="false" selection-start-line="342" selection-start-column="53" selection-end-line="342" selection-end-column="53" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+            <element signature="e#965#10443#0" expanded="false" />
+            <element signature="e#10541#10986#0" expanded="false" />
+            <element signature="e#11040#11277#0" expanded="false" />
+            <element signature="e#11315#11433#0" expanded="false" />
+            <marker date="1524644430066" expanded="true" signature="22586:24179" ph="..." />
+            <marker date="1524644430066" expanded="true" signature="22971:23373" ph="..." />
+            <marker date="1524644430066" expanded="true" signature="23407:23553" ph="..." />
+            <marker date="1524644430066" expanded="true" signature="24037:24128" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
