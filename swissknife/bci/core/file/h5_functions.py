@@ -6,6 +6,8 @@ import h5py
 import logging
 import os
 
+from mdaio import writemda16i
+
 logger = logging.getLogger('bci.h5_functions')
 
 def h5_wrap(h5_function):
@@ -227,6 +229,61 @@ def kwd_to_binary(kwd_file, out_file_path, chan_list=None, chunk_size=8000000):
         chan_list = list(chan_list)
     rec_list = get_rec_list(kwd_file)
     logging.info('Will go through recs {}'.format(rec_list))
+    with open(out_file_path, 'wb') as out_file:
+        stored_elements = list(map(lambda rec_name: dset_to_binary_file(get_data_set(kwd_file, rec_name),
+                                                                   out_file,
+                                                                   chan_list=chan_list,
+                                                                   chunk_size=chunk_size
+                                                                   ),
+                              rec_list))
+
+    elements_in = np.array(list(stored_elements)).sum()
+    logging.info('{} elements written'.format(elements_in))
+
+@h5_wrap
+def kwd_to_mda(kwd_file, out_file_path, chan_list=None, chunk_size=None):
+    """
+    :param kwd_file: kwd file or kwd file
+    :param out_file_path: path to the bin file that will be created
+    :param chan_list: list of channels (must be list or tuple). Default (None) will do the whole table
+    :param chunk_size: size in samples of the chunk
+    :return:
+    """
+    # get the dataset of each recording and concatenateit to the out_file_path
+    logging.info('Writing kwd_file {} to binary'.format(kwd_file.filename))
+    logging.info('Channels to extract: {}'.format(chan_list))
+    logging.info('Creating mountainsort mda file {}'.format(out_file_path))
+
+    if chan_list is not None:
+        raise NotImplementedError
+        if (type(chan_list) is not list) and (type(chan_list) is not tuple):
+            assert (type(chan_list) is int)
+            chan_list = [chan_list]
+        chan_list = list(chan_list)
+
+    rec_list = get_rec_list(kwd_file)
+    logging.info('Will read through recs {}'.format(rec_list))
+
+    n_chans = -1
+    n_samples = 0
+    with h5.File(kwd, 'r') as kwd_f:
+        for recording in rec_list:
+            assert n_chans == -1 or n_chans == kwd_f['recordings'][recording]['data'].shape[1]
+            n_chans = kwd_f['recordings'][recording]['data'].shape[1]
+            n_samples += kwd_f['recordings'][recording]['data'].shape[0]
+        logging.debug("total number of samples %d" % (n_samples))
+        data = np.empty((n_samples, n_chans), dtype='int16')
+        idx = 0
+        for recording in recordings:
+            rec_len = kwd_f['recordings'][recording]['data'].shape[0]
+            logging.debug("loading recording %s with length of %d" % (recording, rec_len))
+            data[idx:idx + rec_len, :] = kwd_f['recordings'][recording]['data']
+            idx += rec_len
+
+    logging.info("writing data")
+    writemda16i(data.T, out_mda)
+    # read everything first
+
     with open(out_file_path, 'wb') as out_file:
         stored_elements = list(map(lambda rec_name: dset_to_binary_file(get_data_set(kwd_file, rec_name),
                                                                    out_file,
