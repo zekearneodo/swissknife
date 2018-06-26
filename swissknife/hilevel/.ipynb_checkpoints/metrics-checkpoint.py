@@ -233,14 +233,6 @@ def all_mot_scores_piecewise(y_t, z_t, y_p, sess_data, other_pd=None, mot_ids=No
 
 
 def all_mot_decoded_pcwise(y, z, y_p, sess_data):
-    '''
-    Generates decoded song (integrated) from parameters decoded from neural activity
-    :param y: ndarray (test_bins, target_dim), target parameters
-    :param z: ndarray (test_bins, 5), target song 
-    :param y_p: ndarray (test_bins, target_dim), predicted parameters
-    :param sess_data: SessData object used for the training
-    :return: all_dec_pd DataFrame (n_test, 10), containing the decoded motifs and streams for the test set.
-    '''
     mot_ids = np.unique(z[:, 0])
     fp = sess_data.fp
     try:
@@ -284,50 +276,19 @@ def all_self_scores(one_pd, other_pd):
 
     all_scores = []
     logger.disabled = True
-    all_raw = one_pd['raw_song'].tolist()
-    for i, (m_id, x, x_syn, x_raw) in tqdm(enumerate(zip(one_pd['m_id'].tolist(),
+    for m_id, x, x_syn, x_raw in tqdm(zip(one_pd['m_id'].tolist(),
                                           one_pd['neu_song'].tolist(),
                                           one_pd['syn_song'].tolist(),
-                                          one_pd['raw_song'].tolist())),
+                                          one_pd['raw_song'].tolist()),
                                       total=len(one_pd['m_id'].tolist())):
         rms_raw = compare_spectra(x, x_raw, n_perseg=64, db_cut=55)[0]
         rms_syn = compare_spectra(x, x_syn, n_perseg=64, db_cut=65)[0]
-        rms_con = np.array(
+        cross_scores = np.array(
             list(map(lambda z: compare_spectra(x, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
-        rms_syn_con = np.array(
-            list(map(lambda z: compare_spectra(x_syn, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
-        rms_bos_con = np.array(
-            list(map(lambda z: compare_spectra(x_raw, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
-        
-        bos_bos = [compare_spectra(x_raw, y, n_perseg=128, 
-            db_cut=80)[0] for j,y in enumerate(all_raw) if not j==i]
-        rms_bos_bos = np.array(bos_bos)
-
         cross_mot_id = other_pd['m_id'].tolist()
-        all_scores.append([m_id, rms_raw, rms_syn, rms_con, rms_syn_con, rms_bos_con, rms_bos_bos, cross_mot_id])
+        all_scores.append([m_id, rms_raw, rms_syn, cross_scores, cross_mot_id])
 
     logger.disabled = False
-    headers = ['m_id', 'rms_raw', 'rms_syn', 'rms_con', 'rms_syn_con', 'rms_bos_con', 'rms_bos_bos', 'vs_id']
 
-    pd_all_scores = pd.DataFrame(all_scores, columns=headers)
+    pd_all_scores = pd.DataFrame(all_scores, columns=['m_id', 'rms_raw', 'rms_syn', 'rms_other', 'vs_id'])
     return pd_all_scores
-
-def merge_runs(run_list):
-    # concatenate the decoded and scores, appending a test_size field for sorting
-    results = []
-    trains = []
-    for i, run in enumerate(run_list):
-        result_pd = run['scores'].merge(run['decoded'], 
-                                      left_on='m_id', 
-                                      right_on='m_id', 
-                                      how='outer')
-        
-        result_pd['test_size'] = run['test_size']
-        run['training_pd']['test_size'] = run['test_size']
-        
-        results.append(result_pd)
-        trains.append(run['training_pd'])
-        
-    results_pd = pd.concat(results, ignore_index=True)
-    trains_pd = pd.concat(trains, ignore_index=True)
-    return results_pd, trains_pd

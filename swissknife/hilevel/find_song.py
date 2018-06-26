@@ -5,6 +5,7 @@ import traceback
 import os
 import glob
 import csv
+import datetime
 from joblib import Parallel, delayed
 
 from swissknife.streamtools import findsong
@@ -133,18 +134,22 @@ def try_find_song(bird_id, sess_day):
         module_logger.warning(traceback.print_tb(sys.exc_info()[2]))
         return None
 
+
 def find_song_list(list_file_path, n_jobs=6):
     module_logger.info('Wil search song in list of sessions contained in {}'.format(list_file_path))
     sess_list = load_csv_list(list_file_path)
     module_logger.info('The list has {} sessions'.format(len(sess_list)))
     module_logger.info('List of sessions is {}'.format(sess_list))
     done_sessions = Parallel(n_jobs=n_jobs)(delayed(try_find_song)(s[0], s[1]) for s in sess_list)
-    if (None in done_sessions):
+    if None in done_sessions:
         module_logger.warning('There were errors for some sessions')
     module_logger.info('Good for sessions {}'.format(done_sessions))
 
-    os.rename(list_file_path, '{}.bk'.format(list_file_path))
-    module_logger.info('List of sessions renamed to {}.bk'.format(list_file_path))
+    today_str = datetime.date.today().isoformat()
+    list_file_bk_path = '{}.{}.bk'.format(list_file_path, today_str)
+
+    os.rename(list_file_path, list_file_bk_path)
+    module_logger.info('List of sessions renamed to {}'.format(list_file_bk_path))
     return done_sessions
 
 

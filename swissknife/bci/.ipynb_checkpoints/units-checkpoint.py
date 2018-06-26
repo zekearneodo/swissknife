@@ -538,30 +538,27 @@ class Unit:
 
 
 def support_vector_ms(starts, len_samples, all_units,
-                   win_size=10, s_f=30000, history_steps=1, step_size=1,
+                   bin_size=10, s_f=30000, history_bins=1, step_size=1,
                    no_silent=False):
     """
     :param starts: list or np array of starting points (absolute)
     :param len_samples: length in samples of the 'trial'
     :param all_units: list of threshUnit or Unit objects (as in units.py)
-    :param win_size: size of the bin for the spike count
-    :param history_steps: step size (ms)
-    :param history_bins: number of steps previous to starting points to include
+    :param bin_size: size of the bin for the spike count
+    :param step_size: step size (ms)
+    :param history_bins: number of bins previous to starting points to include
     :param no_silent: exclude units that don't spike (to prevent singular support arrays)
     :return: np array [n_bins, n_units, n_trials] (compatible with other features sup vecs)
     """
     logger.debug('Getting spike vectors')
-    win_size_samples = int(win_size * s_f / 1000.)
-    step_size_samples = int(step_size * s_f / 1000.) #samples per step
+    bin_size_samples = int(bin_size * s_f / 1000.)
+    len_bin = int(len_samples / bin_size_samples)
+    len_ms = int(len_bin * bin_size)
 
-    len_steps = int(len_samples /step_size_samples) # len of the trial in steps
-    #len_bin = int(len_samples / bin_size_samples)
-    len_ms = int(len_samples * step_size)
+    history_samples = history_bins * bin_size_samples
 
-    history_samples = history_steps * step_size_samples + win_size_samples
-
-    span_ms = len_ms + step_size * history_steps + win_size
-    #span_samples = int(span_ms * s_f / 1000.)
+    span_ms = len_ms + bin_size * history_bins
+    span_samples = int(span_ms * s_f / 1000.)
     # logger.info('span_ms = {}'.format(span_ms))
     sup_vec = []
     sup_vec_units = []
@@ -581,14 +578,13 @@ def support_vector_ms(starts, len_samples, all_units,
             # Instead of binning everything, 
             #sparse_raster = bp.col_binned(bp.sparse_raster(raster), bin_size)
             sparse_raster_ms = bp.sparse_raster(raster)
-            sparse_raster = np.stack([np.convolve(x, np.ones(win_size), mode='valid') for x in sparse_raster_ms])/win_size
-            sparse_raster_stepped = sparse_raster[:, ::step_size]
-
+            sparse_raster = np.stack([np.convolve(x, np.ones(bin_size), mode='same') for x in sparse_raster_ms])/bin_size
+            
             if no_silent and not sparse_raster.any():
                 logger.warn('Watch out, found lazy unit')
                 pass
             else:
-                sup_vec.append(sparse_raster_stepped.T)
+                sup_vec.append(sparse_raster.T)
                 sup_vec_units.append(a_unit)
             # logger.info('sparse raster shape = {}'.format(sparse_raster.shape))
             # return sup_vec
@@ -598,10 +594,10 @@ def support_vector_ms(starts, len_samples, all_units,
     else:
         raise NotImplementedError('Dont know how to do with unit type {}'.format(unit_type))
 
-    logger.debug('returning feature vector shape {}'.format(feature_vector.shape))
+    logger.info('returning feature vector shape {}'.format(feature_vector.shape))
     return feature_vector, used_units
     
-
+    
 def support_vector(starts, len_samples, all_units,
                    bin_size=10, s_f=30000, history_bins=1,
                    no_silent=False):
@@ -730,7 +726,7 @@ def support_vector(starts, len_samples, all_units,
     else:
         raise NotImplementedError('Dont know how to do with unit type {}'.format(unit_type))
 
-    logger.debug('returning feature vector shape {}'.format(feature_vector.shape))
+    logger.info('returning feature vector shape {}'.format(feature_vector.shape))
     return feature_vector, used_units
 
 

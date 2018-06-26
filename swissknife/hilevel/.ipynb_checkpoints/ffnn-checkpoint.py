@@ -211,7 +211,7 @@ class FeedForward(object):
                         else:
                             patience = self.early_stopping_patience
 
-                if i % 100000 == 0 and verbose:
+                if i % 1000 == 0 and verbose:
                     # pick a batch from the validation set and test performance
                     x_v, y_v = shuffle(x_val, y_val, n_samples=self.batch_size)
                     r_loss_cross = self.sesh.run([self.r_loss],
@@ -220,7 +220,7 @@ class FeedForward(object):
                     logger.info('Round {}, r_loss {}, validation_loss {}'.format(i, r_loss, r_loss_cross))
 
                 if i >= max_iter:
-                    logger.info("final avg cost (@ step {} = {})".format(i, r_loss))
+                    print("final avg cost (@ step {} = {})".format(i, r_loss))
                     try:
                         self.writer.flush()
                         self.writer.close()
@@ -297,74 +297,43 @@ def keras_data_set(syl_df, fit_pars, units_list, flat_features=False, normalize_
     s_v = []
     target = []
     raw_target = []
-    
-    try:
-        fit_target = fit_pars['fit_target']
-    except KeyError:
-        logger.debug('No fit target specified, going for dynamical model parameters')
-        fit_target = 'dyn'
 
-    try:
-        #step != bin
-        win_size = fit_pars['win_size']
-        step_size = fit_pars['bin_size']
-    except KeyError:
-        # force step = bin
-        logger.debug('Now win_size in fit_parameters, choosing win_size=bin_size (step = bin = win_size)')
-        win_size = fit_pars['bin_size']
-        step_size = fit_pars['bin_size']
-    
     logger.info('Collecting neural features and target')
-    logger.info('Fit target is {}'.format(fit_target))
-    logger.info('bin_size = {} / win_size = {}'.format(win_size, step_size))
     for i_syl, syl in tqdm(syl_df.iterrows(), total=syl_df.shape[0]):
         # print(i_syl)
         len_ms = int(syl['duration'])
+
         len_samples = int(syl['duration'] * ms_to_samp)
-        
-        # Get parameters acording to target, in ms scale
+        try:
+            fit_target = fit_pars['fit_target']
+        except KeyError:
+            logger.warning('No fit target specified, going for dynamical model parameters')
+            fit_target = 'dyn'
+
+        logger.info('Fit target is {}'.format(fit_target))
+
         if fit_target == 'dyn':
             pars_ms = np.stack([np.array(syl[p_name]) for p_name in ['alpha', 'beta', 'env']])[:, :len_ms]
             pars_ms = fit_pars['par_reg_fcn'](pars_ms)
         elif fit_target == 'pc':
             pars_ms = np.array(syl['pc']).T[:, :len_ms]
             pars_ms = scale_pc(pars_ms.T, fit_pars['pca_dict']).T
-        
-        # get the neural data wheterh fixed or variable step
-        if step_size == win_size:
-            # Do the legacy thing
-            model_pars = bp.col_binned(pars_ms, step_size)/step_size       
-            this_sv, ths_sv_u = unitobjs.support_vector(np.array([syl_starts_abs[i_syl]]), 
-                                             len_samples, 
-                                             units_list,
-                                            bin_size = step_size,
-                                            history_bins = fit_pars['history_bins']+1,
-                                            no_silent=False)
 
-        else:
-            # Get the stepped parameters and neural vectors convolved with window and get them in steps
-            # Instead of n. of bins, do ms but with bin running avg (or savgol)
-            model_pars = np.stack([np.convolve(x, np.ones(win_size), mode='same') for x in pars_ms])
-            model_pars = model_pars[:, ::step_size]/win_size
+        model_pars = bp.col_binned(pars_ms, fit_pars['bin_size']) / fit_pars['bin_size']
+        this_sv, ths_sv_u = unitobjs.support_vector(np.array([syl_starts_abs[i_syl]]),
+                                                    len_samples,
+                                                    units_list,
+                                                    bin_size=fit_pars['bin_size'],
+                                                    history_bins=fit_pars['history_bins'] + 1,
+                                                    no_silent=False)
 
-            this_sv, _ = unitobjs.support_vector_ms(np.array([syl_starts_abs[i_syl]]),
-                                                        len_samples,
-                                                        units_list,
-                                                        win_size=win_size,
-                                                        step_size=step_size,
-                                                        history_steps=fit_pars['history_bins'] + 1,
-                                                        no_silent=False)
-
-        #the shape of this_sv; this_sv_u are:
-        # this_sv_u: list of used units
-        #ms_sv: [n_bin, n_unit, n_trial], where n_bin is n_steps if support_vector_ms
         target_mot_id = np.array([syl['mot_id'] for i in np.arange(model_pars.shape[1])])
         target_syl_idx = np.array([i_syl for i in np.arange(model_pars.shape[1])])
         target_s_type = np.array([syl['syl_type'] for i in np.arange(model_pars.shape[1])])
         # start in ms relative to motiff
-        target_start_in_syl = np.arange(model_pars.shape[1]) * step_size
+        target_start_in_syl = np.arange(model_pars.shape[1]) * fit_pars['bin_size']
         target_start_in_mot = target_start_in_syl + syl['start']
-        logger.debug('this_sv shape {}'.format(this_sv.shape))
+        logger.info('this_sv shape {}'.format(this_sv.shape))
         s_v.append(this_sv)
         target.append(model_pars)
         raw_target.append(np.stack([target_mot_id, target_syl_idx, target_start_in_syl,
@@ -574,10 +543,9 @@ def train_and_test(x, y, x_t, y_t, sess_data, name_suffix='whl', tf_back_end=Non
     model_path = os.path.join(fn['folders']['ss'], 'model_' + model_name)
     logger.info('Model path: {}'.format(model_path))
 
-    
     net_pars = {'batch_size': fit_pars['batch_size'],
                 'history_bins': fit_pars['history_bins'],
-                 'n_features': x.shape[2],
+                'n_features': x.shape[2],
                 'n_target': y.shape[-1]}
 
     # Define, train
@@ -621,8 +589,6 @@ def mot_wise_train(sess_data, mots_per_run=7, only_chunks='all', tf_back_end=Non
 
     for i_c, chunk in enumerate(do_chunks):
         logger.info('Chunk {0}/{1}'.format(i_c, len(do_chunks)))
-        logger.info('Chunk comprises motifs {}'.format(chunk))
-
         X, Y, X_t, Y_t, Z, Z_t = sess_data.gimme_motif_set(chunk)
         mod_path, mod_pred = train_and_test(X, Y, X_t, Y_t, sess_data, 
                                             name_suffix='mot-chnk{:03d}'.format(i_c), 
@@ -639,7 +605,7 @@ def mot_wise_train(sess_data, mots_per_run=7, only_chunks='all', tf_back_end=Non
         'Z_t': all_Z_t,
         'Y_t': all_Y_t,
         'X_t': all_X_t,
-        })
+    })
 
     # save the dataframe to a pickle file
     pickle_path, base_name = os.path.split(mod_path)
