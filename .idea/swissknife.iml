@@ -15,6 +15,7 @@
     <orderEntry type="module" module-name="intan2kwik" />
     <orderEntry type="module" module-name="ephysflow" />
     <orderEntry type="module" module-name="tidydrive" />
+    <orderEntry type="module" module-name="helperephys" />
   </component>
   <component name="TestRunnerService">
     <option name="projectConfiguration" value="Nosetests" />

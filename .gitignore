@@ -1,3 +1,5 @@
-/*.pyc
-/.idea
-/*.xml
+*.pyc
+*.xml
+*.out
+*.iml
+.idea/
