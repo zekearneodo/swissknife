@@ -275,8 +275,9 @@ def all_mot_decoded_pcwise(y, z, y_p, sess_data):
     return all_dec_pd
 
 
-def all_self_scores(one_pd, other_pd):
+def all_self_scores(one_pd, other_pd, pass_thru=[]):
     # one_pd has a raw, a neu, and a syn
+    # pass_trhu is a list of fields fron one_pd that should be included in the returned pd_all_scores
     logger = logging.getLogger()
 
     all_mots = one_pd['m_id'].tolist()
@@ -291,25 +292,30 @@ def all_self_scores(one_pd, other_pd):
                                           one_pd['raw_song'].tolist())),
                                       total=len(one_pd['m_id'].tolist())):
         rms_raw = compare_spectra(x, x_raw, n_perseg=64, db_cut=55)[0]
-        rms_syn = compare_spectra(x, x_syn, n_perseg=64, db_cut=65)[0]
+        rms_syn = compare_spectra(x, x_syn, n_perseg=64, db_cut=55)[0]
+        rms_syn_raw = compare_spectra(x_syn, x_raw, n_perseg=64, db_cut=55)[0]
         rms_con = np.array(
-            list(map(lambda z: compare_spectra(x, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
+            list(map(lambda z: compare_spectra(x, z, n_perseg=128, db_cut=90)[0], other_pd['x'].tolist())))
         rms_syn_con = np.array(
             list(map(lambda z: compare_spectra(x_syn, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
         rms_bos_con = np.array(
-            list(map(lambda z: compare_spectra(x_raw, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
+            list(map(lambda z: compare_spectra(x_raw, z, n_perseg=128, db_cut=90)[0], other_pd['x'].tolist())))
         
         bos_bos = [compare_spectra(x_raw, y, n_perseg=128, 
             db_cut=80)[0] for j,y in enumerate(all_raw) if not j==i]
         rms_bos_bos = np.array(bos_bos)
 
         cross_mot_id = other_pd['m_id'].tolist()
-        all_scores.append([m_id, rms_raw, rms_syn, rms_con, rms_syn_con, rms_bos_con, rms_bos_bos, cross_mot_id])
+        all_scores.append([m_id, rms_raw, rms_syn, rms_syn_raw, rms_con, rms_syn_con, rms_bos_con, rms_bos_bos, cross_mot_id])
 
     logger.disabled = False
-    headers = ['m_id', 'rms_raw', 'rms_syn', 'rms_con', 'rms_syn_con', 'rms_bos_con', 'rms_bos_bos', 'vs_id']
+    headers = ['m_id', 'rms_raw', 'rms_syn', 'rms_syn_raw', 'rms_con', 'rms_syn_con', 'rms_bos_con', 'rms_bos_bos', 'vs_id']
 
     pd_all_scores = pd.DataFrame(all_scores, columns=headers)
+    
+    # append passtrhu fields
+    for field in pass_thru:
+        pd_all_scores[field] = one_pd[field].tolist()
     return pd_all_scores
 
 def merge_runs(run_list):
