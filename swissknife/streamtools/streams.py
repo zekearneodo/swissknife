@@ -10,6 +10,7 @@ import wave
 import numpy as np
 import scipy.signal as sg
 from matplotlib import pyplot as plt
+from numba import jit
 
 from swissknife.h5tools import tables as h5t
 
@@ -104,6 +105,15 @@ def sum_frames(frames_list):
     all_avg = all_frames_array.mean(axis=0)
     return all_avg
 
+@jit
+def repeated_slice(big_array: np.array, starts: np.array, span: int, chan_list: np.array) -> np.array:
+    n_starts = starts.size
+    n_cols = chan_list.size
+    
+    slice_stack = np.empty([n_starts, span, n_cols])
+    for i, start in enumerate(range(n_starts)):
+        slice_stack[i, :, :] = big_array[start: start + span, chan_list]
+    return slice_stack
 
 class WavData2:
     # same as wavdata, but streams are read in columns into an N_samp X N_ch array (one channel = one column)

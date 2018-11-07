@@ -255,6 +255,8 @@ class Unit:
         self.sampling_rate = None
 
         self.kwd_file = None
+        self.all_waveforms = None # all of the waveforms
+        self.n_waveforms = 1000 #sample of waveforms to show/compute
         self.waveforms = None
         self.avg_waveform = None
         self.main_chan = None
@@ -277,10 +279,12 @@ class Unit:
         r_path = "/channel_groups/{0:d}/spikes/recording".format(self.group)
 
         dtype = self.kwik_file[t_path].dtype
+        # time samples are relative to the beginning of the corresponding rec
         time_samples = np.array(self.kwik_file[t_path][self.kwik_file[clu_path][:] == self.clu],
                                 dtype=np.dtype(dtype))
 
         dtype = self.kwik_file[r_path].dtype
+        # recordings ids (as in the key)
         recordings = np.array(self.kwik_file[r_path][self.kwik_file[clu_path][:] == self.clu],
                               dtype=np.dtype(dtype))
 
@@ -376,7 +380,6 @@ class Unit:
         two_side_hist = np.concatenate([hist[::-1], hist[1:]])
         return two_side_hist, two_side_bins
 
-
     def get_folder(self):
         return os.path.split(os.path.abspath(self.kwik_file.filename))[0]
 
@@ -407,22 +410,23 @@ class Unit:
                                  'unit_{}_{:03d}.npy'.format(self.group,
                                                              self.clu))
         logger.info('Saving unit {0} in file {1}'.format(self.clu, file_path))
-        np.save(file_path, self.waveforms)
+        np.save(file_path, self.all_waveforms)
         par_path = os.path.join(file_folder,
                                 'unit_{}_{:03d}.par.pickle'.format(self.group,
                                                             self.clu))
         pickle.dump(self.waveform_pars, open(par_path, 'wb'))
 
     def load_unit_spikes(self):
-        logger.info('will try to load previous unit files')
+        logger.debug('will try to load previous unit files')
         # careful, loads the last saved
         folder = self.get_folder()
         f_name = 'unit_{}_{:03d}.npy'.format(self.group, self.clu)
         p_name = 'unit_{}_{:03d}.par.pickle'.format(self.group, self.clu)
         self.waveform_pars = pickle.load(open(os.path.join(folder, 'unit_waveforms', p_name),
                                               'rb'))
-        self.waveforms = np.load(os.path.join(folder, 'unit_waveforms', f_name))
-        return self.waveforms
+        self.all_waveforms = np.load(os.path.join(folder, 'unit_waveforms', f_name), mmap_mode='r')
+
+        return self.all_waveforms
 
     def get_principal_channels(self, projectors=4):
         kilo_path = self.get_kilo_folder()
@@ -463,22 +467,26 @@ class Unit:
 
         self.waveform_pars = {'before': before,
                               'after': after,
-                              'chan_list': chan_list}
+                              'chan_list': np.array(chan_list)}
 
-        self.waveforms = collect_frames_array(valid_times - before,
+        self.all_waveforms = collect_frames_fast(valid_times - before,
                                               before + after,
                                               s_f,
                                               self.get_kwd_path(),
                                               valid_recs,
-                                              chan_list)
+                                              np.array(chan_list))
         return self.waveforms
 
     def load_all_waveforms(self):
         folder = self.get_folder()
         f_name = 'unit_{:03d}.npy'.format(self.clu)
-        return np.load(os.path.join(folder, 'unit_waveforms', f_name))
+        return np.load(os.path.join(folder, 'unit_waveforms', f_name), mmap_mode='r')
+
+    def set_n_waveforms(self, n_waveforms):
+        self.n_waveforms = n_waveforms
 
     def get_waveforms(self, before=20, after=20, only_principal=False, force=False):
+
         try:
             logger.info('Trying to load waveforms file')
             assert force is False
@@ -489,6 +497,12 @@ class Unit:
                                  only_principal=only_principal)
             logger.info('will save the spikes for the nest time around')
             self.save_unit_spikes()
+        # all waveforms were loaded into self.all_waveforms.
+        # now we want to make a sample fo them in self.waveforms, to show and compute metrics
+        self.n_waveforms = min(self.n_waveforms, self.all_waveforms.shape[0])
+        waveform_samples = np.random.choice(self.all_waveforms.shape[0], self.n_waveforms,
+        replace=False)
+        self.waveforms = self.all_waveforms[waveform_samples, :, :]
         return self.waveforms
 
     def get_avg_wave(self):
@@ -971,3 +985,28 @@ def collect_frames_array(starts, span, s_f, kwd_file, recs_list, chan_list):
         all_frames_array.append(rec_frames)
     logger.info('Done collecting')
     return np.concatenate(all_frames_array, axis=0)
+
+
+def collect_frames_fast(starts, span, s_f, kwd_file, recs_list, chan_list):
+    recs = np.unique(recs_list)
+    logger.info('Collecting {} recs...'.format(recs.size))
+    all_frames_list = []
+    for i_rec, rec in tqdm(enumerate(recs)):
+        starts_from_rec = starts[recs_list == rec]
+        logger.info("Rec {0}, {1} events ...".format(rec, starts_from_rec.size))
+                
+        h5_dset = h5f.get_data_set(kwd_file, rec)
+        n_samples = h5_dset.shape[0]
+                             
+        valid_starts = starts_from_rec[(starts_from_rec > 0)
+                                       & (starts_from_rec + span < n_samples)]
+        if valid_starts.size < starts_from_rec.size:
+            logger.warn('Some frames were out of bounds and will be discarded')
+            logger.warn('will collect only {0} events...'.format(valid_starts.size))
+        
+        this_rec_spikes = st.repeated_slice(h5_dset, valid_starts, span, chan_list)
+        all_frames_list.append(this_rec_spikes)
+    
+    logger.info('Done collecting')
+    return np.concatenate(all_frames_list, axis=0)
+

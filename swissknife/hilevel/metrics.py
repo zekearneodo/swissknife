@@ -249,7 +249,7 @@ def all_mot_decoded_pcwise(y, z, y_p, sess_data):
         fit_target = 'dyn'
 
     s_f = int(sess_data.s_f)
-    logger.info('Getting streams and reconstructions of {} motifs, target fit is {}'.format(mot_ids.size, fit_target))
+    logger.info('Getting streams and reconstructions of {} motifs, target fit is {}, dim {}'.format(mot_ids.size, fit_target, y_p.shape[-1]))
 
     all_decoded = []
     for i, m_id in tqdm(enumerate(mot_ids), total=mot_ids.size):
@@ -291,15 +291,15 @@ def all_self_scores(one_pd, other_pd, pass_thru=[]):
                                           one_pd['syn_song'].tolist(),
                                           one_pd['raw_song'].tolist())),
                                       total=len(one_pd['m_id'].tolist())):
-        rms_raw = compare_spectra(x, x_raw, n_perseg=64, db_cut=55)[0]
+        rms_raw = compare_spectra(x, x_raw, n_perseg=64, db_cut=65)[0]
         rms_syn = compare_spectra(x, x_syn, n_perseg=64, db_cut=55)[0]
         rms_syn_raw = compare_spectra(x_syn, x_raw, n_perseg=64, db_cut=55)[0]
         rms_con = np.array(
-            list(map(lambda z: compare_spectra(x, z, n_perseg=128, db_cut=90)[0], other_pd['x'].tolist())))
+            list(map(lambda z: compare_spectra(x, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
         rms_syn_con = np.array(
-            list(map(lambda z: compare_spectra(x_syn, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
+            list(map(lambda z: compare_spectra(x_syn, z, n_perseg=128, db_cut=70)[0], other_pd['x'].tolist())))
         rms_bos_con = np.array(
-            list(map(lambda z: compare_spectra(x_raw, z, n_perseg=128, db_cut=90)[0], other_pd['x'].tolist())))
+            list(map(lambda z: compare_spectra(x_raw, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
         
         bos_bos = [compare_spectra(x_raw, y, n_perseg=128, 
             db_cut=80)[0] for j,y in enumerate(all_raw) if not j==i]

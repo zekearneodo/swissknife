@@ -7,6 +7,7 @@ import socket
 import h5py
 # for more than structure
 import numpy as np
+import pandas as pd
 import yaml
 from numpy.lib import recfunctions as rf
 
@@ -175,12 +176,22 @@ def mkdir_p(path):
         else:
             raise
 
+def sub_dirs(path):
+    return [d for d in glob.glob(os.path.join(path, '*')) if os.path.isdir(d)]
+
+
+def list_birds(folder, breed='z'):
+    all_dirs = [os.path.split(d)[-1] for d in sub_dirs(folder)]
+    all_birds = [b for b in all_dirs if b.startswith(breed)]
+    all_birds.sort()
+    return all_birds
 
 def list_sessions(bird, experiment_folder=None, location='ss'):
     fn = file_names(bird, experiment_folder=experiment_folder)
     bird_folder = fn['folders'][location]
     sessions_bird = [s for s in os.listdir(bird_folder) if os.path.isdir(os.path.join(bird_folder, s))]
     return sessions_bird
+
 
 
 def list_raw_sessions(bird, sess_day=None, depth='', experiment_folder=None, location='raw'):
@@ -191,6 +202,13 @@ def list_raw_sessions(bird, sess_day=None, depth='', experiment_folder=None, loc
         all_sessions = [s for s in all_sessions if int(s[0].split('_')[-1]) == int(depth)]
     all_depths = ['{}'.format(s.split('_')[-1]) for s in all_sessions]
     return all_sessions, all_depths
+
+
+def get_sessions_info_pd(breed='z', location='rw'):
+    folder = file_names('')['folders'][location]
+    info_pd = pd.DataFrame(list_birds(folder, breed=breed), columns=['bird'])
+    info_pd['sessions'] = info_pd['bird'].apply(lambda x: list_sessions(x, location=location))
+    return info_pd
 
 
 # Experiment structure

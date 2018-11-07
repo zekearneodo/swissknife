@@ -179,7 +179,7 @@ class FeedForward(object):
 
         return x, y, y_, r_loss, c_solver, summaries, global_step
 
-    def train(self, X, Y, max_iter=np.inf, max_epochs=np.inf, cross_validate=True, verbose=True):
+    def train(self, X, Y, max_iter=np.inf, max_epochs=np.inf, cross_validate=True, verbose=False):
         # set aside train/validation split
         x_train, x_val, y_train, y_val = train_test_split(X, Y, test_size=self.validation_split)
         r_losses = []

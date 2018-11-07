@@ -119,8 +119,10 @@ def get_rec_sizes(kwd_file):
 
 @h5_wrap
 def get_corresponding_rec(kwd_file, sample):
+    # returns the order of rec in which this position belongs (not the rec_id)
     rec_starts = get_rec_starts(kwd_file)
     rec_index = np.min(np.where(sample > rec_starts))
+    return rec_index
 
 
 @h5_wrap

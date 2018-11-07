@@ -162,11 +162,12 @@ def get_rec_list(k_file):
 @h5f.h5_wrap
 def rec_start_array(kwik):
     rec_list = list(map(int, get_rec_list(kwik)))
-    rec_array = np.arange(max(rec_list) + 1)
-    start_array = np.zeros_like(rec_array)
-    for i_rec in rec_list:
-        start_array[i_rec] = get_rec_start_sample(kwik, i_rec)
-    return start_array
+    # rec_array = np.arange(max(rec_list) + 1)
+    # start_array = np.zeros_like(rec_array)
+    start_array = [get_rec_start_sample(kwik, rec_id) for rec_id in rec_list]
+    # for i_rec, rec_id in enumerate(rec_list):
+    #     start_array[i_rec] = get_rec_start_sample(kwik, rec_id)
+    return np.array(start_array)
 
 
 @h5f.h5_wrap
