@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import scipy
 from tqdm import tqdm
 
 from swissknife.streamtools import spectral as sp
@@ -70,6 +71,43 @@ def rms_slices(s_1, s_2):
     return rms_slice, rms_total
 
 
+def equal_shaped(x_in: np.array, y_in: np.array, warp='nowarp') -> tuple:
+    # return the two largest possible x, y with same dimension 2
+    xy = [x_in, y_in]
+    lengths = np.array([a.shape[-1] for a in xy])
+    #len_diff = np.diff(lengths)
+    #     if(np.abs(len_diff)>2):
+    #         logger.warning('Spectrograms differ in {} ms'.format(len_diff))
+    if warp is 'nowarp':
+        shorter_t = np.min(lengths)
+        x = x_in[:, :shorter_t]
+        y = y_in[:, :shorter_t]
+
+    elif warp is 'median':
+        # warp to shorter time array
+        shorter_t = np.min(lengths)
+        sorted_l = np.argsort(lengths)
+
+        x_short = xy[sorted_l[0]]
+        x_long = xy[sorted_l[1]]
+        
+        longer_t = x_long.shape[-1]
+        t_long_warped = np.arange(shorter_t)*longer_t/shorter_t
+        t_slice_long = t_long_warped.astype(np.int)
+        x = x_short
+        y = x_long[:, t_slice_long]
+    else:
+        raise NotImplementedError('Dont know who to warp [{}]'.format(warp))
+
+    return x, y
+
+def normalize_spec(sx):
+    sx -= np.amin(sx)
+    sx_max = np.amax(sx)
+
+    sx /= sx_max
+    return sx
+
 def compare_spectra_old(x, y, s_f=30000, n_perseg=1024, step_s=0.001, db_cut=65, f_min=300, f_max=7500,
                         log=False,
                         plots=None):
@@ -105,26 +143,34 @@ def compare_spectra_old(x, y, s_f=30000, n_perseg=1024, step_s=0.001, db_cut=65,
     return rms_slices(short, long[:, :shorter_t])
 
 
-def compare_spectra(x, y, s_f=30000, n_perseg=1024, step_s=0.001, db_cut=65, f_min=0, f_max=12000, plots=False):
-    # make sure sizes are right
-    xy = [x, y]
-    lengths = np.array([a.shape[-1] for a in xy])
-    len_diff = np.diff(lengths)
-    #     if(np.abs(len_diff)>2):
-    #         logger.warning('Spectrograms differ in {} ms'.format(len_diff))
-    shorter_t = np.min(lengths)
-    sorted_l = np.argsort(lengths)
+def compare_spectra(x, y, s_f=30000, n_perseg=1024, step_s=0.001, db_cut=75, f_min=0, f_max=12000, 
+plots=False, warp='nowarp'):
 
-    short = xy[sorted_l[0]]
-    long = xy[sorted_l[1]]
+    if warp=='nowarp':
+        # make sure sizes are right
+        xy = [x, y]
+        lengths = np.array([a.shape[-1] for a in xy])
+        len_diff = np.diff(lengths)
+        #     if(np.abs(len_diff)>2):
+        #         logger.warning('Spectrograms differ in {} ms'.format(len_diff))
+        shorter_t = np.min(lengths)
+        sorted_l = np.argsort(lengths)
 
-    fx, tx, sx = sp.pretty_spectrogram(normalize(x[:shorter_t]), s_f, fft_size=n_perseg, log=True,
+        short = xy[sorted_l[0]]
+        long = xy[sorted_l[1]]
+        x = x[: shorter_t]
+        y = y[: shorter_t]
+
+    fx, tx, sx = sp.pretty_spectrogram(normalize(x), s_f, fft_size=n_perseg, log=True,
                                        step_size=int(s_f * step_s), db_cut=db_cut,
                                        f_min=f_min, f_max=f_max, window=('gaussian', 120))
 
-    fy, ty, sy = sp.pretty_spectrogram(normalize(y[:shorter_t]), s_f, fft_size=n_perseg, log=True,
+    fy, ty, sy = sp.pretty_spectrogram(normalize(y), s_f, fft_size=n_perseg, log=True,
                                        step_size=int(s_f * step_s), db_cut=db_cut,
                                        f_min=f_min, f_max=f_max, window=('gaussian', 120))
+
+    if warp == 'median':
+        sx, sy = equal_shaped(sx, sy, warp='median')
 
     if plots:
         plt.imshow(((sx))[::-1], aspect='auto', cmap='inferno')
@@ -146,10 +192,23 @@ def compare_spectra(x, y, s_f=30000, n_perseg=1024, step_s=0.001, db_cut=65, f_m
     sy -= np.amin(sy)
     sy /= np.amax(sx_max)
 
-    rms = np.linalg.norm(sx - sy) / np.sqrt(sx.size)
+    # deal with zeros to compute the spectrogram correlations
+    f_bin, t_bin = sx.shape
 
-    rho = np.corrcoef(sx, sy)
-    return rms, sx, sy
+    #zero_x = np.where((sx.sum(axis=0)<10) & (sy.sum(axis=0) < 10) )[0]
+    zero_x = np.where(sx.sum(axis=0)<1)[0]
+    
+    mu = 0.01
+    epsilon = mu*8e-17
+
+    x_jitter = np.random.normal(mu, epsilon, (f_bin, zero_x.size))
+    y_jitter = np.random.normal(mu, epsilon, (f_bin, zero_x.size))
+
+    sx[:, zero_x] = x_jitter
+    sy[:, zero_x] = y_jitter
+
+    rxy = np.array([scipy.stats.pearsonr(i, j)[0] for i,j in zip(sx.T, sy.T)])
+    return rxy, sx, sy
 
 
 def mot_scores(mot_id, Y, Z, mod_pred, sess_data, win_samples=64, other_pd=None):
@@ -281,7 +340,7 @@ def all_self_scores(one_pd, other_pd, pass_thru=[]):
     logger = logging.getLogger()
 
     all_mots = one_pd['m_id'].tolist()
-    logger.info('Found {} mots'.format(len(all_mots)))
+    logger.info('Found {} mots your mom'.format(len(all_mots)))
 
     all_scores = []
     logger.disabled = True
@@ -291,8 +350,8 @@ def all_self_scores(one_pd, other_pd, pass_thru=[]):
                                           one_pd['syn_song'].tolist(),
                                           one_pd['raw_song'].tolist())),
                                       total=len(one_pd['m_id'].tolist())):
-        rms_raw = compare_spectra(x, x_raw, n_perseg=64, db_cut=65)[0]
-        rms_syn = compare_spectra(x, x_syn, n_perseg=64, db_cut=55)[0]
+        rms_raw, sxx_neu, sxx_raw = compare_spectra(x, x_raw, n_perseg=64, db_cut=55)
+        rms_syn, _, sxx_syn = compare_spectra(x, x_syn, n_perseg=64, db_cut=55)
         rms_syn_raw = compare_spectra(x_syn, x_raw, n_perseg=64, db_cut=55)[0]
         rms_con = np.array(
             list(map(lambda z: compare_spectra(x, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
@@ -306,11 +365,14 @@ def all_self_scores(one_pd, other_pd, pass_thru=[]):
         rms_bos_bos = np.array(bos_bos)
 
         cross_mot_id = other_pd['m_id'].tolist()
-        all_scores.append([m_id, rms_raw, rms_syn, rms_syn_raw, rms_con, rms_syn_con, rms_bos_con, rms_bos_bos, cross_mot_id])
+        all_scores.append([m_id, rms_raw, rms_syn, rms_syn_raw, rms_con,
+                           rms_syn_con, rms_bos_con, rms_bos_bos, cross_mot_id, 
+                           sxx_raw, sxx_neu, sxx_syn])
 
     logger.disabled = False
-    headers = ['m_id', 'rms_raw', 'rms_syn', 'rms_syn_raw', 'rms_con', 'rms_syn_con', 'rms_bos_con', 'rms_bos_bos', 'vs_id']
-
+    headers = ['m_id', 'rms_raw', 'rms_syn', 'rms_syn_raw',
+               'rms_con', 'rms_syn_con', 'rms_bos_con', 'rms_bos_bos', 'vs_id', 
+               'sxx_raw', 'sxx_neu', 'sxx_syn']
     pd_all_scores = pd.DataFrame(all_scores, columns=headers)
     
     # append passtrhu fields

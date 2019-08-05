@@ -169,6 +169,24 @@ def rec_start_array(kwik):
     #     start_array[i_rec] = get_rec_start_sample(kwik, rec_id)
     return np.array(start_array)
 
+@h5f.h5_wrap
+def get_rec_sizes(kwd_file):
+    rec_list = get_rec_list(kwd_file)
+    rec_sizes = {rec: get_data_size(kwd_file, rec)
+                 for rec in rec_list}
+    return rec_sizes
+
+@h5f.h5_wrap
+def get_rec_starts(kwd_file):
+    logger.debug('Getting rec_starts')
+    rec_sizes = get_rec_sizes(kwd_file)
+    #logger.debug('rec sizes {}'.format(rec_sizes))
+    starts_vec = np.array(list(rec_sizes.values())).cumsum()
+    #logger.debug('starts vector {}'.format(starts_vec))
+    starts_vec = np.hstack([0, starts_vec[:-1]])
+    rec_starts = {rec: r_start for r_start,
+                  rec in zip(starts_vec, rec_sizes.keys())}
+    return rec_starts
 
 @h5f.h5_wrap
 def get_corresponding_rec(kwik, stamps):

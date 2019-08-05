@@ -5,6 +5,7 @@ import logging
 import h5py
 import logging
 import os
+from tqdm import tqdm_notebook as tqdm
 
 #from mdaio import writemda16i
 
@@ -27,6 +28,34 @@ def h5_wrap(h5_function):
 
     return file_checker
 
+def h5_decorator(default_mode='r'):
+    """
+    Decorator to open h5 structure if the path was provided to a function.
+    :param h5_function: a function that receives an h5file as first argument
+    :param default_mode: what mode to open the file by default.
+        It is overriden when file is entered open and when option 'mode' is set
+        in h5_function (if it exists)
+    :return: decorated function that takes open or path as first argument
+    """
+    def wrap(h5_function):
+        def file_checker(h5_file, *args, **kwargs):
+            if 'mode' in kwargs.keys():
+                mode = kwargs['mode']
+            else:
+                mode = default_mode
+                #logger.debug('mode {}'.format(mode))
+            try:
+                if type(h5_file) is not h5py._hl.files.File:
+                    with h5py.File(h5_file, mode) as h5_file:
+                        return_value = h5_function(h5_file, *args, **kwargs)
+                else:
+                    return_value = h5_function(h5_file, *args, **kwargs)
+                return return_value
+            except UnboundLocalError as err:
+                logger.error(err)
+                raise
+        return file_checker
+    return wrap
 
 def list_subgroups(h5_group):
     return [key for key, val in h5_group.items() if isinstance(val, h5py.Group)]
@@ -345,3 +374,51 @@ def list_event_types(kwe_file):
 
 def count_events(kwe_file, ev_type, ev_name, rec=None):
     return get_events_one_type(kwe_file, ev_type, ev_name, rec=rec).size
+
+@h5_decorator(default_mode='r')
+def collect_frames_fast(kwd_file, recs_list, starts, span, chan_list):
+    recs = np.unique(recs_list)
+    all_frames_list = []
+    for i_rec, rec in tqdm(enumerate(recs), total=recs.size):
+        starts_from_rec = starts[recs_list == rec]
+        dset = get_data_set(kwd_file, rec)
+        n_samples = dset.shape[0]
+        valid_starts = starts_from_rec[(starts_from_rec > 0)
+                                       & (starts_from_rec + span < n_samples)]
+        if valid_starts.size < starts_from_rec.size:
+            logger.warn('Some frames were out of bounds and will be discarded')
+            logger.warn('will collect only {0} events...'.format(
+                valid_starts.size))
+
+        # get the dataset slices for only the channel list
+        this_rec_frames = get_slice_array(dset, valid_starts, span, chan_list)
+        all_frames_list.append(this_rec_frames)
+
+    try:
+        all_frames_array = np.concatenate(all_frames_list, axis=0)
+    except ValueError:
+        raise
+        # logger.warn('Failed to collect stream frames, return is nan array')
+        # zero_dset_shape = get_data_set(kwd_file, rec).shape
+        # all_frames_array = np.empty([1, *zero_dset_shape])
+        # all_frames_array[:] = np.nan
+    return all_frames_array
+
+def get_slice_array(dset: np.ndarray, starts: np.ndarray, span: np.int, chan_list) -> np.ndarray:
+    n_slices = starts.size
+    #n_chan = dset.shape[1]
+    n_chan = chan_list.size
+    chan_list = np.array(chan_list)
+    #logger.info('nslice {}, span {}, chan {}'.format(n_slices,n_chan,chan_list))
+    slices_array = np.zeros([n_slices, span, n_chan])
+    #logger.info('dset {}, starts {}, span {}, chan_list {}'.format(dset.shape, starts, span, chan_list))
+    #logger.info('starts {}'.format(starts.dtype))
+    for i, start in enumerate(starts.astype(np.int64)):
+        #logger.info('start {}'.format(start.shape))
+        #logger.info('chan_list {}'.format(chan_list))
+        #logger.info('i {}'.format(i))
+        #logger.info('span'.format(span))
+        #start = np.int(start)
+        #aux = dset[5: 5 + span, chan_list]
+        slices_array[i, :, :] = dset[start: start + span, chan_list]
+    return slices_array

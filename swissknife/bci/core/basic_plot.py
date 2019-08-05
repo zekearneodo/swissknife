@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import scipy as sp
 import math
+from numba import jit
 
 # fucntions for handling and plotting
 def decim(x, q):
@@ -74,10 +75,13 @@ def plot_raster(x, t1=0, t2=-1, t0=0, ax=None, bin_size=0):
     # if bin_size was entered, we want a psth
     if bin_size > 0:
         psth, t_dec = make_psth(x, t1=t1, t2=t2, t0=t0, bin_size=bin_size)
-        raster = ax.plot(t_dec, psth)
+        raster = ax.plot(t_dec, psth, color='C5')
         ax.set_ylim(0, max(psth) * 1.2)
-        stim = ax.plot((0, 0), (0, max(psth) * 1.2), 'k--')
+        #stim = ax.plot((0, 0), (0, max(psth) * 1.2), 'k--')
+        #ax.axvline(x=0, color='C6', linestyle=':')
         t_max = max(t_dec)
+        ax.set_ylabel('F.R. (Hz)')
+        ax.yaxis.set_ticks([int(max(psth)*0.8)])
 
     else:
         # Chop the segment
@@ -101,10 +105,13 @@ def plot_raster(x, t1=0, t2=-1, t0=0, ax=None, bin_size=0):
         col = np.arange(events, dtype=np.float)
         frame = col[:, np.newaxis] + row[np.newaxis, :]
 
-        raster = ax.scatter(t * x, frame * x, marker='|', rasterized=True)
+        raster = ax.scatter(t * x, frame * x, marker='|', linewidth=0.2, 
+                            rasterized=True, color='C3')
         ax.set_ylim(0, events + 1)
-        ax.plot((0, 0), (0, events + 1), 'k--')
+        #ax.plot((0, 0), (0, events + 1), 'k--')
         t_max = t_stamps - t0
+        ax.set_ylabel('trial')
+        ax.yaxis.set_ticks([events - 1])
 
     ax.set_xlim(0 - t0, t_max)
     return raster, ax
@@ -164,3 +171,24 @@ def sparse_raster(x, nan=False):
     if not nan:
         raster[np.isnan(raster)] = 0
     return raster
+
+@jit(nopython=True)
+def plottable_array(x:np.ndarray, scale:np.ndarray, offset:np.ndarray) -> np.ndarray:
+    """ Rescale and offset an array for quick plotting multiple channels, along the 
+        1 axis, for each jth axis
+    Arguments:
+        x {np.ndarray} -- [n_col x n_row] array (each col is a chan, for instance)
+        scale {np.ndarray} -- [n_col] vector of scales (typically the ptp values of each row)
+        offset {np.ndarray} -- [n_col] vector offsets (typycally range (row))
+
+    Returns:
+        np.ndarray -- [n_row x n_col] scaled, offsetted array to plot
+    """
+    # for each row [i]:
+    # - divide by scale_i
+    # - add offset_i
+    n_row, n_col = x.shape
+    for col in range(n_col):
+        for row in range(n_row):
+            x[row, col] = x[row, col] * scale[col] + offset[col]
+    return x

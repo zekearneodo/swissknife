@@ -51,7 +51,7 @@ class superUnit:
             self.get_time_stamps()
 
     def get_rec_offsets(self):
-        self.recording_offsets = kf.rec_start_array(self.h5_file)
+        self.recording_offsets = kf.get_rec_starts(self.h5_file)
         return self.recording_offsets
 
     def get_sampling_rate(self):
@@ -261,6 +261,7 @@ class Unit:
         self.avg_waveform = None
         self.main_chan = None
         self.main_wave = None
+        self.isi_hist_tuple = None
         self.waveform_pars = {}
 
         if kwik_file is not None:
@@ -278,19 +279,19 @@ class Unit:
         t_path = "/channel_groups/{0:d}/spikes/time_samples".format(self.group)
         r_path = "/channel_groups/{0:d}/spikes/recording".format(self.group)
 
-        dtype = self.kwik_file[t_path].dtype
         # time samples are relative to the beginning of the corresponding rec
-        time_samples = np.array(self.kwik_file[t_path][self.kwik_file[clu_path][:] == self.clu],
-                                dtype=np.dtype(dtype))
+        this_clu = self.kwik_file[clu_path][:] == self.clu
+        all_t = self.kwik_file[t_path][:]
+        all_rec = self.kwik_file[r_path][:]
+
+        dtype = self.kwik_file[t_path].dtype
+        self.time_samples = np.array(
+            all_t[this_clu], dtype=np.dtype(dtype))
 
         dtype = self.kwik_file[r_path].dtype
         # recordings ids (as in the key)
-        recordings = np.array(self.kwik_file[r_path][self.kwik_file[clu_path][:] == self.clu],
-                              dtype=np.dtype(dtype))
-
-        # patch for a random kilosort error that throws a random 0 for a time_stamp
-        self.time_samples = time_samples[time_samples > 0]
-        self.recordings = recordings[time_samples > 0]
+        self.recordings = np.array(
+            all_rec[this_clu], dtype=np.dtype(dtype))
         return self.time_samples, self.recordings
 
     def get_rec_offsets(self):
@@ -367,7 +368,7 @@ class Unit:
         return all_isi_ms
 
 
-    def get_isi_dist(self, bin_size_ms=1, max_t=100):
+    def get_isi_dist(self, bin_size_ms=0.5, max_t=100, one_sided=False):
         if self.time_samples is None:
             self.get_time_stamps()
         all_isi_ms = np.round(np.diff(self.time_samples)/(self.sampling_rate * 0.001))
@@ -378,7 +379,24 @@ class Unit:
         bins = bins[1:]
         two_side_bins = np.concatenate([-bins[::-1], bins[1:]])
         two_side_hist = np.concatenate([hist[::-1], hist[1:]])
-        return two_side_hist, two_side_bins
+        
+        
+        self.isi_hist_tuple = (hist, bins)
+        if one_sided:
+            return bins, hist
+        else:
+            return two_side_hist, two_side_bins
+    
+    def get_isi_violations(self, threshold=0.05, refractory_ms=1):
+        if self.isi_hist_tuple is None:
+            self.get_isi_dist()
+        hist, bins = self.isi_hist_tuple
+        
+        total_spikes = np.sum(hist)
+        violations = np.sum(hist[bins <= refractory_ms])
+        violations_ratio = violations/total_spikes
+        return violations_ratio, violations_ratio < threshold
+        
 
     def get_folder(self):
         return os.path.split(os.path.abspath(self.kwik_file.filename))[0]
@@ -451,7 +469,7 @@ class Unit:
         principal_channels = pc_ind[self.clu][principal_projections]
         return principal_channels, principal_projections
 
-    def get_unit_spikes(self, before=20, after=20, only_principal=False):
+    def get_unit_spikes(self, before=20, after=20, only_principal=False, max_events=5000):
         s_f = self.sampling_rate
         valid_times = self.time_samples[self.time_samples > before]
         valid_recs = self.recordings[self.time_samples > before]
@@ -460,21 +478,35 @@ class Unit:
             logger.warn('Some frames were out of left bounds and will be discarded')
             logger.warn('will collect only {0} events...'.format(valid_times.size))
 
-        if only_principal:
-            chan_list = self.get_principal_channels()
-        else:
-            chan_list = self.get_unit_chans()
+ 
+        chan_list = self.get_unit_chans()
 
         self.waveform_pars = {'before': before,
                               'after': after,
                               'chan_list': np.array(chan_list)}
-
-        self.all_waveforms = collect_frames_fast(valid_times - before,
-                                              before + after,
-                                              s_f,
-                                              self.get_kwd_path(),
-                                              valid_recs,
-                                              np.array(chan_list))
+        
+        
+        try:
+            assert valid_times.size > 1, 'no valid events'
+            # get a random sample of max_events elements
+            sample = np.random.choice(np.arange(valid_times.size),
+                                      size=min(max_events, valid_times.size),
+                                      replace=False)
+            self.all_waveforms = h5f.collect_frames_fast(self.get_kwd_path(),
+                                                          valid_recs[sample],
+                                                          valid_times[sample] -
+                                                          before,
+                                                          before + after,
+                                                          np.array(chan_list))
+        except (ValueError, AssertionError) as err:
+            logger.warn(
+                'Could not retrieve waveforms for clu {}, error {}'.format(self.clu, 
+                                                                           err))
+            self.all_waveforms = np.zeros(
+                [1, before + after, np.array(chan_list).size])
+            self.all_waveforms[:] = np.nan
+        self.save_unit_spikes()
+        
         return self.waveforms
 
     def load_all_waveforms(self):
@@ -523,7 +555,7 @@ class Unit:
         main_chan_absolute = np.array(self.waveform_pars['chan_list'])[main_chans]
         return main_chans.astype(np.int), main_chan_absolute
 
-    def get_unit_main_wave(self, n_chans=1):
+    def get_unit_main_wave(self, n_chans=4):
         ch = self.get_unit_main_chans(n_chans=n_chans)[0]
         return self.waveforms[:, :, ch]
 
@@ -549,7 +581,7 @@ class Unit:
     def get_unit_widths(self):
         widths = self.get_all_unit_widths()
         return np.median(widths), np.std(widths)
-
+    
 
 def support_vector_ms(starts, len_samples, all_units,
                    win_size=10, s_f=30000, history_steps=1, step_size=1,
@@ -986,27 +1018,49 @@ def collect_frames_array(starts, span, s_f, kwd_file, recs_list, chan_list):
     logger.info('Done collecting')
     return np.concatenate(all_frames_array, axis=0)
 
+# @h5f.h5_decorator(default_mode='r')
+# def collect_frames_fast(kwd_file, recs_list, starts, span, chan_list):
+#     recs = np.unique(recs_list)
+#     all_frames_list = []
+#     for i_rec, rec in tqdm(enumerate(recs), total=recs.size):
+#         starts_from_rec = starts[recs_list == rec]
+#         dset = h5f.get_data_set(kwd_file, rec)
+#         n_samples = dset.shape[0]
+#         valid_starts = starts_from_rec[(starts_from_rec > 0)
+#                                        & (starts_from_rec + span < n_samples)]
+#         if valid_starts.size < starts_from_rec.size:
+#             logger.warn('Some frames were out of bounds and will be discarded')
+#             logger.warn('will collect only {0} events...'.format(
+#                 valid_starts.size))
 
-def collect_frames_fast(starts, span, s_f, kwd_file, recs_list, chan_list):
-    recs = np.unique(recs_list)
-    logger.info('Collecting {} recs...'.format(recs.size))
-    all_frames_list = []
-    for i_rec, rec in tqdm(enumerate(recs)):
-        starts_from_rec = starts[recs_list == rec]
-        logger.info("Rec {0}, {1} events ...".format(rec, starts_from_rec.size))
-                
-        h5_dset = h5f.get_data_set(kwd_file, rec)
-        n_samples = h5_dset.shape[0]
-                             
-        valid_starts = starts_from_rec[(starts_from_rec > 0)
-                                       & (starts_from_rec + span < n_samples)]
-        if valid_starts.size < starts_from_rec.size:
-            logger.warn('Some frames were out of bounds and will be discarded')
-            logger.warn('will collect only {0} events...'.format(valid_starts.size))
-        
-        this_rec_spikes = st.repeated_slice(h5_dset, valid_starts, span, chan_list)
-        all_frames_list.append(this_rec_spikes)
-    
-    logger.info('Done collecting')
-    return np.concatenate(all_frames_list, axis=0)
+#         # get the dataset slices for only the channel list
+#         this_rec_frames = get_slice_array(dset, valid_starts, span, chan_list)
+#         all_frames_list.append(this_rec_frames)
 
+#     try:
+#         all_frames_array = np.concatenate(all_frames_list, axis=0)
+#     except ValueError:
+#         raise
+#         # logger.warn('Failed to collect stream frames, return is nan array')
+#         # zero_dset_shape = get_data_set(kwd_file, rec).shape
+#         # all_frames_array = np.empty([1, *zero_dset_shape])
+#         # all_frames_array[:] = np.nan
+#     return all_frames_array
+
+# def get_slice_array(dset: np.ndarray, starts: np.ndarray, span: np.int, chan_list) -> np.ndarray:
+#     n_slices = starts.size
+#     #n_chan = dset.shape[1]
+#     n_chan = chan_list.size
+#     chan_list = np.array(chan_list)
+#     slices_array = np.zeros([n_slices, span, n_chan])
+#     #logger.info('dset {}, starts {}, span {}, chan_list {}'.format(dset.shape, starts, span, chan_list))
+#     #logger.info('starts {}'.format(starts.dtype))
+#     for i, start in enumerate(starts.astype(np.int64)):
+#         #logger.info('start {}'.format(start.shape))
+#         #logger.info('chan_list {}'.format(chan_list))
+#         #logger.info('i {}'.format(i))
+#         #logger.info('span'.format(span))
+#         #start = np.int(start)
+#         #aux = dset[5: 5 + span, chan_list]
+#         slices_array[i, :, :] = dset[start: start + span, chan_list]
+#     return slices_array
