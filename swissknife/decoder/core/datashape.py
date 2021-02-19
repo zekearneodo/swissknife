@@ -1,7 +1,7 @@
 import numpy as np
 import logging
 
-logger = logging.getLogger('decoder.datashape')
+logger = logging.getLogger('swissknife.decoder.core.datashape')
 
 
 def trial_arrange_wrapper(sup_function):
@@ -26,8 +26,10 @@ def make_big_r(sup, hist_bins):
     :return: (n_bins-hist_bins)*n_trial x n_feat*hist_bins array
     """
     [n_feat, n_bin, n_trial] = sup.shape
-    m = n_bin - hist_bins + 1
-    # logger.info('m={}'.format(m))
+    m = int(n_bin - hist_bins + 1)
+    logger.info('m={}'.format(m))
+    logger.info('hist_bins ={}'.format(hist_bins))
+    logger.info('n_trial ={}'.format(n_trial))
     r = np.vstack([sup[:, j:j + hist_bins, :].reshape(-1, n_trial)
                    for j in range(m)])
 
@@ -69,3 +71,4 @@ def data_arrange(sup, target, hist_bins):
 
     big_r = make_big_r(sup_corrected, hist_bins)
     return big_r, target.flatten()
+

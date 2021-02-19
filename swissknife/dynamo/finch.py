@@ -56,7 +56,7 @@ def takens_finch(v, pars):
 
     return np.array([
         y,
-        pars['alpha_1'] * gg + pars['beta_1'] * gg * x - gg * x * x * x - g * x * x * y + gg * x * x - g * x * y,
+        pars['alpha_1']*gg + pars['beta_1']*gg*x + gg*x*x - g*x*y - gg*x*x*x - g*x*x*y,
         i_2,
         -pars['Lg_inv'] * pars['Ch_inv'] * i_1 - pars['Rh'] * (pars['Lb_inv'] + pars['Lg_inv']) * i_2 + (
             pars['Lg_inv'] * pars['Ch_inv'] - pars['Rb'] * pars['Rh'] * pars['Lb_inv'] * pars['Lg_inv']) * i_3 +
@@ -131,7 +131,7 @@ def finch(pars, int_par_stream, x_0=None):
                       (1. + pars['sys']['noise_fraction_env'] *
                        pars['sys']['noise'][0])
         pars['sys']['beta_1'] = beta_1 * (1. + pars['sys']['noise_fraction_beta_1'] *
-                                          (pars['sys']['noise'][1] - 0.5))
+                                          (pars['sys']['noise'][1]))
 
         db_old = tract_buffers[step, db]
         tract_buffers[step, a] = pars['t_in'] * pars['A_1'] * x[1] + tract_buffers[step - pars['tau_1'], bb]

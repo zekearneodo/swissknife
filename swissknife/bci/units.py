@@ -1,11 +1,9 @@
 # objects to do quick stuff with clusters
-from __future__ import division
-
 import numpy as np
 import logging
 import os
 import pickle
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 
 from swissknife.bci.core.file import h5_functions as h5f
 from swissknife.bci.core.file import file_functions as ff
@@ -121,7 +119,7 @@ class threshUnit(superUnit):
     def set_thresh_factor(self, thf=4.5):
         self.thresh_factor = thf
 
-    def set_filter_pars(self, filter_band=[500, 10000],
+    def set_filter_pars(self, filter_band=[300, 10000],
                         filter_gen_func=sp.make_butter_bandpass,
                         *args, **kwargs):
 
@@ -136,7 +134,7 @@ class threshUnit(superUnit):
         self.filter_args = args
         self.filter_kwargs = kwargs
 
-    def get_rec_dicts(self, filter_band=[500, 10000], force=False):
+    def get_rec_dicts(self, filter_band=[300, 10000], force=False):
         logger.debug('Getting rec dicts')
         recs_list = h5f.get_rec_list(self.h5_file)
         neural_chans = np.array(self.exp_pars['channel_config']['neural'])
@@ -155,7 +153,7 @@ class threshUnit(superUnit):
                                             force=force)}
             self.rec_dicts.append(one_dict)
 
-    def get_rms(self, stream_obj, filter_band=[500, 10000], force=False):
+    def get_rms(self, stream_obj, filter_band=[300, 10000], force=False):
         '''
         get rms for a stream_obj
         param stream_obj: H5Data object
@@ -193,40 +191,49 @@ class threshUnit(superUnit):
                      otherwise, the method will identify which rec each start belongs to and offset accordingly
         :return: n x span
         """
-        raise NotImplementedError
+        #raise NotImplementedError
+        rec_list = kf.get_rec_list(self.h5_file)
         if recs is None:
-            recs = kf.get_corresponding_rec(self.h5_file, starts)
+            recs_guessed = kf.get_corresponding_rec(self.h5_file, starts)
             start_rec_offsets = kf.rec_start_array(self.h5_file)
-            rec_list = kf.get_rec_list(self.h5_file)
+            starts_from_rec = np.array([s - start_rec_offsets[r] for s,r in zip(starts, recs_guessed)])
         else:
             assert (starts.size == recs.size)
-            rec_list = kf.get_rec_list(self.h5_file)
-            start_rec_offsets = np.ddzeros_like(rec_list)
-
+            start_rec_offsets = np.zeros_like(rec_list)
         return_ms = span_is_ms if return_ms is None else return_ms
         span_samples = np.int(span * self.sampling_rate * 0.001) if span_is_ms else span
         span_ms = span if span_is_ms else np.int(span * 1000. / self.sampling_rate)
 
-        rows = starts.shape[0]
-        cols = span_ms if return_ms else span_samples
-        raster = np.empty((rows, cols), dtype=np.float64)
-        raster[:] = np.nan
-
-        # do the raster in samples
-        i_trial = 0
-        for rec in np.unique(recs):
-            rec_frames
-            rec_time_samples = self.time_samples[self.recordings == rec]
-            for start in starts[recs == rec]:
-                start -= start_rec_offsets[rec_list == rec]
-                end = np.int(start + span_samples)
-                where = (rec_time_samples[:] >= start) & (rec_time_samples[:] <= end)
-                n = np.sum(where)
-                raster[i_trial, :n] = rec_time_samples[where] - start
-                if return_ms:
-                    raster[i_trial, :n] = np.round(raster[i_trial, :n] * 1000. / self.sampling_rate)
-                i_trial += 1
-        return raster
+        
+        # collect_frames will go through all the recs
+        # get all starts referred to their rec
+        if recs is None:
+            rec_start_arr = np.stack([recs_guessed.flatten(), starts_from_rec.flatten()])
+        else:
+            rec_start_arr = np.stack([recs.flatten(), starts.flatten()])
+        
+        rec_start_arr = rec_start_arr[:, np.argsort(rec_start_arr[0])]
+        clu_chans = np.array([self.clu])
+        all_spk_arr_stack = []
+        for rec_dict in (self.rec_dicts):
+            rec = rec_dict['rec']
+            logger.info('getting spikes for rec {}'.format(rec_dict['rec']))
+            this_rec_start = rec_start_arr[:, rec_start_arr[0]==rec]
+            #logger.info(this_rec_start)
+            all_frames = collect_frames(this_rec_start[1],
+                                        span_samples,
+                                        self.sampling_rate,
+                                        self.h5_file,
+                                        clu_chans,
+                                        recs=this_rec_start[0])
+            #logger.info(all_frames[0].data.shape)
+            [fr.apply_filter(self.filter_func, self.filter_pars) for fr in all_frames]
+            clu_threshold = np.array([rec_dict['rms'][clu_chans] * self.thresh_factor])
+            #logger.info(clu_threshold.shape)
+            all_spk_arr = collect_all_spk_arr(all_frames, clu_threshold)
+            all_spk_arr_stack.append(all_spk_arr)
+        
+        return np.concatenate(all_spk_arr_stack, axis=0)
 
     def get_qlt(self):
         return 4
@@ -864,6 +871,7 @@ def support_vector_thresh(starts, len_samples, all_units,
     mean_rms = all_rms.mean(axis=0)
 
     chans_thf = np.array([u.thresh_factor for u in all_units])
+    #logger.info('Chans thresh factors {}'.format(chans_thf))
     thresholds = mean_rms * chans_thf
 
     # collect_frames will go through all the recs
@@ -946,11 +954,11 @@ def filter_rms(x, filter_pars):
 
 
 def collect_all_spk_arr(frames_list, thresholds, min_dist=10):
-    logger.info('Will get spikes form {} frams'.format(len(frames_list)))
+    #logger.info('Will get spikes form {} frams'.format(len(frames_list)))
     sp_stack = np.stack([tp.spikes_array(fr.data, thresholds, min_dist=min_dist)
                          for fr in frames_list],
                         axis=0)
-    logger.info('done getting spikes')
+    logger.debug('done getting spikes')
     return sp_stack
 
 
@@ -982,10 +990,15 @@ def collect_frames(starts, span, s_f, kwd_file, chan_list, recs=None):
         rec_list = kf.get_rec_list(kwd_file)
         start_rec_offsets = np.zeros_like(rec_list)
 
-    logger.info('Collecting {} frames...'.format(starts.size))
-    for i_start, start in enumerate(starts):
-        if i_start % 10 == 0:
-            logger.info("Frame {} ...".format(i_start))
+    if starts.size > 1:
+        logger.info('Collecting {} frames...'.format(starts.size))
+        tqdm_show = True
+    else:
+        tqdm_show = False
+
+    for i_start, start in tqdm(enumerate(starts), total=np.array(starts).size, disable=~tqdm_show):
+        # if i_start % 10 == 0:
+        #     logger.info("Frame {} ...".format(i_start))
         rec = recs[i_start]
         start = start - start_rec_offsets[rec]
         one_frame = st.Chunk(st.H5Data(h5f.get_data_set(kwd_file, rec),
@@ -1001,7 +1014,7 @@ def collect_frames_array(starts, span, s_f, kwd_file, recs_list, chan_list):
     recs = np.unique(recs_list)
     logger.info('Collecting {} recs...'.format(recs.size))
     all_frames_array = []
-    for i_rec, rec in tqdm(enumerate(recs)):
+    for i_rec, rec in tqdm(enumerate(recs), total=recs.size):
         starts_from_rec = starts[recs_list == rec]
         logger.info("Rec {0}, {1} events ...".format(rec, starts_from_rec.size))
         stream_obj = st.H5Data(h5f.get_data_set(kwd_file, rec),

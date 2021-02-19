@@ -1,7 +1,5 @@
 # Objects and helper functions to do stuff with sound
 # The logic of using these is to be able to page through long structure and apply the same whether they are wavs, h5, bin.
-from __future__ import division
-
 import copy
 import logging
 import struct
@@ -33,11 +31,11 @@ def rms(x, axis=0):
     if axis is None:
         return np.linalg.norm(x)
     else:
-        return np.linalg.norm(x, axis=axis)/x.shape[axis]
+        return np.linalg.norm(x, axis=axis)/np.sqrt(x.shape[axis])
 
 def chunk_rms(x, axis=0):
     #print('chunk rms with shape {}'.format(x.shape))
-    return np.linalg.norm(x, axis=axis)
+    return np.linalg.norm(x, axis=axis)/np.sqrt(x.shape[axis])
 
 def mad(x):
     med = np.median(x)
@@ -327,7 +325,7 @@ class H5Data:
     def get_rms(self, window_size_samples=50000, n_windows=5000, rms_func=rms, rms_args=(), rms_kwargs={}):
         logger.debug('Computing rms over {0} windows for {1} channels'.format(n_windows, self.n_chans))
         window_size_samples = min(window_size_samples, self.n_samples)
-        all_starts = np.random.randint(self.n_samples - window_size_samples, size=n_windows)
+        all_starts = np.random.randint(self.n_samples - window_size_samples + 1, size=n_windows)
         self.rms = self.apply_repeated(all_starts, window_size_samples, rms_func, *rms_args, **rms_kwargs).mean(axis=0)
         return self.rms
 

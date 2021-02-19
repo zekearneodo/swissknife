@@ -33,11 +33,11 @@ def get_definitions_dictionaries():
                       'archive': os.path.abspath('/mnt/cube/earneodo/archive/bci_zf'),
                       'store': os.path.abspath('/Data/bci_zf'),
                       'scratch': os.path.abspath('/usr/local/experiment/scratchpad')},
-                 'manu':
+                 'pakhi':
                      {'repos': os.path.abspath('/mnt/cube/earneodo/repos'),
                       'experiment': os.path.abspath('/mnt/cube/earneodo/bci_zf'),
-                      'experiment_local': os.path.abspath('/mnt/cube/earneodo/bci_zf'),
-                      'archive': os.path.abspath('/mnt/cube/earneodo/archive/bci_zf'),
+                      'experiment_local': os.path.abspath('/home/earneodo/bci_zf'),
+                      'archive': os.path.abspath('/mnt/sphere/earneodo/archive/bci_zf'),
                       'scratch': os.path.abspath('/home/earneodo/scratchpad')},
                  'niao':
                      {'repos': os.path.abspath('/mnt/cube/earneodo/repos'),

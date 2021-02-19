@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 # for the session functions
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 import pandas as pd
 
 from swissknife.bci.core import expstruct as et
@@ -27,6 +27,11 @@ from sklearn.utils import shuffle
 import matplotlib.pyplot as plt
 
 import tensorflow as tf
+from keras import backend as k
+from tensorflow.keras.models import Model
+from tensorflow.keras import layers as kl 
+from tensorflow.keras.callbacks import EarlyStopping
+
 
 logger = logging.getLogger('swissknife.hilevel.ffnn')
 
@@ -97,7 +102,7 @@ class FeedForward(object):
         logger.info('Architecture X_in shape {}'.format(x_in.shape))
         with tf.variable_scope('regressor_common', reuse=tf.AUTO_REUSE):
             x = tf.reshape(x_in, [-1, self.n_features * self.history_bins], name='neural_input')
-            logger.info('Architacture x shape {}'.format(x_in.shape))
+            logger.info('Architecture x shape {}'.format(x_in.shape))
             x = tf.layers.dense(inputs=x, units=(self.n_features * self.history_bins) // 2,
                                 activation=self.nonlinearity,
                                 kernel_initializer=self.initializer,
@@ -166,7 +171,7 @@ class FeedForward(object):
                 clipped.append((tf.clip_by_value(grad, -100, 100), var))
             c_solver = c_optimizer.apply_gradients(clipped, global_step=global_step,
                                                    name='common_apply_grad')
-            # Alternatively, one can just let the optimizer do it's deed
+            # Alternatively, one can just let the optimizer do its deed
             # c_solver = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(r_loss,
             #                                                                             var_list=c_vars,
             #                                                                             global_step=global_step)
@@ -599,6 +604,76 @@ def train_and_test(x, y, x_t, y_t, sess_data, name_suffix='whl', tf_back_end=Non
     return model_path, y_r
 
 
+def train_and_test_keras(x, y, x_t, y_t, sess_data, name_suffix='whl', tf_config=tf_config, model=None):
+    fit_pars = sess_data.fp
+    fn = sess_data.fn
+
+    try:
+        fit_target = fit_pars['fit_target']
+    except KeyError:
+        fit_target = 'dyn'
+
+    assert fit_pars['network'] is 'ffnn_keras'
+    logger.info('Network is FFNN (Keras)')
+    #logger.info('fit pars: {}'.format(fit_pars))
+    model_name = 'tf_{0}_{1}_bs{2:02d}_hs{3:02d}_te{4:03d}_ut{5}_{6}.h5'.format(fit_target,
+                                                                                fit_pars['network'],
+                                                                            fit_pars['bin_size'],
+                                                                            fit_pars['history_bins'],
+                                                                            fit_pars['num_ep'],
+                                                                            fit_pars['unit_type'],
+                                                                            name_suffix)
+    model_path = os.path.join(fn['folders']['ss'], 'model_' + model_name)
+    logger.info('Model path: {}'.format(model_path))
+
+
+    # Define, train
+    logger.info('Making the model')
+    try:
+        tf_config = tf_back_end['config']
+        k.tensorflow_backend.set_session(tf.compat.v1.Session(config=tf_back_end['config']))
+    except:
+        logger.info('No or bad config in tf_back_end dictionary, will go with default session config')
+        logger.info('Also Mind that keras models needs tensorflow 2.0')
+        tf_config = None
+
+    # make the model
+    n_train, n_hist, n_unit = x.shape
+    batch_size = fit_pars['batch_size']
+
+    if model is None:
+        neur_in = Input(shape=(n_hist, n_unit, 1))
+        l = kl.Conv2D(n_hist, (5, max(n_unit, 5)), activation='relu')(neur_in)
+        l = kl.Conv2D(n_hist, (3, max(n_unit, 3)), activation='relu')(l)
+        l = kl.Flatten()(l)
+        l = kl.Dense(n_hist*n_unit, activation='relu')(l)
+        l = kl.Dense(512, activation='relu')(l)
+        l = kl.Dense(256, activation='relu')(l)
+        l = kl.Dense(64, activation='relu')(l)
+        l = kl.Dense(16, activation='relu')(l)
+        out = kl.Dense(3, activation='relu')(l)
+
+        model = Model(neur_in, out)
+        model.compile(loss='mean_squared_error', optimizer='adam')
+
+    # callbacks (early stop)
+    early_stopping = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=50)
+    callback_list = [early_stopping]
+
+    # Train
+    logger.info('Will begin network training')
+    model.fit(x.reshape((-1, n_hist, n_unit, 1)), y.reshape(-1, 3), 
+          epochs=fit_pars['num_ep'], 
+          batch_size=batch_size, 
+          verbose=2, 
+          #validation_split=0.1,
+          validation_data= (x_t.reshape((-1, n_hist, n_unit, 1)), y_t.reshape(-1, 3)),
+         callbacks=callback_list)
+
+    logger.info('Done training. Will make a prediction batch now')
+    y_r = model.predict(x_t.reshape((-1, n_hist, n_unit, 1)), batch_size=batch_size)
+    return model_path, y_r
+
 def mot_wise_train(sess_data, mots_per_run=7, only_chunks='all', tf_back_end=None):
     all_mots = sess_data.all_mots_list()
     n_mots = all_mots.size
@@ -656,5 +731,3 @@ def mot_wise_train(sess_data, mots_per_run=7, only_chunks='all', tf_back_end=Non
         plt.plot(Y_p_arr[:200, j])
 
     return Y_t_arr, Z_t_arr, Y_p_arr, training_pd
-
-

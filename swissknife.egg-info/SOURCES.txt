@@ -1,0 +1,9 @@
+README.md
+setup.py
+swissknife/__init__.py
+swissknife.egg-info/PKG-INFO
+swissknife.egg-info/SOURCES.txt
+swissknife.egg-info/dependency_links.txt
+swissknife.egg-info/not-zip-safe
+swissknife.egg-info/requires.txt
+swissknife.egg-info/top_level.txt

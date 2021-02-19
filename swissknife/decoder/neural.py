@@ -14,8 +14,8 @@ def sup_to_keras(sup, target, history_bins, n_test=10):
     trial_len = sup.shape[1] - history_bins
     n_feat = x.shape[1]
 
-    x_train = x[:-(n_test * trial_len), :]
-    y_train = y[:-(n_test * trial_len)]
+    x_train = x[(n_test * trial_len):, :]
+    y_train = y[(n_test * trial_len):]
     x_test = x[:(n_test * trial_len), :]
     y_test = y[:(n_test * trial_len)]
     logger.info('Train vector sizes {0} and {1}'.format(x_train.shape, y_train.shape))
@@ -62,8 +62,8 @@ def sup_to_keras_hirank(sup, target, history_bins, n_test=10):
     n_feat = x.shape[1]
     logger.info('Total vector sizes {0} and {1}'.format(x.shape, y.shape))
 
-    x_train = x[:-(n_test * trial_len), :]
-    y_train = y[:-(n_test * trial_len)]
+    x_train = x[-(n_test * trial_len):, :]
+    y_train = y[-(n_test * trial_len):]
     x_test = x[:(n_test * trial_len), :]
     y_test = y[:(n_test * trial_len)]
     logger.info('Train vector sizes {0} and {1}'.format(x_train.shape, y_train.shape))

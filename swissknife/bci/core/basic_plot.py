@@ -46,7 +46,7 @@ def col_binned_max(a, bs):
 
     pad = np.empty([n, o * bs - m]) * np.nan
     padded = np.append(a, pad, axis=1)
-    return np.max(padded.reshape(n, o, bs), axis=2)
+    return np.nanmax(padded.reshape(n, o, bs), axis=2)
 
 def plot_raster(x, t1=0, t2=-1, t0=0, ax=None, bin_size=0):
     # plot a raster

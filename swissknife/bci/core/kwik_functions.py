@@ -12,7 +12,7 @@ from scipy.io import wavfile
 from swissknife.bci.core import expstruct as et
 from swissknife.bci.core.file import h5_functions as h5f
 
-module_logger = logging.getLogger("kwik_functions")
+logger = logging.getLogger("kwik_functions")
 
 
 # add wave stimuli
@@ -172,7 +172,7 @@ def rec_start_array(kwik):
 @h5f.h5_wrap
 def get_rec_sizes(kwd_file):
     rec_list = get_rec_list(kwd_file)
-    rec_sizes = {rec: get_data_size(kwd_file, rec)
+    rec_sizes = {rec: h5f.get_data_size(kwd_file, rec)
                  for rec in rec_list}
     return rec_sizes
 
@@ -313,31 +313,31 @@ class KwikFile:
     def make_rec_groups(self):
         rec_list = np.unique(self.rec_kwik)
         rec_start_samples = h5f.get_rec_starts(self.file_names['kwd'])
-        #module_logger.debug(rec_start_samples)
-        #module_logger.info("Found recs {}".format(rec_list))
+        #logger.debug(rec_start_samples)
+        #logger.info("Found recs {}".format(rec_list))
         with h5py.File(self.file_names['kwk'], 'r+') as kwf:
             rec_group = kwf.require_group('recordings')
             for rec in rec_list:
-                #module_logger.info("table for rec {}".format(rec))
+                #logger.info("table for rec {}".format(rec))
 
                 rec_name = 'recording_{}'.format(rec)
-                #module_logger.debug(rec_start_samples)
-                #module_logger.info(rec_name)
+                #logger.debug(rec_start_samples)
+                #logger.info(rec_name)
                 attribs = [{'name': 'name', 'data': rec_name, 'dtype': 'S{}'.format(len(rec_name))},
                            {'name': 'sample_rate', 'data': self.s_f, 'dtype': np.dtype(np.float64)},
                            {'name': 'start_sample', 'data': rec_start_samples[rec], 'dtype': np.int64},
                            {'name': 'start_time', 'data': rec_start_samples[rec] / self.s_f, 'dtype': np.float64}]
-                module_logger.info('Will make rec group for rec {}'.format(rec))
+                logger.info('Will make rec group for rec {}'.format(rec))
                 try:
                     insert_group(rec_group, str(rec), attribs)
                 # except ValueError as err:
                 #     if 'Name already exists' in err.args[0]:
-                #         module_logger.info('rec group already existed, skipping')
+                #         logger.info('rec group already existed, skipping')
                 #     else:
                 #         raise
                 except RuntimeError as err:
                     if 'Name already exists' in err.args[0]:
-                        module_logger.info('rec group already existed, skipping')
+                        logger.info('rec group already existed, skipping')
                     else:
                         raise
 
@@ -415,7 +415,7 @@ def ref_to_rec_starts(rec_sizes, spk_array):
 
 
 def kilo_to_kwik(bird, sess, file_names=None, location='ss', chan_group=0):
-    module_logger.info('Creating kwik file for bird: {} sess: {}'.format(bird, sess))
+    logger.info('Creating kwik file for bird: {} sess: {}'.format(bird, sess))
     if file_names is None:
         file_names = dict(
             clu='spike_clusters.npy',
@@ -432,24 +432,24 @@ def kilo_to_kwik(bird, sess, file_names=None, location='ss', chan_group=0):
 
     # Check whether there is manual sort or not:
     if not os.path.isfile(file_names['clu']):
-        module_logger.info('Clu not found, will assume no manual sorting was done')
+        logger.info('Clu not found, will assume no manual sorting was done')
         file_names['clu'] = None
         file_names['grp'] = None
-        module_logger.debug(file_names)
+        logger.debug(file_names)
     else:
-        module_logger.info('Found clu file, will attempt to unpack manual sorted data from kilosort')
+        logger.info('Found clu file, will attempt to unpack manual sorted data from kilosort')
         file_names['temp'] = None
-        module_logger.debug(file_names)
+        logger.debug(file_names)
 
     k = KwikFile(file_names, chan_group=chan_group)
-    module_logger.info('Making spike tables')
+    logger.info('Making spike tables')
     k.make_spk_tables()
-    module_logger.info('Making rec tables (make_rec_groups)')
+    logger.info('Making rec tables (make_rec_groups)')
     k.make_rec_groups()
-    module_logger.info('Making cluster group tables')
+    logger.info('Making cluster group tables')
     k.make_clu_groups()
 
-    module_logger.info('Moving files to their sort folder')
+    logger.info('Moving files to their sort folder')
     sort_kilo_dir = os.path.join(fn['folders'][location],
                                  'kilo_{:02d}'.format(chan_group))
     et.mkdir_p(sort_kilo_dir)
@@ -457,7 +457,7 @@ def kilo_to_kwik(bird, sess, file_names=None, location='ss', chan_group=0):
     npy_files = glob.glob(os.path.join(fn['folders'][location], '*.npy'))
     for src in py_files + npy_files:
         shutil.move(src, sort_kilo_dir)
-    module_logger.info('Removing temporary .dat file')
+    logger.info('Removing temporary .dat file')
     dat_file = os.path.join(fn['folders'][location], 'experiment.dat')
     os.remove(dat_file)
-    module_logger.info('Done')
+    logger.info('Done')

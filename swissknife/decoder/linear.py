@@ -14,7 +14,7 @@ def data_arrange(sup, target, hist_bins):
     :return: an array of n_points x n_features, an array of n_points x 1 (target)
     """
     logger.warn('This function is deprecated, use the one in datashape.')
-    sup_correct = ds.sup_correct(sup, target, hist_bins)
+    sup_correct = ds.correct_sv(sup, target, hist_bins)
     big_r = ds.make_big_r(sup_correct, hist_bins)
     return big_r, target.flatten()
 
@@ -48,7 +48,7 @@ def fit_kernel(sup, target, hist_bins):
 @ds.trial_arrange_wrapper
 def kernel_predict(sup, kernel):
     [n_feat, n_bin, n_trial] = sup.shape
-    hist_bins = (kernel.size - 1)/n_feat
+    hist_bins = int((kernel.size - 1)/n_feat)
 
     big_r = ds.make_big_r(sup, hist_bins)
     #logger.info('Big_r shape {}'.format(big_r.shape))

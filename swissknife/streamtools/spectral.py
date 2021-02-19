@@ -1,18 +1,28 @@
 # from mock.mock import self
-from scipy.signal import spectrogram
-import scipy.signal as sg
+import scipy
+from scipy import signal as sg
+from scipy import interpolate as interp
+from scipy.stats import wasserstein_distance as emd
+from scipy.stats import pearsonr
+
+
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
 import tensorflow as tf
 
+from dtw import dtw
+
 from swissknife.streamtools.core.data import overlap
 from swissknife.streamtools.core import rosa
+
+from swissknife.streamtools.core import data as dt
+
 from tqdm import tqdm
 
 import logging
 
-logger = logging.getLogger('h5tools')
+logger = logging.getLogger('swissknife.streamtools.spectral')
 
 class Spectrogram(object):
     def __init__(self, x, s_f,
@@ -34,7 +44,7 @@ class Spectrogram(object):
         self.f_cut = f_cut
         self.db_cut = db_cut
 
-        self.f, self.t, self.Sxx = spectrogram(x, s_f,
+        self.f, self.t, self.Sxx = sg.spectrogram(x, s_f,
                                                nperseg=n_window,
                                                noverlap=self.n_overlap,
                                                window=sg.gaussian(n_window, self.sigma),
@@ -97,7 +107,7 @@ def plot_spectrogram(x, before_ms, after_ms, s_f, n_window=192, n_overlap=None, 
         sigma = 1. / 1000. * s_f
 
     # Make the spectrogram
-    f, t, Sxx = spectrogram(x, s_f, nperseg=n_window, noverlap=n_overlap, window=sg.gaussian(n_window, sigma),
+    f, t, Sxx = sg.spectrogram(x, s_f, nperseg=n_window, noverlap=n_overlap, window=sg.gaussian(n_window, sigma),
                             scaling='spectrum')
 
     Sxx[[Sxx < np.max((Sxx) * 0.000065)]] = 1
@@ -248,8 +258,15 @@ def pretty_spectrogram_tf(X, log=True, db_cut=65, fft_size=512, step_size=64,
 def pretty_spectrogram(x, s_f, log=True, fft_size=512, step_size=64, window=None,
                        db_cut=65,
                        f_min=0.,
-                       f_max=None):
+                       f_max=None,
+                       plot=False,
+                       ax=None):
     # db_cut=0 for no_trhesholding
+
+    if window is None:
+        #window = sg.windows.hann(fft_size, sym=False)
+        window = ('tukey', 0.25)
+
     f, t, specgram = sg.spectrogram(x, fs=s_f, window=window,
                                        nperseg=fft_size,
                                        noverlap=fft_size - step_size,
@@ -270,6 +287,16 @@ def pretty_spectrogram(x, s_f, log=True, fft_size=512, step_size=64, window=None
 
     f_filter = np.where((f >= f_min) & (f < f_max))
     #return f, t, specgram
+
+    if plot:
+        if ax is None:
+            fig, ax = plt.subplots()
+        ax.pcolormesh(t, f[f < f_max], specgram[f < f_max, :],
+            cmap='inferno',
+            rasterized=True)
+        
+        return f[f_filter], t, specgram[f_filter], ax
+
     return f[f_filter], t, specgram[f_filter]
 
 
@@ -399,3 +426,184 @@ def inv_spectrogram(spectrogram, hparams):
   '''Converts spectrogram to waveform using librosa'''
   S = rosa._db_to_amp(rosa._denormalize(spectrogram, hparams) + hparams['ref_level_db'])  # Convert back to linear
   return rosa.inv_preemphasis(rosa._griffin_lim(S ** hparams['power'], hparams), hparams)          # Reconstruct phase
+
+
+def normalize_pdf(x:np.array):
+    x = x - np.min(x)
+    norm_x = np.linalg.norm(x, ord=1)
+    if norm_x == 0:
+        y = np.ones_like(x)/x.size
+    else:
+        y = x/norm_x
+    return y
+
+def normalize_emd(x:np.array):
+    
+    x = x - np.min(x)
+    norm_x = np.linalg.norm(x, ord=1)
+    
+    # if the spectral slice is a nan flat, put all the probability in the lowest frequency (it's a flat)
+    # if norm_x == 0:
+    #     y = np.zeros_like(x)
+    #     y[0] = 1
+    # else:
+    #     y = x/norm_x
+    
+    # if the spectral slice is a nan flat, make it uniform
+    if norm_x == 0:
+        y = np.ones(x)/x.size
+    else:
+        y = x/norm_x
+    
+    return y
+
+def spec_emd_dist(sx: np.array, sy:np.array) -> np.array:
+    """ Earthmovers distance over all spectral slices of two equally shaped spectrograms.
+
+    :type sx:np.array:
+    :param sx:np.array: first spectrogram (n_f, n_t) where n_f, n_t are the number of frequency, time bins.
+
+    :type sy:np.array:
+    :param sy:np.array: second spectrogram (n_f, n_t) where n_f, n_t are the number of frequency, time bins.
+
+    :raises:
+
+    :rtype: emd_arr: (n_t, ) earthmovers distance along the n_t axis
+    """
+    try:
+        emd_arr = np.array([emd(normalize_pdf(a), normalize_pdf(b)) for a, b in zip(sx.T, sy.T)])
+    except TypeError:
+        emd_arr = np.zeros_like(sx)
+        emd_arr[:] = np.nan
+    return emd_arr
+
+
+def spec_rho_dist(sx: np.array, sy:np.array) -> np.array:
+    """ Earthmovers distance over all spectral slices of two equally shaped spectrograms.
+
+    :type sx:np.array:
+    :param sx:np.array: first spectrogram (n_f, n_t) where n_f, n_t are the number of frequency, time bins.
+
+    :type sy:np.array:
+    :param sy:np.array: second spectrogram (n_f, n_t) where n_f, n_t are the number of frequency, time bins.
+
+    :raises:
+
+    :rtype: emd_arr: (n_t, ) earthmovers distance along the n_t axis
+    """
+    #logger.info('getting spec_rho')
+    try:
+        emd_arr = np.array([pearsonr(normalize_pdf(a), normalize_pdf(b))[0] for a, b in zip(sx.T, sy.T)])
+    except TypeError:
+        emd_arr = np.zeros_like(sx)
+        emd_arr[:] = np.nan
+    return emd_arr
+
+def spec_rho_dist_legacy(sx: np.array, sy:np.array) -> np.array:
+    """ Earthmovers distance over all spectral slices of two equally shaped spectrograms.
+
+    :type sx:np.array:
+    :param sx:np.array: first spectrogram (n_f, n_t) where n_f, n_t are the number of frequency, time bins.
+
+    :type sy:np.array:
+    :param sy:np.array: second spectrogram (n_f, n_t) where n_f, n_t are the number of frequency, time bins.
+
+    :raises:
+
+    :rtype: emd_arr: (n_t, ) earthmovers distance along the n_t axis
+    """
+    #logger.info('getting spec_rho')
+
+
+    # normalize first spectrogram
+    sx -= np.amin(sx)
+    sx_max = np.amax(sx)
+
+    sx /= sx_max
+
+    # rescale second spectrogram
+    sy -= np.amin(sy)
+    sy /= np.amax(sx_max)
+
+    # deal with zeros to compute the spectrogram correlations
+    f_bin, t_bin = sx.shape
+
+    #zero_x = np.where((sx.sum(axis=0)<10) & (sy.sum(axis=0) < 10) )[0]
+    zero_x = np.where(sx.sum(axis=0)<1)[0]
+    
+    mu = 0.
+    epsilon = mu*8e-17
+
+    x_jitter = np.random.normal(mu, epsilon, (f_bin, zero_x.size))
+    y_jitter = np.random.normal(mu, epsilon, (f_bin, zero_x.size))
+
+    sx[:, zero_x] = x_jitter
+    sy[:, zero_x] = y_jitter
+
+    rxy = np.array([scipy.stats.pearsonr(i, j)[0] for i,j in zip(sx.T, sy.T)])
+
+    return rxy
+
+def warp_rho_dist(sx, sy):
+    #dist_fun = sp.spec_emd_dist
+    
+    dist, sz = interp_spec_dist(sx, sy, spec_rho_dist)
+    #dist[dist<1e-8] = 1
+    return dist
+
+def get_envelope(y: np.array, spectral_par_dict:dict, f_min: float=300, f_max: float=7500) -> tuple:
+
+    s_f = spectral_par_dict['s_f']
+
+    f, t_y, s_y = pretty_spectrogram(y, s_f, 
+                                fft_size=sp_par['n_perseg'], 
+                                log=True,
+                        step_size=int(s_f*step_s), db_cut=sp_par['cut_off'],
+                        f_min=f_min, f_max=f_max, window=('gaussian', 70))
+
+    env_y = sg.savgol_filter(s_y.sum(axis=0) - np.min(s_y.sum(axis=0)), 51, 4)
+    
+    return env_y, t_y, s_y, f
+
+def resize_interp(x, new_n, kind='linear'):
+    f = interp.interp1d(np.linspace(0, 1, x.size), x, kind)
+    return f(np.linspace(0, 1, new_n))
+
+def resize_interp_2d(x, new_n, kind='linear'):
+    # interpolate along the second dimension
+    return np.vstack([resize_interp(z, new_n, kind=kind) for z in x])
+
+def warp_spec_dist(sx: np.array, sy:np.array, metric_fcn, **metric_kwargs):
+
+    # get the paths of the envelope warping and do the comparison in the warped specs
+    env_x, env_y = tuple([sg.savgol_filter(z.sum(axis=0) - np.min(z.sum(axis=0)), 51, 4) for z in [sx, sy]])
+
+    w_dist, w_cm, w_acc_cm, w_path = dtw(env_x, env_y, dist=np.linalg.norm)
+
+    sx_warp = sx[:, w_path[0]]
+    sy_warp = sx[:, w_path[1]]
+
+    warped_dist = metric_fcn(sx_warp, sy_warp, **metric_kwargs)
+
+    return warped_dist, w_dist, w_path
+
+def interp_spec_dist(sx:np.array, sy:np.array, metric_fcn, **metric_kwargs) -> tuple:
+    # interpolate sy to the length (dimension 1) of sx and compare using metric_fc
+    # interpolate
+    n_x = sx.shape[1]
+    sz = resize_interp_2d(sy, n_x, kind='linear')
+    # compare
+    distance = metric_fcn(sx, sz, **metric_kwargs)
+
+    return distance, sz
+
+def truncate_spec_dist(sx:np.array, sy:np.array, metric_fcn, **metric_kwargs) -> tuple:
+    # interpolate sy to the length (dimension 1) of sx and compare using metric_fc
+    # interpolate
+    
+    n_min = min(sx.shape[1], sy.shape[1])
+
+    # compare
+    distance = metric_fcn(sx[:,: n_min], sy[:, :n_min], **metric_kwargs)
+
+    return distance, sx[:, :n_min], sy[:, :n_min]

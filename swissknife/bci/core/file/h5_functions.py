@@ -9,7 +9,7 @@ from tqdm import tqdm_notebook as tqdm
 
 #from mdaio import writemda16i
 
-logger = logging.getLogger('bci.h5_functions')
+logger = logging.getLogger('swissknife.bci.core.h5_functions')
 
 def h5_wrap(h5_function):
     """
