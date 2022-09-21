@@ -88,9 +88,9 @@ def one_frame_to_window(one_fv, one_tv, n_lookback):
     n_feat, f_bins, _ = one_fv.shape # n of features and feature bins
     t_dim, t_bins = one_tv.shape # n of time bins of target data, and target space dimension
 
-    #logger.info('one_fv.shape = {}'.format(one_fv.shape))
-    #logger.info('one_tv.shape = {}'.format(one_tv.shape))
-    #logger.info('tbins {}, nlookback {}'.format(t_bins, n_lookback))
+    logger.info('one_fv.shape = {}'.format(one_fv.shape))
+    logger.info('one_tv.shape = {}'.format(one_tv.shape))
+    logger.info('tbins {}, nlookback {}'.format(t_bins, n_lookback))
     assert((t_bins + n_lookback) <= f_bins)
 
     one_frame_feature_window = np.stack([one_fv.squeeze()[:, j:j+n_lookback].T for j in range(t_bins)], axis=0)

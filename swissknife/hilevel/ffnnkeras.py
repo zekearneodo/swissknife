@@ -414,14 +414,8 @@ def train_and_test_keras(x, y, x_t, y_t, sess_data, name_suffix='whl', tf_back_e
 
     if model is None:
         neur_in = kl.Input(shape=(n_hist, n_unit, 1))
-        l = kl.Conv2D(n_hist, (5, 5), activation='relu')(neur_in)
-        l = kl.Conv2D(n_hist, (3, 3), activation='relu')(l)
-        l = kl.Flatten()(l)
-        l = kl.Dense(n_hist*n_unit, activation='relu')(l)
-        l = kl.Dense(512, activation='relu')(l)
-        l = kl.Dense(256, activation='relu')(l)
+        l = kl.Flatten()(neur_in)
         l = kl.Dense(64, activation='relu')(l)
-        l = kl.Dense(16, activation='relu')(l)
         out = kl.Dense(3, activation='relu')(l)
 
         model = Model(neur_in, out)
@@ -540,9 +534,6 @@ def train_test_spec(X, Y, Z, X_t, Y_t, Z_t, sess_data):
 
     if fit_pars['network'] == 'ffnn_keras_linear':
         neur_in = kl.Input(shape=(n_hist, n_unit, 1))
-        #x = Conv2D(n_hist, (5, 5), activation='relu')(neur_in)
-        #x = Conv2D(n_hist, (3, 3), activation='relu')(x)
-        #x = AveragePooling2D()(x)
         x = kl.Flatten()(neur_in)
         x = kl.Dense(1, activation='linear')(x)
         #x = Dense(512, activation='relu')(x)
@@ -566,12 +557,36 @@ def train_test_spec(X, Y, Z, X_t, Y_t, Z_t, sess_data):
 
     elif fit_pars['network'] == 'ffnn_keras':
         neur_in = kl.Input(shape=(n_hist, n_unit, 1))
-        #x = Conv2D(n_hist, (5, 5), activation='relu')(neur_in)
-        #x = Conv2D(n_hist, (3, 3), activation='relu')(x)
-        #x = AveragePooling2D()(x)
         x = kl.Flatten()(neur_in)
-        x = kl.Dense(12, activation='relu')(x)
+        x = kl.Dense(64, activation='relu')(x)
         #x = Dense(512, activation='relu')(x)
+
+        out = kl.Dense(n_fit_par, activation='relu')(x)
+
+        model = Model(neur_in, out)
+        model.compile(loss='mean_squared_error', optimizer='SGD')
+
+        model.fit(X.reshape((-1, n_hist, n_unit, 1)),
+                  Y.reshape(-1, n_fit_par),
+                  epochs=1000,
+                  batch_size=batch_size,
+                  verbose=1,
+                  validation_split=0.1,
+                  callbacks=callback_list)
+        logger.info('Done fitting')
+
+        y_r = model.predict(X_t.reshape((-1, n_hist, n_unit, 1)),
+                            batch_size=batch_size)
+
+    elif fit_pars['network'] == 'ffnn_keras_conv':
+        neur_in = kl.Input(shape=(n_hist, n_unit, 1))
+        x = kl.Conv2D(n_hist, (5, 5), activation='relu')(neur_in)
+        x = kl.Conv2D(n_hist, (3, 3), activation='relu')(x)
+        #x = kl.AveragePooling2D()(x)
+        x = kl.Flatten()(x)
+        x = kl.Dense(128, activation='relu')(x)
+        x = kl.Dense(64, activation='relu')(x)
+        x = kl.Dense(32, activation='relu')(x)
 
         out = kl.Dense(n_fit_par, activation='relu')(x)
 
@@ -650,15 +665,7 @@ def train_test_ffnn_model(X, Y, Z, X_t, Y_t, Z_t, sess_data):
 
     # the model
     neur_in = kl.Input(shape=(n_hist, n_unit, 1))
-    x = kl.Conv2D(n_hist, (min(n_unit, 5), min(n_unit, 5)), activation='relu')(neur_in)
-    x = kl.Conv2D(n_hist, (min(n_unit, 3), min(n_unit, 3)), activation='relu')(x)
-    # x = AveragePooling2D()(x)
-    x = kl.Flatten()(x)
-    x = kl.Dense(n_hist*n_unit, activation='relu')(x)
-    x = kl.Dense(512, activation='relu')(x)
-    x = kl.Dense(256, activation='relu')(x)
-    x = kl.Dense(64, activation='relu')(x)
-    x = kl.Dense(16, activation='relu')(x)
+    x = kl.Dense(64, activation='relu')(neur_in)
     out = kl.Dense(3, activation='relu')(x)
 
     model = Model(neur_in, out)

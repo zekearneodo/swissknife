@@ -108,15 +108,10 @@ class FeedForward(object):
                                 kernel_initializer=self.initializer,
                                 name='d_0')
 
-            x = tf.layers.dense(inputs=x, units=128,
+            x = tf.layers.dense(inputs=x, units=64,
                                 activation=self.nonlinearity,
                                 kernel_initializer=self.initializer,
                                 name='d_1')
-
-            x = tf.layers.dense(inputs=x, units=32,
-                                activation=self.nonlinearity,
-                                kernel_initializer=self.initializer,
-                                name='d_2')
 
             y_ = tf.layers.dense(inputs=x, units=self.n_target,
                                  activation=self.nonlinearity,
@@ -643,16 +638,8 @@ def train_and_test_keras(x, y, x_t, y_t, sess_data, name_suffix='whl', tf_config
 
     if model is None:
         neur_in = Input(shape=(n_hist, n_unit, 1))
-        l = kl.Conv2D(n_hist, (5, max(n_unit, 5)), activation='relu')(neur_in)
-        l = kl.Conv2D(n_hist, (3, max(n_unit, 3)), activation='relu')(l)
-        l = kl.Flatten()(l)
-        l = kl.Dense(n_hist*n_unit, activation='relu')(l)
-        l = kl.Dense(512, activation='relu')(l)
-        l = kl.Dense(256, activation='relu')(l)
-        l = kl.Dense(64, activation='relu')(l)
-        l = kl.Dense(16, activation='relu')(l)
+        l = kl.Dense(64, activation='relu')(neur_in)
         out = kl.Dense(3, activation='relu')(l)
-
         model = Model(neur_in, out)
         model.compile(loss='mean_squared_error', optimizer='adam')
 

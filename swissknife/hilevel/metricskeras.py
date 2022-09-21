@@ -151,7 +151,7 @@ def normalize_spec(sx):
     sx /= sx_max
     return sx
 
-def compare_spectra_old(x, y, s_f=30000, n_perseg=1024, step_s=0.001, db_cut=65, f_min=300, f_max=7500,
+def compare_spectra_old(x, y, s_f=30000, n_perseg=1024, step_s=0.001, db_cut=75, f_min=300, f_max=7500,
                         log=False,
                         plots=None):
     fx, tx, sx = sp.pretty_spectrogram(x, s_f, fft_size=n_perseg, log=log,
@@ -398,18 +398,17 @@ def all_self_scores(one_pd, other_pd, pass_thru=[]):
                                           one_pd['syn_song'].tolist(),
                                           one_pd['raw_song'].tolist())),
                                       total=len(one_pd['m_id'].tolist())):
-        rms_raw, sxx_neu, sxx_raw = compare_spectra(x, x_raw, n_perseg=64, db_cut=55)
-        rms_syn, _, sxx_syn = compare_spectra(x, x_syn, n_perseg=64, db_cut=55)
-        rms_syn_raw = compare_spectra(x_syn, x_raw, n_perseg=64, db_cut=55)[0]
+        rms_raw, sxx_neu, sxx_raw = compare_spectra(x, x_raw)
+        rms_syn, _, sxx_syn = compare_spectra(x, x_syn)
+        rms_syn_raw = compare_spectra(x_syn, x_raw)[0]
         rms_con = np.array(
-            list(map(lambda z: compare_spectra(x, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
+            list(map(lambda z: compare_spectra(x, z)[0], other_pd['x'].tolist())))
         rms_syn_con = np.array(
-            list(map(lambda z: compare_spectra(x_syn, z, n_perseg=128, db_cut=70)[0], other_pd['x'].tolist())))
+            list(map(lambda z: compare_spectra(x_syn, z)[0], other_pd['x'].tolist())))
         rms_bos_con = np.array(
-            list(map(lambda z: compare_spectra(x_raw, z, n_perseg=128, db_cut=80)[0], other_pd['x'].tolist())))
+            list(map(lambda z: compare_spectra(x_raw, z)[0], other_pd['x'].tolist())))
         
-        bos_bos = [compare_spectra(x_raw, y, n_perseg=128, 
-            db_cut=80)[0] for j,y in enumerate(all_raw) if not j==i]
+        bos_bos = [compare_spectra(x_raw, y)[0] for j,y in enumerate(all_raw) if not j==i]
         rms_bos_bos = np.array(bos_bos)
 
         cross_mot_id = other_pd['m_id'].tolist()

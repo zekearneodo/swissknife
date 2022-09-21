@@ -36,7 +36,7 @@ default_spec_pars = {'fft_size': 512,
                      'step_size': int(30000*0.001),
                      'f_min': 300,
                      'f_max': 7500,
-                     'db_cut': 45,
+                     'db_cut': 75,
                      }
 
 ### loading and handling
@@ -434,7 +434,6 @@ def all_bird_metrics_rho_pw(bird: str, sess: str, spec_pars: dict = default_spec
         all_pd_list.append(sims_metrics_pd)
 
     # get the con metrics only once
-    spec_pars['db_cut'] = 125
     all_spec(other_mot_pd, spec_pars=spec_pars, streams=['x'])
     all_spec(sims_pd, spec_pars=spec_pars, streams=['syn', 'bos', 'neur'])
     con_metrics_pd = all_con_metrics(sims_pd, other_mot_pd, dist_fun)
@@ -522,7 +521,6 @@ def all_bird_metrics_rho(bird: str, sess: str, spec_pars: dict = default_spec_pa
         all_pd_list.append(sims_metrics_pd)
 
     # get the con metrics only once
-    spec_pars['db_cut'] = 125
     all_spec(other_mot_pd, spec_pars=spec_pars, streams=['x'])
     all_spec(sims_pd, spec_pars=spec_pars, streams=['syn', 'bos', 'neur'])
     #con_metrics_pd = all_con_metrics(sims_pd, other_mot_pd, dist_fun)

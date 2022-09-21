@@ -9,7 +9,7 @@ from scipy.stats import pearsonr
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
-import tensorflow as tf
+
 
 from dtw import dtw
 
@@ -17,6 +17,8 @@ from swissknife.streamtools.core.data import overlap
 from swissknife.streamtools.core import rosa
 
 from swissknife.streamtools.core import data as dt
+
+from scipy import signal
 
 from tqdm import tqdm
 
@@ -299,6 +301,26 @@ def pretty_spectrogram(x, s_f, log=True, fft_size=512, step_size=64, window=None
 
     return f[f_filter], t, specgram[f_filter]
 
+def ms_spectrogram(x, s_f, n_window=512, step_ms=1, f_min=300, f_max=9000, cut_off=0.000055):
+
+    # the overlap is the size of the window minus the smples in a msec
+    msec_samples = int(s_f * 0.001)
+    n_overlap = n_window - msec_samples * step_ms
+    sigma = 1 / 200. * s_f
+
+    # Make the spectrogram
+    f, t, Sxx = signal.spectrogram(x, s_f,
+                                   nperseg=n_window,
+                                   noverlap=n_overlap,
+                                   window=signal.gaussian(n_window, sigma),
+                                   scaling='spectrum')
+
+    if cut_off > 0:
+        Sxx[Sxx < np.max((Sxx) * cut_off)] = 1
+    
+    Sxx[f<f_min, :] = 1
+
+    return f[(f>f_min) & (f<f_max)], t, Sxx[(f>f_min) & (f<f_max)]
 
 def chunky_spectrogram(x, s_f, log=True, fft_size=256, step_size=64, window=None,
                        db_cut=65,
