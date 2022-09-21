@@ -12,7 +12,7 @@ jupyter-core==4.4.0
 Markdown==2.6.11
 mkl-fft==1.0.10
 mkl-random==1.0.2
-numpy==1.15.4
+numpy==1.22.0
 pandas==0.23.4
 parso==0.3.1
 pexpect==4.6.0
