@@ -4,7 +4,7 @@ certifi==2018.10.15
 decorator==4.3.0
 html5lib==0.9999999
 ipykernel==5.1.0
-ipython==7.2.0
+ipython==8.10.0
 ipython-genutils==0.2.0
 jedi==0.13.2
 jupyter-client==5.2.4
